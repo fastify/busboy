@@ -4,7 +4,7 @@ var assert = require('assert'),
     path = require('path'),
     inspect = require('util').inspect;
 
-var FIXTURES_ROOT = __dirname + '/fixtures/';
+var FIXTURES_ROOT = path.resolve(__dirname, 'fixtures/');
 
 var t = 0,
     group = path.basename(__filename, '.js') + '/';
@@ -22,7 +22,7 @@ function next() {
   if (t === tests.length)
     return;
   var v = tests[t],
-      fixtureBase = FIXTURES_ROOT + v.source,
+      fixtureBase = path.resolve(FIXTURES_ROOT, v.source),
       fd,
       n = 0,
       buffer = Buffer.allocUnsafe(v.chsize),
