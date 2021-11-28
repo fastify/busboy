@@ -175,9 +175,10 @@ Dicer.prototype._oninfo = function(isMatch, data, start, end) {
     this._part._read = function(n) {
       self._unpause();
     };
-    ev = this._isPreamble ? 'preamble' : 'part';
-    if (this._events[ev])
-      this.emit(ev, this._part);
+    if (this._isPreamble && this._events['preamble'])
+      this.emit('preamble', this._part);
+    else if (this._isPreamble !== true && this._events['part'])
+      this.emit('part', this._part);
     else
       this._ignore();
     if (!this._isPreamble)
