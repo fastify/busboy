@@ -1,50 +1,56 @@
-var Dicer = require('../lib/Dicer');
-var assert = require('assert'),
+const Dicer = require('../lib/Dicer');
+const assert = require('assert'),
     fs = require('fs'),
     path = require('path'),
     inspect = require('util').inspect;
 
-var FIXTURES_ROOT = __dirname + '/fixtures/';
+const FIXTURES_ROOT = __dirname + '/fixtures/';
 
-var t = 0,
-    group = path.basename(__filename, '.js') + '/';
+let t = 0;
+const group = path.basename(__filename, '.js') + '/';
 
-var tests = [
-  { source: 'nested',
-    opts: { boundary: 'AaB03x' },
+const tests = [
+  {
+    source: 'nested',
+    opts: {boundary: 'AaB03x'},
     chsize: 32,
     nparts: 2,
     what: 'One nested multipart'
   },
-  { source: 'many',
-    opts: { boundary: '----WebKitFormBoundaryWLHCs9qmcJJoyjKR' },
+  {
+    source: 'many',
+    opts: {boundary: '----WebKitFormBoundaryWLHCs9qmcJJoyjKR'},
     chsize: 16,
     nparts: 7,
     what: 'Many parts'
   },
-  { source: 'many-wrongboundary',
-    opts: { boundary: 'LOLOLOL' },
+  {
+    source: 'many-wrongboundary',
+    opts: {boundary: 'LOLOLOL'},
     chsize: 8,
     nparts: 0,
     dicerError: true,
     what: 'Many parts, wrong boundary'
   },
-  { source: 'many-noend',
-    opts: { boundary: '----WebKitFormBoundaryWLHCs9qmcJJoyjKR' },
+  {
+    source: 'many-noend',
+    opts: {boundary: '----WebKitFormBoundaryWLHCs9qmcJJoyjKR'},
     chsize: 16,
     nparts: 7,
     npartErrors: 1,
     dicerError: true,
     what: 'Many parts, end boundary missing, 1 file open'
   },
-  { source: 'nested-full',
-    opts: { boundary: 'AaB03x', headerFirst: true },
+  {
+    source: 'nested-full',
+    opts: {boundary: 'AaB03x', headerFirst: true},
     chsize: 32,
     nparts: 2,
     what: 'One nested multipart with preceding header'
   },
-  { source: 'nested-full',
-    opts: { headerFirst: true },
+  {
+    source: 'nested-full',
+    opts: {headerFirst: true},
     chsize: 32,
     nparts: 2,
     setBoundary: 'AaB03x',
@@ -55,19 +61,17 @@ var tests = [
 function next() {
   if (t === tests.length)
     return;
-  var v = tests[t],
+  const v = tests[t],
       fixtureBase = FIXTURES_ROOT + v.source,
-      n = 0,
-      buffer = Buffer.allocUnsafe(v.chsize),
-      state = { parts: [], preamble: undefined };
+      state = {parts: [], preamble: undefined};
 
-  var dicer = new Dicer(v.opts),
-      error,
+  const dicer = new Dicer(v.opts);
+  let error,
       partErrors = 0,
       finishes = 0;
 
   dicer.on('preamble', function(p) {
-    var preamble = {
+    const preamble = {
       body: undefined,
       bodylen: 0,
       error: undefined,
@@ -80,7 +84,7 @@ function next() {
         dicer.setBoundary(v.setBoundary);
     }).on('data', function(data) {
       // make a copy because we are using readSync which re-uses a buffer ...
-      var copy = Buffer.allocUnsafe(data.length);
+      const copy = Buffer.allocUnsafe(data.length);
       data.copy(copy);
       data = copy;
       if (!preamble.body)
@@ -98,7 +102,7 @@ function next() {
     });
   });
   dicer.on('part', function(p) {
-    var part = {
+    const part = {
       body: undefined,
       bodylen: 0,
       error: undefined,
@@ -131,9 +135,9 @@ function next() {
     else
       assert(error === undefined, makeMsg(v.what, 'Unexpected error: ' + error));
 
-    var preamble;
+    let preamble;
     if (fs.existsSync(fixtureBase + '/preamble')) {
-      var prebody = fs.readFileSync(fixtureBase + '/preamble');
+      const prebody = fs.readFileSync(fixtureBase + '/preamble');
       if (prebody.length) {
         preamble = {
           body: prebody,
@@ -144,8 +148,8 @@ function next() {
       }
     }
     if (fs.existsSync(fixtureBase + '/preamble.header')) {
-      var prehead = JSON.parse(fs.readFileSync(fixtureBase
-                                               + '/preamble.header', 'binary'));
+      const prehead = JSON.parse(fs.readFileSync(fixtureBase
+          + '/preamble.header', 'binary'));
       if (!preamble) {
         preamble = {
           body: undefined,
@@ -157,8 +161,8 @@ function next() {
         preamble.header = prehead;
     }
     if (fs.existsSync(fixtureBase + '/preamble.error')) {
-      var err = new Error(fs.readFileSync(fixtureBase
-                                          + '/preamble.error', 'binary'));
+      const err = new Error(fs.readFileSync(fixtureBase
+          + '/preamble.error', 'binary'));
       if (!preamble) {
         preamble = {
           body: undefined,
@@ -196,7 +200,8 @@ function next() {
                          + '\nExpected: '
                          + v.npartErrors));
 
-    for (var i = 0, header, body; i < v.nparts; ++i) {
+    let i = 0, header, body;
+    for (; i < v.nparts; ++i) {
       if (fs.existsSync(fixtureBase + '/part' + (i+1))) {
         body = fs.readFileSync(fixtureBase + '/part' + (i+1));
         if (body.length === 0)
