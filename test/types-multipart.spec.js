@@ -4,7 +4,7 @@ const { describe, it } = require('mocha');
 const inspect = require('util').inspect;
 const EMPTY_FN = function () { };
 
-describe('test-types-multipart', () => {
+describe('types-multipart', () => {
   [
     {
       source: [
@@ -322,21 +322,21 @@ describe('test-types-multipart', () => {
         });
       }
       busboy.on('finish', function () {
-        assert(finishes++ === 0, `${v.what} finish emitted multiple times`);
+        assert(finishes++ === 0, `${v.what}: finish emitted multiple times`);
         assert.deepEqual(results.length,
           v.expected.length,
-          `${v.what} Parsed result count mismatch:\n Saw ${results.length}.\nExpected: ${v.expected.length}`
+          `${v.what}: Parsed result count mismatch:\n Saw ${results.length}.\nExpected: ${v.expected.length}`
         );
 
         results.forEach(function (result, i) {
           assert.deepEqual(result,
             v.expected[i],
-            `${v.what} Result mismatch:\nParsed: ${inspect(result)}.\nExpected: ${inspect(v.expected[i])}`
+            `${v.what}: Result mismatch:\nParsed: ${inspect(result)}.\nExpected: ${inspect(v.expected[i])}`
           );
         });
       }).on('error', function (err) {
         if (!v.shouldError || v.shouldError !== err.message)
-          assert(false, `${v.what} Unexpected error: ${err}`);
+          assert(false, `${v.what}: Unexpected error: ${err}`);
       });
 
       v.source.forEach(function (s) {
