@@ -6,7 +6,7 @@ const assert = require('assert'),
 
 const FIXTURES_ROOT = path.resolve(__dirname, 'fixtures/');
 
-describe('multipart-nolisteners', () => {
+describe('dicer-multipart-nolisteners', () => {
   [
     {
       source: 'many',
