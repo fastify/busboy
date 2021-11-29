@@ -105,8 +105,8 @@ SBMH.prototype._sbmh_feed = function(data) {
           && this._sbmh_memcmp(data, pos, needle_len - 1)) {
         this._lookbehind_size = 0;
         ++this.matches;
-        if (pos > -this._lookbehind_size)
-          this.emit('info', true, lookbehind, 0, this._lookbehind_size + pos);
+        if (pos > 0)
+          this.emit('info', true, lookbehind, 0, pos);
         else
           this.emit('info', true);
 
@@ -127,7 +127,7 @@ SBMH.prototype._sbmh_feed = function(data) {
       // or until
       //   pos == 0
       while (pos < 0 && !this._sbmh_memcmp(data, pos, len - pos))
-        pos++;
+        ++pos;
     }
 
     if (pos >= 0) {
@@ -181,25 +181,23 @@ SBMH.prototype._sbmh_feed = function(data) {
   // algorithm that starts matching from the beginning instead of the end.
   // Whatever trailing data is left after running this algorithm is added to
   // the lookbehind buffer.
-  if (pos < len) {
-    while (
-      pos < len && 
+  while (
+    pos < len && 
+    (
+      data[pos] !== needle[0] || 
       (
-        data[pos] !== needle[0] || 
-        (
-          (Buffer.compare(
-            data.subarray(pos, pos + len - pos),
-            needle.subarray(0, len - pos)
-          ) !== 0)
-        )
+        (Buffer.compare(
+          data.subarray(pos, pos + len - pos),
+          needle.subarray(0, len - pos)
+        ) !== 0)
       )
-    ) {
-      ++pos;
-    }
-    if (pos < len) {
-      data.copy(lookbehind, 0, pos, pos + (len - pos));
-      this._lookbehind_size = len - pos;
-    }
+    )
+  ) {
+    ++pos;
+  }
+  if (pos < len) {
+    data.copy(lookbehind, 0, pos, pos + (len - pos));
+    this._lookbehind_size = len - pos;
   }
 
   // Everything until pos is guaranteed not to contain needle data.
@@ -211,10 +209,9 @@ SBMH.prototype._sbmh_feed = function(data) {
 };
 
 SBMH.prototype._sbmh_lookup_char = function(data, pos) {
-  if (pos < 0)
-    return this._lookbehind[this._lookbehind_size + pos];
-  else
-    return data[pos];
+  return (pos < 0) 
+    ? this._lookbehind[this._lookbehind_size + pos]
+    : data[pos];
 };
 
 SBMH.prototype._sbmh_memcmp = function(data, pos, len) {
