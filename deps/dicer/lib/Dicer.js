@@ -31,6 +31,7 @@ function Dicer(cfg) {
   this._dashes = 0;
   this._parts = 0;
   this._finished = false;
+  this._realFinish = false;
   this._isPreamble = true;
   this._justMatched = false;
   this._firstWrite = true;
@@ -53,7 +54,7 @@ function Dicer(cfg) {
 inherits(Dicer, WritableStream);
 
 Dicer.prototype.emit = function(ev) {
-  if (ev === 'finish') {
+  if (ev === 'finish' && !this._realFinish) {
     if (!this._finished) {
       var self = this;
       process.nextTick(function() {
@@ -63,11 +64,15 @@ Dicer.prototype.emit = function(ev) {
           self._part.emit('error', new Error(type + ' terminated early due to unexpected end of multipart data'));
           self._part.push(null);
           process.nextTick(function() {
-            WritableStream.prototype.emit.call(self, 'finish');
+            self._realFinish = true;
+            self.emit('finish');
+            self._realFinish = false;
           });
           return;
         }
-        WritableStream.prototype.emit.call(self, 'finish');
+        self._realFinish = true;
+        self.emit('finish');
+        self._realFinish = false;
       });
     }
   } else
@@ -155,7 +160,9 @@ Dicer.prototype._oninfo = function(isMatch, data, start, end) {
       this._finished = true;
       // no more parts will be added
       if (self._parts === 0) {
-        WritableStream.prototype.emit.call(self, 'finish');
+        self._realFinish = true;
+        self.emit('finish');
+        self._realFinish = false;
       }
     }
     if (this._dashes)
@@ -183,7 +190,7 @@ Dicer.prototype._oninfo = function(isMatch, data, start, end) {
       shouldWriteMore = this._part.push(data.slice(start, end));
       if (!shouldWriteMore)
         this._pause = true;
-    } else {
+    } else if (!this._isPreamble && this._inHeader) {
       if (buf)
         this._hparser.push(buf);
       r = this._hparser.push(data.slice(start, end));
@@ -200,7 +207,9 @@ Dicer.prototype._oninfo = function(isMatch, data, start, end) {
       this._part.on('end', function() {
         if (--self._parts === 0) {
           if (self._finished) {
-            WritableStream.prototype.emit.call(self, 'finish');
+            self._realFinish = true;
+            self.emit('finish');
+            self._realFinish = false;
           } else {
             self._unpause();
           }
