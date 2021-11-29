@@ -169,12 +169,8 @@ SBMH.prototype._sbmh_feed = function(data) {
     if (
       ch === last_needle_char &&
       data[pos] === needle[0] &&
-      (
-        Buffer.compare(
-            needle.subarray(0, needle_len-1),
-            data.subarray(pos, pos + needle_len - 1)
-        ) === 0)
-      ) {
+      Buffer.compare(needle.subarray(0, needle_len-1), data.subarray(pos, pos + needle_len - 1)) === 0)
+     {
       ++this.matches;
       if (pos > 0)
         this.emit('info', true, data, this._bufpos, pos);
