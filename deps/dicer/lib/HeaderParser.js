@@ -76,7 +76,7 @@ HeaderParser.prototype._parseHeader = function() {
     len = lines.length;
   let m, h;
 
-  for (let i = 0; i < len; ++i) {
+  for (var i = 0; i < len; ++i) {
     if (lines[i].length === 0)
       continue;
     if (lines[i][0] === '\t' || lines[i][0] === ' ') {
