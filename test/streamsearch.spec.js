@@ -259,4 +259,92 @@ describe('streamsearch', () => {
         s.push(chunks[1]);
         s.push(chunks[2]);
     });
+
+    it('should process four chunks with a overflowing needle', (done) => {
+        const expected = [
+            [false, Buffer.from("bar\r"), 0, 3],
+            [true, undefined, undefined, undefined],
+            [false, Buffer.from("hello"), 0, 5],
+        ]
+        const needle = "\r\n\n";
+        const s = new Streamsearch(needle);
+        const chunks = [
+            Buffer.from('bar\r'),
+            Buffer.from('\n'),
+            Buffer.from('\n'),
+            Buffer.from('hello'),
+        ];
+        let i = 0;
+        s.on('info', (isMatched, data, start, end) => {
+            expect(isMatched).to.be.eql(expected[i][0]);
+            expect(data).to.be.eql(expected[i][1]);
+            expect(start).to.be.eql(expected[i][2]);
+            expect(end).to.be.eql(expected[i][3]);
+            i++;
+            if (i === 3) {
+                done();
+            }
+        });
+
+        s.push(chunks[0]);
+        s.push(chunks[1]);
+        s.push(chunks[2]);
+        s.push(chunks[3]);
+    });
+
+    it('should process four chunks with a potentially overflowing needle', (done) => {
+        const expected = [
+            [false, Buffer.from("bar\r"), 0, 3],
+            [false, Buffer.from("\r\n\0"), 0, 2],
+            [false, Buffer.from("\r\n\0"), 0, 1],
+            [false, Buffer.from("hello"), 0, 5],
+        ]
+        const needle = "\r\n\n";
+        const s = new Streamsearch(needle);
+        const chunks = [
+            Buffer.from('bar\r'),
+            Buffer.from('\n'),
+            Buffer.from('\r'),
+            Buffer.from('hello'),
+        ];
+        let i = 0;
+        s.on('info', (isMatched, data, start, end) => {
+            expect(isMatched).to.be.eql(expected[i][0]);
+            expect(data).to.be.eql(expected[i][1]);
+            expect(start).to.be.eql(expected[i][2]);
+            expect(end).to.be.eql(expected[i][3]);
+            i++;
+            if (i === 4) {
+                done();
+            }
+        });
+
+        s.push(chunks[0]);
+        s.push(chunks[1]);
+        s.push(chunks[2]);
+        s.push(chunks[3]);
+    });
+
+    it('should reset the internal values if .reset() is called', () => {
+
+        const s = new Streamsearch("test");
+
+        expect(s._lookbehind_size).to.be.eql(0);
+        expect(s.matches).to.be.eql(0);
+        expect(s._bufpos).to.be.eql(0);
+
+        s._lookbehind_size = 1;
+        s._bufpos = 1;
+        s.matches = 1;
+
+        expect(s._lookbehind_size).to.be.eql(1);
+        expect(s.matches).to.be.eql(1);
+        expect(s._bufpos).to.be.eql(1);
+
+        s.reset();
+
+        expect(s._lookbehind_size).to.be.eql(0);
+        expect(s.matches).to.be.eql(0);
+        expect(s._bufpos).to.be.eql(0);
+    });
 })
