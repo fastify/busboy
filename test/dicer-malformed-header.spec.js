@@ -1,17 +1,15 @@
 const Dicer = require('../deps/dicer/lib/Dicer');
+const { expect } = require('chai');
 
 describe('dicer-malformed-header', () => {
 
   it("should gracefully handle headers with leading whitespace", done => {
-    var inspect = require('util').inspect;
     var d = new Dicer({ boundary: "----WebKitFormBoundaryoo6vortfDzBsDiro" });
 
     d.on('part', function (p) {
       p.on('header', function (header) {
-        for (var h in header) {
-          console.log('Part header: k: ' + inspect(h)
-            + ', v: ' + inspect(header[h]));
-        }
+        expect(header).has.property(" content-disposition");
+        expect(header[" content-disposition"]).to.be.eql(['form-data; name="bildbeschreibung"'])
       });
       p.on('data', function (data) {
       });
