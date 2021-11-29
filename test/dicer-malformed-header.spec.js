@@ -21,5 +21,5 @@ describe('dicer-malformed-header', () => {
     });
 
     d.write(Buffer.from('------WebKitFormBoundaryoo6vortfDzBsDiro\r\n Content-Disposition: form-data; name="bildbeschreibung"\r\n\r\n\r\n------WebKitFormBoundaryoo6vortfDzBsDiro--'));
-  }).timeout(10000);
+  });
 });
