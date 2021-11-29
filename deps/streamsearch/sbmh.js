@@ -101,8 +101,10 @@ SBMH.prototype._sbmh_feed = function(data) {
     while (pos < 0 && pos <= len - needle_len) {
       ch = this._sbmh_lookup_char(data, pos + needle_len - 1);
 
-      if (ch === last_needle_char
-          && this._sbmh_memcmp(data, pos, needle_len - 1)) {
+      if (
+        ch === last_needle_char &&
+        this._sbmh_memcmp(data, pos, needle_len - 1)
+      ) {
         this._lookbehind_size = 0;
         ++this.matches;
         if (pos > 0)
@@ -111,8 +113,8 @@ SBMH.prototype._sbmh_feed = function(data) {
           this.emit('info', true);
 
         return (this._bufpos = pos + needle_len);
-      } else
-        pos += occ[ch];
+      }
+      pos += occ[ch];
     }
 
     // No match.
