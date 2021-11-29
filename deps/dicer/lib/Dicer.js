@@ -139,7 +139,7 @@ Dicer.prototype._ignore = function() {
 };
 
 Dicer.prototype._oninfo = function(isMatch, data, start, end) {
-  var buf, self = this, i = 0, r, ev, shouldWriteMore = true;
+  var buf, self = this, i = 0, r, shouldWriteMore = true;
 
   if (!this._part && this._justMatched && data) {
     while (this._dashes < 2 && (start + i) < end) {
