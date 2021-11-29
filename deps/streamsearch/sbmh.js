@@ -160,26 +160,19 @@ SBMH.prototype._sbmh_feed = function(data) {
   if (pos >= 0)
     pos += this._bufpos;
 
-  // Lookbehind buffer is now empty. Perform Boyer-Moore-Horspool
-  // search with optimized character lookup code that only considers
-  // the current round's haystack data.
-  while (pos <= len - needle_len) {
-    ch = data[pos + needle_len - 1];
+  // Lookbehind buffer is now empty. We only need to check if the 
+  // needle is in the haystack. 
+  if (data.indexOf(needle, pos) !== -1) {
+    pos = data.indexOf(needle, pos);
+    ++this.matches;
+    if (pos > 0)
+      this.emit('info', true, data, this._bufpos, pos);
+    else
+      this.emit('info', true);
 
-    if (
-      ch === last_needle_char &&
-      data[pos] === needle[0] &&
-      Buffer.compare(needle.subarray(0, needle_len-1), data.subarray(pos, pos + needle_len - 1)) === 0)
-     {
-      ++this.matches;
-      if (pos > 0)
-        this.emit('info', true, data, this._bufpos, pos);
-      else
-        this.emit('info', true);
-
-      return (this._bufpos = pos + needle_len);
-    } else
-      pos += occ[ch];
+    return (this._bufpos = pos + needle_len);
+  } else {
+    pos = len - needle_len;
   }
 
   // There was no match. If there's trailing haystack data that we cannot
@@ -225,12 +218,8 @@ SBMH.prototype._sbmh_lookup_char = function(data, pos) {
 };
 
 SBMH.prototype._sbmh_memcmp = function(data, pos, len) {
-  var i = 0;
-
-  while (i < len) {
-    if (this._sbmh_lookup_char(data, pos + i) === this._needle[i])
-      ++i;
-    else
+  for (var i = 0; i < len; ++i) {
+    if (this._sbmh_lookup_char(data, pos + i) !== this._needle[i])
       return false;
   }
   return true;
