@@ -7,6 +7,7 @@ module.exports = {
     'deps/encoding',
   ],
   extends: [
+    'standard',
     'eslint:recommended',
     'plugin:node/recommended',
   ],
