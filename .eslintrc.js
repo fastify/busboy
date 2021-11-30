@@ -3,7 +3,8 @@ module.exports = {
     ecmaVersion: 2018,
   },
   ignorePatterns: [
-    '/bench'
+    'bench',
+    'deps/encoding',
   ],
   extends: [
     'eslint:recommended',
