@@ -1,4 +1,4 @@
-const Dicer = require('../lib/Dicer')
+const Dicer = require('../../deps/dicer/lib/Dicer')
 
 function createMultipartBuffer(boundary, size) {
   const head =
