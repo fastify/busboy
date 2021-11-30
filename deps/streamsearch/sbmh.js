@@ -39,7 +39,7 @@ function SBMH(needle) {
   const needle_len = needle.length;
 
   if (needle_len === 0) {
-    throw new Error("The needle can not be an empty String/Buffer.");
+    throw new Error("The needle cannot be an empty String/Buffer.");
   }
 
   if (needle_len > 256) {
