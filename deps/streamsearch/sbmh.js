@@ -43,7 +43,7 @@ function SBMH(needle) {
   }
 
   if (needle_len > 256) {
-    throw new Error("The needle can not have a length bigger than 256.");
+    throw new Error("The needle cannot have a length bigger than 256.");
   }
 
   this.maxMatches = Infinity;
