@@ -1,10 +1,10 @@
 var WritableStream = require('stream').Writable,
+    ReadableStream = require('stream').Readable,
     inherits = require('util').inherits;
 
 var StreamSearch = require('../../streamsearch/sbmh');
 
-var PartStream = require('./PartStream'),
-    HeaderParser = require('./HeaderParser');
+var HeaderParser = require('./HeaderParser');
 
 var DASH = 45,
     B_ONEDASH = Buffer.from('-'),
@@ -86,7 +86,10 @@ Dicer.prototype._write = function(data, encoding, cb) {
 
   if (this._headerFirst && this._isPreamble) {
     if (!this._part) {
-      this._part = new PartStream(this._partOpts);
+      this._part = new ReadableStream({
+        ...this._partOpts,
+        read: () => {}
+      });
       if (this._events.preamble)
         this.emit('preamble', this._part);
       else
@@ -171,10 +174,10 @@ Dicer.prototype._oninfo = function(isMatch, data, start, end) {
   if (this._justMatched)
     this._justMatched = false;
   if (!this._part) {
-    this._part = new PartStream(this._partOpts);
-    this._part._read = function(n) {
-      self._unpause();
-    };
+    this._part = new ReadableStream({
+      ...this._partOpts,
+      read: () => { self._unpause(); }
+    });
     if (this._isPreamble && this._events['preamble'])
       this.emit('preamble', this._part);
     else if (this._isPreamble !== true && this._events['part'])
