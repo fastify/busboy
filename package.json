@@ -68,9 +68,11 @@
     }
   },
   "standard": {
-    "globals": [ "describe", "it" ],
+    "globals": [
+      "describe",
+      "it"
+    ],
     "ignore": [
-      "deps/encoding",
       "bench"
     ]
   },
@@ -82,5 +84,8 @@
     "deps/dicer/lib",
     "deps/streamsearch/",
     "deps/dicer/LICENSE"
-  ]
+  ],
+  "dependencies": {
+    "text-decoding": "^1.0.0"
+  }
 }
