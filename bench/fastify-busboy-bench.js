@@ -1,17 +1,5 @@
 const Busboy = require('../lib/main');
-
-function createMultipartBuffer(boundary, size) {
-  const head =
-    '--' + boundary + '\r\n'
-    + 'content-disposition: form-data; name="field1"\r\n'
-    + '\r\n'
-    , tail = '\r\n--' + boundary + '--\r\n'
-    , buffer = Buffer.allocUnsafe(size);
-
-  buffer.write(head, 0, 'ascii');
-  buffer.write(tail, buffer.length - tail.length, 'ascii');
-  return buffer;
-}
+const { createMultipartBuffer } = require("./createMultipartBuffer");
 
 for (var i = 0, il = 10; i < il; i++) { // eslint-disable-line no-var
   const boundary = '-----------------------------168072824752491622650073',

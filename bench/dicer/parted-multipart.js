@@ -8,7 +8,7 @@ var fs = require('fs')
   , path = require('path')
   , EventEmitter = require('events').EventEmitter
   , StringDecoder = require('string_decoder').StringDecoder
-  , set = require('qs').set
+  , set = require('querystring').set
   , each = Array.prototype.forEach;
 
 /**
@@ -42,7 +42,7 @@ var Parser = function(type, options) {
     return this._error('No boundary key found.');
   }
 
-  this.key = Buffer.allocUnsafe('\r\n--' + key);
+  this.key = Buffer.from('\r\n--' + key);
 
   this._key = {};
   each.call(this.key, function(ch) {
