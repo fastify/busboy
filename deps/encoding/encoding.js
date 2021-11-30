@@ -268,15 +268,6 @@ function decoderError(fatal, opt_code_point) {
 }
 
 /**
- * @param {number} code_point The code point that could not be encoded.
- * @return {number} Always throws, no value is actually returned.
- */
-function encoderError(code_point) {
-  throw new EncodingError('The code point ' + code_point +
-                          ' could not be encoded.');
-}
-
-/**
  * @param {string} label The encoding label.
  * @return {?{name:string,labels:Array.<string>}}
  */
@@ -946,79 +937,6 @@ TextDecoder.prototype = {
 };
 
 var UTFs = ['utf-8', 'utf-16le', 'utf-16be'];
-
-// 7.2 Interface TextEncoder
-
-/**
- * @constructor
- * @param {string=} opt_encoding The label of the encoding;
- *     defaults to 'utf-8'.
- * @param {{fatal: boolean}=} options
- */
-function TextEncoder(opt_encoding, options) {
-  if (!(this instanceof TextEncoder)) {
-    return new TextEncoder(opt_encoding, options);
-  }
-  opt_encoding = opt_encoding ? String(opt_encoding) : DEFAULT_ENCODING;
-  options = Object(options);
-  /** @private */
-  this._encoding = getEncoding(opt_encoding);
-  if (this._encoding === null || (this._encoding.name !== 'utf-8' &&
-                                  this._encoding.name !== 'utf-16le' &&
-                                  this._encoding.name !== 'utf-16be'))
-    throw new TypeError('Unknown encoding: ' + opt_encoding);
-  /** @private @type {boolean} */
-  this._streaming = false;
-  /** @private */
-  this._encoder = null;
-  /** @private @type {{fatal: boolean}=} */
-  this._options = { fatal: Boolean(options.fatal) };
-
-  if (Object.defineProperty) {
-    Object.defineProperty(
-        this, 'encoding',
-        { get: function() { return this._encoding.name; } });
-  } else {
-    this.encoding = this._encoding.name;
-  }
-
-  return this;
-}
-
-TextEncoder.prototype = {
-  /**
-   * @param {string=} opt_string The string to encode.
-   * @param {{stream: boolean}=} options
-   */
-  encode: function encode(opt_string, options) {
-    opt_string = opt_string ? String(opt_string) : '';
-    options = Object(options);
-    // TODO: any options?
-    if (!this._streaming) {
-      this._encoder = this._encoding.getEncoder(this._options);
-    }
-    this._streaming = Boolean(options.stream);
-
-    var bytes = [];
-    var output_stream = new ByteOutputStream(bytes);
-    var input_stream = new CodePointInputStream(opt_string);
-    while (input_stream.get() !== EOF_code_point) {
-      this._encoder.encode(output_stream, input_stream);
-    }
-    if (!this._streaming) {
-      /** @type {number} */
-      var last_byte;
-      do {
-        last_byte = this._encoder.encode(output_stream, input_stream);
-      } while (last_byte !== EOF_byte);
-      this._encoder = null;
-    }
-
-    return Buffer.from(bytes);
-  }
-};
-
-
 //
 // 8. The encoding
 //
@@ -1101,56 +1019,6 @@ function UTF8Decoder(options) {
   };
 }
 
-/**
- * @constructor
- * @param {{fatal: boolean}} options
- */
-function UTF8Encoder(options) {
-  var fatal = options.fatal;
-  /**
-   * @param {ByteOutputStream} output_byte_stream Output byte stream.
-   * @param {CodePointInputStream} code_point_pointer Input stream.
-   * @return {number} The last byte emitted.
-   */
-  this.encode = function(output_byte_stream, code_point_pointer) {
-    /** @type {number} */
-    var code_point = code_point_pointer.get();
-    if (code_point === EOF_code_point) {
-      return EOF_byte;
-    }
-    code_point_pointer.offset(1);
-    if (inRange(code_point, 0xD800, 0xDFFF)) {
-      return encoderError(code_point);
-    }
-    if (inRange(code_point, 0x0000, 0x007f)) {
-      return output_byte_stream.emit(code_point);
-    }
-    var count, offset;
-    if (inRange(code_point, 0x0080, 0x07FF)) {
-      count = 1;
-      offset = 0xC0;
-    } else if (inRange(code_point, 0x0800, 0xFFFF)) {
-      count = 2;
-      offset = 0xE0;
-    } else if (inRange(code_point, 0x10000, 0x10FFFF)) {
-      count = 3;
-      offset = 0xF0;
-    }
-    var result = output_byte_stream.emit(
-        div(code_point, Math.pow(64, count)) + offset);
-    while (count > 0) {
-      var temp = div(code_point, Math.pow(64, count - 1));
-      result = output_byte_stream.emit(0x80 + (temp % 64));
-      count -= 1;
-    }
-    return result;
-  };
-}
-
-/** @param {{fatal: boolean}} options */
-name_to_encoding['utf-8'].getEncoder = function(options) {
-  return new UTF8Encoder(options);
-};
 /** @param {{fatal: boolean}} options */
 name_to_encoding['utf-8'].getDecoder = function(options) {
   return new UTF8Decoder(options);
@@ -1189,35 +1057,6 @@ function SingleByteDecoder(index, options) {
   };
 }
 
-/**
- * @constructor
- * @param {Array.<?number>} index The encoding index.
- * @param {{fatal: boolean}} options
- */
-function SingleByteEncoder(index, options) {
-  var fatal = options.fatal;
-  /**
-   * @param {ByteOutputStream} output_byte_stream Output byte stream.
-   * @param {CodePointInputStream} code_point_pointer Input stream.
-   * @return {number} The last byte emitted.
-   */
-  this.encode = function(output_byte_stream, code_point_pointer) {
-    var code_point = code_point_pointer.get();
-    if (code_point === EOF_code_point) {
-      return EOF_byte;
-    }
-    code_point_pointer.offset(1);
-    if (inRange(code_point, 0x0000, 0x007F)) {
-      return output_byte_stream.emit(code_point);
-    }
-    var pointer = indexPointerFor(code_point, index);
-    if (pointer === null) {
-      encoderError(code_point);
-    }
-    return output_byte_stream.emit(pointer + 0x80);
-  };
-}
-
 (function() {
   encodings.forEach(function(category) {
     if (category.heading !== 'Legacy single-byte encodings')
@@ -1227,10 +1066,6 @@ function SingleByteEncoder(index, options) {
       /** @param {{fatal: boolean}} options */
       encoding.getDecoder = function(options) {
         return new SingleByteDecoder(idx, options);
-      };
-      /** @param {{fatal: boolean}} options */
-      encoding.getEncoder = function(options) {
-        return new SingleByteEncoder(idx, options);
       };
     });
   });
@@ -1334,62 +1169,10 @@ function GBKDecoder(gb18030, options) {
   };
 }
 
-/**
- * @constructor
- * @param {boolean} gb18030 True if decoding gb18030, false otherwise.
- * @param {{fatal: boolean}} options
- */
-function GBKEncoder(gb18030, options) {
-  var fatal = options.fatal;
-  /**
-   * @param {ByteOutputStream} output_byte_stream Output byte stream.
-   * @param {CodePointInputStream} code_point_pointer Input stream.
-   * @return {number} The last byte emitted.
-   */
-  this.encode = function(output_byte_stream, code_point_pointer) {
-    var code_point = code_point_pointer.get();
-    if (code_point === EOF_code_point) {
-      return EOF_byte;
-    }
-    code_point_pointer.offset(1);
-    if (inRange(code_point, 0x0000, 0x007F)) {
-      return output_byte_stream.emit(code_point);
-    }
-    var pointer = indexPointerFor(code_point, indexes['gbk']);
-    if (pointer !== null) {
-      var lead = div(pointer, 190) + 0x81;
-      var trail = pointer % 190;
-      var offset = trail < 0x3F ? 0x40 : 0x41;
-      return output_byte_stream.emit(lead, trail + offset);
-    }
-    if (pointer === null && !gb18030) {
-      return encoderError(code_point);
-    }
-    pointer = indexGB18030PointerFor(code_point);
-    var byte1 = div(div(div(pointer, 10), 126), 10);
-    pointer = pointer - byte1 * 10 * 126 * 10;
-    var byte2 = div(div(pointer, 10), 126);
-    pointer = pointer - byte2 * 10 * 126;
-    var byte3 = div(pointer, 10);
-    var byte4 = pointer - byte3 * 10;
-    return output_byte_stream.emit(byte1 + 0x81,
-                                   byte2 + 0x30,
-                                   byte3 + 0x81,
-                                   byte4 + 0x30);
-  };
-}
-
-name_to_encoding['gbk'].getEncoder = function(options) {
-  return new GBKEncoder(false, options);
-};
 name_to_encoding['gbk'].getDecoder = function(options) {
   return new GBKDecoder(false, options);
 };
 
-// 9.2 gb18030
-name_to_encoding['gb18030'].getEncoder = function(options) {
-  return new GBKEncoder(true, options);
-};
 name_to_encoding['gb18030'].getDecoder = function(options) {
   return new GBKDecoder(true, options);
 };
@@ -1475,58 +1258,6 @@ function HZGB2312Decoder(options) {
   };
 }
 
-/**
- * @constructor
- * @param {{fatal: boolean}} options
- */
-function HZGB2312Encoder(options) {
-  var fatal = options.fatal;
-  /** @type {boolean} */
-  var hzgb2312 = false;
-  /**
-   * @param {ByteOutputStream} output_byte_stream Output byte stream.
-   * @param {CodePointInputStream} code_point_pointer Input stream.
-   * @return {number} The last byte emitted.
-   */
-  this.encode = function(output_byte_stream, code_point_pointer) {
-    var code_point = code_point_pointer.get();
-    if (code_point === EOF_code_point) {
-      return EOF_byte;
-    }
-    code_point_pointer.offset(1);
-    if (inRange(code_point, 0x0000, 0x007F) && hzgb2312) {
-      code_point_pointer.offset(-1);
-      hzgb2312 = false;
-      return output_byte_stream.emit(0x7E, 0x7D);
-    }
-    if (code_point === 0x007E) {
-      return output_byte_stream.emit(0x7E, 0x7E);
-    }
-    if (inRange(code_point, 0x0000, 0x007F)) {
-      return output_byte_stream.emit(code_point);
-    }
-    if (!hzgb2312) {
-      code_point_pointer.offset(-1);
-      hzgb2312 = true;
-      return output_byte_stream.emit(0x7E, 0x7B);
-    }
-    var pointer = indexPointerFor(code_point, indexes['gbk']);
-    if (pointer === null) {
-      return encoderError(code_point);
-    }
-    var lead = div(pointer, 190) + 1;
-    var trail = pointer % 190 - 0x3F;
-    if (!inRange(lead, 0x21, 0x7E) || !inRange(trail, 0x21, 0x7E)) {
-      return encoderError(code_point);
-    }
-    return output_byte_stream.emit(lead, trail);
-  };
-}
-
-/** @param {{fatal: boolean}} options */
-name_to_encoding['hz-gb-2312'].getEncoder = function(options) {
-  return new HZGB2312Encoder(options);
-};
 /** @param {{fatal: boolean}} options */
 name_to_encoding['hz-gb-2312'].getDecoder = function(options) {
   return new HZGB2312Decoder(options);
@@ -1613,44 +1344,6 @@ function Big5Decoder(options) {
   };
 }
 
-/**
- * @constructor
- * @param {{fatal: boolean}} options
- */
-function Big5Encoder(options) {
-  var fatal = options.fatal;
-  /**
-   * @param {ByteOutputStream} output_byte_stream Output byte stream.
-   * @param {CodePointInputStream} code_point_pointer Input stream.
-   * @return {number} The last byte emitted.
-   */
-  this.encode = function(output_byte_stream, code_point_pointer) {
-    var code_point = code_point_pointer.get();
-    if (code_point === EOF_code_point) {
-      return EOF_byte;
-    }
-    code_point_pointer.offset(1);
-    if (inRange(code_point, 0x0000, 0x007F)) {
-      return output_byte_stream.emit(code_point);
-    }
-    var pointer = indexPointerFor(code_point, indexes['big5']);
-    if (pointer === null) {
-      return encoderError(code_point);
-    }
-    var lead = div(pointer, 157) + 0x81;
-    //if (lead < 0xA1) {
-    //  return encoderError(code_point);
-    //}
-    var trail = pointer % 157;
-    var offset = trail < 0x3F ? 0x40 : 0x62;
-    return output_byte_stream.emit(lead, trail + offset);
-  };
-}
-
-/** @param {{fatal: boolean}} options */
-name_to_encoding['big5'].getEncoder = function(options) {
-  return new Big5Encoder(options);
-};
 /** @param {{fatal: boolean}} options */
 name_to_encoding['big5'].getDecoder = function(options) {
   return new Big5Decoder(options);
@@ -1741,50 +1434,6 @@ function EUCJPDecoder(options) {
   };
 }
 
-/**
- * @constructor
- * @param {{fatal: boolean}} options
- */
-function EUCJPEncoder(options) {
-  var fatal = options.fatal;
-  /**
-   * @param {ByteOutputStream} output_byte_stream Output byte stream.
-   * @param {CodePointInputStream} code_point_pointer Input stream.
-   * @return {number} The last byte emitted.
-   */
-  this.encode = function(output_byte_stream, code_point_pointer) {
-    var code_point = code_point_pointer.get();
-    if (code_point === EOF_code_point) {
-      return EOF_byte;
-    }
-    code_point_pointer.offset(1);
-    if (inRange(code_point, 0x0000, 0x007F)) {
-      return output_byte_stream.emit(code_point);
-    }
-    if (code_point === 0x00A5) {
-      return output_byte_stream.emit(0x5C);
-    }
-    if (code_point === 0x203E) {
-      return output_byte_stream.emit(0x7E);
-    }
-    if (inRange(code_point, 0xFF61, 0xFF9F)) {
-      return output_byte_stream.emit(0x8E, code_point - 0xFF61 + 0xA1);
-    }
-
-    var pointer = indexPointerFor(code_point, indexes['jis0208']);
-    if (pointer === null) {
-      return encoderError(code_point);
-    }
-    var lead = div(pointer, 94) + 0xA1;
-    var trail = pointer % 94 + 0xA1;
-    return output_byte_stream.emit(lead, trail);
-  };
-}
-
-/** @param {{fatal: boolean}} options */
-name_to_encoding['euc-jp'].getEncoder = function(options) {
-  return new EUCJPEncoder(options);
-};
 /** @param {{fatal: boolean}} options */
 name_to_encoding['euc-jp'].getDecoder = function(options) {
   return new EUCJPDecoder(options);
@@ -1940,74 +1589,6 @@ function ISO2022JPDecoder(options) {
   };
 }
 
-/**
- * @constructor
- * @param {{fatal: boolean}} options
- */
-function ISO2022JPEncoder(options) {
-  var fatal = options.fatal;
-  /** @enum */
-  var state = {
-    ASCII: 0,
-    lead: 1,
-    Katakana: 2
-  };
-  var /** @type {number} */ iso2022jp_state = state.ASCII;
-  /**
-   * @param {ByteOutputStream} output_byte_stream Output byte stream.
-   * @param {CodePointInputStream} code_point_pointer Input stream.
-   * @return {number} The last byte emitted.
-   */
-  this.encode = function(output_byte_stream, code_point_pointer) {
-    var code_point = code_point_pointer.get();
-    if (code_point === EOF_code_point) {
-      return EOF_byte;
-    }
-    code_point_pointer.offset(1);
-    if ((inRange(code_point, 0x0000, 0x007F) ||
-         code_point === 0x00A5 || code_point === 0x203E) &&
-        iso2022jp_state !== state.ASCII) {
-      code_point_pointer.offset(-1);
-      iso2022jp_state = state.ASCII;
-      return output_byte_stream.emit(0x1B, 0x28, 0x42);
-    }
-    if (inRange(code_point, 0x0000, 0x007F)) {
-      return output_byte_stream.emit(code_point);
-    }
-    if (code_point === 0x00A5) {
-      return output_byte_stream.emit(0x5C);
-    }
-    if (code_point === 0x203E) {
-      return output_byte_stream.emit(0x7E);
-    }
-    if (inRange(code_point, 0xFF61, 0xFF9F) &&
-        iso2022jp_state !== state.Katakana) {
-      code_point_pointer.offset(-1);
-      iso2022jp_state = state.Katakana;
-      return output_byte_stream.emit(0x1B, 0x28, 0x49);
-    }
-    if (inRange(code_point, 0xFF61, 0xFF9F)) {
-      return output_byte_stream.emit(code_point - 0xFF61 - 0x21);
-    }
-    if (iso2022jp_state !== state.lead) {
-      code_point_pointer.offset(-1);
-      iso2022jp_state = state.lead;
-      return output_byte_stream.emit(0x1B, 0x24, 0x42);
-    }
-    var pointer = indexPointerFor(code_point, indexes['jis0208']);
-    if (pointer === null) {
-      return encoderError(code_point);
-    }
-    var lead = div(pointer, 94) + 0x21;
-    var trail = pointer % 94 + 0x21;
-    return output_byte_stream.emit(lead, trail);
-  };
-}
-
-/** @param {{fatal: boolean}} options */
-name_to_encoding['iso-2022-jp'].getEncoder = function(options) {
-  return new ISO2022JPEncoder(options);
-};
 /** @param {{fatal: boolean}} options */
 name_to_encoding['iso-2022-jp'].getDecoder = function(options) {
   return new ISO2022JPDecoder(options);
@@ -2067,51 +1648,6 @@ function ShiftJISDecoder(options) {
   };
 }
 
-/**
- * @constructor
- * @param {{fatal: boolean}} options
- */
-function ShiftJISEncoder(options) {
-  var fatal = options.fatal;
-  /**
-   * @param {ByteOutputStream} output_byte_stream Output byte stream.
-   * @param {CodePointInputStream} code_point_pointer Input stream.
-   * @return {number} The last byte emitted.
-   */
-  this.encode = function(output_byte_stream, code_point_pointer) {
-    var code_point = code_point_pointer.get();
-    if (code_point === EOF_code_point) {
-      return EOF_byte;
-    }
-    code_point_pointer.offset(1);
-    if (inRange(code_point, 0x0000, 0x0080)) {
-      return output_byte_stream.emit(code_point);
-    }
-    if (code_point === 0x00A5) {
-      return output_byte_stream.emit(0x5C);
-    }
-    if (code_point === 0x203E) {
-      return output_byte_stream.emit(0x7E);
-    }
-    if (inRange(code_point, 0xFF61, 0xFF9F)) {
-      return output_byte_stream.emit(code_point - 0xFF61 + 0xA1);
-    }
-    var pointer = indexPointerFor(code_point, indexes['jis0208']);
-    if (pointer === null) {
-      return encoderError(code_point);
-    }
-    var lead = div(pointer, 188);
-    var lead_offset = lead < 0x1F ? 0x81 : 0xC1;
-    var trail = pointer % 188;
-    var offset = trail < 0x3F ? 0x40 : 0x41;
-    return output_byte_stream.emit(lead + lead_offset, trail + offset);
-  };
-}
-
-/** @param {{fatal: boolean}} options */
-name_to_encoding['shift_jis'].getEncoder = function(options) {
-  return new ShiftJISEncoder(options);
-};
 /** @param {{fatal: boolean}} options */
 name_to_encoding['shift_jis'].getDecoder = function(options) {
   return new ShiftJISDecoder(options);
@@ -2190,48 +1726,6 @@ function EUCKRDecoder(options) {
   };
 }
 
-/**
- * @constructor
- * @param {{fatal: boolean}} options
- */
-function EUCKREncoder(options) {
-  var fatal = options.fatal;
-  /**
-   * @param {ByteOutputStream} output_byte_stream Output byte stream.
-   * @param {CodePointInputStream} code_point_pointer Input stream.
-   * @return {number} The last byte emitted.
-   */
-  this.encode = function(output_byte_stream, code_point_pointer) {
-    var code_point = code_point_pointer.get();
-    if (code_point === EOF_code_point) {
-      return EOF_byte;
-    }
-    code_point_pointer.offset(1);
-    if (inRange(code_point, 0x0000, 0x007F)) {
-      return output_byte_stream.emit(code_point);
-    }
-    var pointer = indexPointerFor(code_point, indexes['euc-kr']);
-    if (pointer === null) {
-      return encoderError(code_point);
-    }
-    var lead, trail;
-    if (pointer < ((26 + 26 + 126) * (0xC7 - 0x81))) {
-      lead = div(pointer, (26 + 26 + 126)) + 0x81;
-      trail = pointer % (26 + 26 + 126);
-      var offset = trail < 26 ? 0x41 : trail < 26 + 26 ? 0x47 : 0x4D;
-      return output_byte_stream.emit(lead, trail + offset);
-    }
-    pointer = pointer - (26 + 26 + 126) * (0xC7 - 0x81);
-    lead = div(pointer, 94) + 0xC7;
-    trail = pointer % 94 + 0xA1;
-    return output_byte_stream.emit(lead, trail);
-  };
-}
-
-/** @param {{fatal: boolean}} options */
-name_to_encoding['euc-kr'].getEncoder = function(options) {
-  return new EUCKREncoder(options);
-};
 /** @param {{fatal: boolean}} options */
 name_to_encoding['euc-kr'].getDecoder = function(options) {
   return new EUCKRDecoder(options);
@@ -2305,64 +1799,11 @@ function UTF16Decoder(utf16_be, options) {
   };
 }
 
-/**
- * @constructor
- * @param {boolean} utf16_be True if big-endian, false if little-endian.
- * @param {{fatal: boolean}} options
- */
-function UTF16Encoder(utf16_be, options) {
-  var fatal = options.fatal;
-  /**
-   * @param {ByteOutputStream} output_byte_stream Output byte stream.
-   * @param {CodePointInputStream} code_point_pointer Input stream.
-   * @return {number} The last byte emitted.
-   */
-  this.encode = function(output_byte_stream, code_point_pointer) {
-    /**
-     * @param {number} code_unit
-     * @return {number} last byte emitted
-     */
-    function convert_to_bytes(code_unit) {
-      var byte1 = code_unit >> 8;
-      var byte2 = code_unit & 0x00FF;
-      if (utf16_be) {
-        return output_byte_stream.emit(byte1, byte2);
-      }
-      return output_byte_stream.emit(byte2, byte1);
-    }
-    var code_point = code_point_pointer.get();
-    if (code_point === EOF_code_point) {
-      return EOF_byte;
-    }
-    code_point_pointer.offset(1);
-    if (inRange(code_point, 0xD800, 0xDFFF)) {
-      encoderError(code_point);
-    }
-    if (code_point <= 0xFFFF) {
-      return convert_to_bytes(code_point);
-    }
-    var lead = div((code_point - 0x10000), 0x400) + 0xD800;
-    var trail = ((code_point - 0x10000) % 0x400) + 0xDC00;
-    convert_to_bytes(lead);
-    return convert_to_bytes(trail);
-  };
-}
-
-// 14.3 utf-16be
-/** @param {{fatal: boolean}} options */
-name_to_encoding['utf-16be'].getEncoder = function(options) {
-  return new UTF16Encoder(true, options);
-};
 /** @param {{fatal: boolean}} options */
 name_to_encoding['utf-16be'].getDecoder = function(options) {
   return new UTF16Decoder(true, options);
 };
 
-// 14.4 utf-16le
-/** @param {{fatal: boolean}} options */
-name_to_encoding['utf-16le'].getEncoder = function(options) {
-  return new UTF16Encoder(false, options);
-};
 /** @param {{fatal: boolean}} options */
 name_to_encoding['utf-16le'].getDecoder = function(options) {
   return new UTF16Decoder(false, options);
@@ -2392,6 +1833,5 @@ function detectEncoding(label, input_stream) {
   return label;
 }
 
-exports.TextEncoder = TextEncoder;
 exports.TextDecoder = TextDecoder;
 exports.encodingExists = getEncoding;
