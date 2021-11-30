@@ -19,6 +19,7 @@
   "main": "lib/main",
   "types": "lib/main.d.ts",
   "scripts": {
+    "bench:busboy": "node bench/fastify-busboy-bench.js",
     "bench:dicer": "node bench/dicer/dicer-bench-multipart-parser.js",
     "coveralls": "nyc report --reporter=lcov",
     "lint": "eslint .",
@@ -33,6 +34,7 @@
   },
   "devDependencies": {
     "@types/node": "^16.11.10",
+    "busboy": "^0.3.1",
     "chai": "^4.3.4",
     "eslint": "^8.3.0",
     "eslint-plugin-node": "^11.1.0",
