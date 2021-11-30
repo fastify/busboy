@@ -59,7 +59,9 @@ function SBMH (needle) {
 
   // Populate occurrence table with analysis of the needle,
   // ignoring last letter.
-  for (let i = 0; i < needleLength - 1; ++i) { this._occ[needle[i]] = needleLength - 1 - i }
+  for (var i = 0; i < needleLength - 1; ++i) { // eslint-disable-line no-var
+    this._occ[needle[i]] = needleLength - 1 - i
+  }
 }
 inherits(SBMH, EventEmitter)
 
@@ -215,7 +217,7 @@ SBMH.prototype._sbmh_lookup_char = function (data, pos) {
 }
 
 SBMH.prototype._sbmh_memcmp = function (data, pos, len) {
-  for (let i = 0; i < len; ++i) {
+  for (var i = 0; i < len; ++i) { // eslint-disable-line no-var
     if (this._sbmh_lookup_char(data, pos + i) !== this._needle[i]) { return false }
   }
   return true
