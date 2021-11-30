@@ -56,16 +56,6 @@ function inRange(a, min, max) {
   return min <= a && a <= max;
 }
 
-/**
- * @param {number} n The numerator.
- * @param {number} d The denominator.
- * @return {number} The result of the integer division of n by d.
- */
-function div(n, d) {
-  return Math.floor(n / d);
-}
-
-
 //
 // Implementation of Encoding specification
 // http://dvcs.w3.org/hg/encoding/raw-file/tip/Overview.html
