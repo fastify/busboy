@@ -6,13 +6,13 @@ describe('streamsearch', () => {
         expect(() => new Streamsearch(2)).to.throw("The needle has to be a String or a Buffer.");
     });
     it('should throw an error if the needle is an empty String', () => {
-        expect(() => new Streamsearch('')).to.throw("The needle can not be an empty String/Buffer.");
+        expect(() => new Streamsearch('')).to.throw("The needle cannot be an empty String/Buffer.");
     });
     it('should throw an error if the needle is an empty Buffer', () => {
-        expect(() => new Streamsearch(Buffer.from(''))).to.throw("The needle can not be an empty String/Buffer.");
+        expect(() => new Streamsearch(Buffer.from(''))).to.throw("The needle cannot be an empty String/Buffer.");
     });
     it('should throw an error if the needle is bigger than 256 characters', () => {
-        expect(() => new Streamsearch(Buffer.from(Array(257).fill("a").join("")))).to.throw("The needle can not have a length bigger than 256.");
+        expect(() => new Streamsearch(Buffer.from(Array(257).fill("a").join("")))).to.throw("The needle cannot have a length bigger than 256.");
     });
     it('should process a Buffer without a needle', (done) => {
         const expected = [

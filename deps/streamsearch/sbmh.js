@@ -32,7 +32,7 @@ function SBMH(needle) {
     needle = Buffer.from(needle);
   }
 
-  if ((needle instanceof Buffer) === false) {
+  if (!Buffer.isBuffer(needle)) {
     throw new TypeError("The needle has to be a String or a Buffer.");
   }
 
