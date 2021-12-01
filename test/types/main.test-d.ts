@@ -1,6 +1,5 @@
-import BusboyDefault, { BusboyConstructor, BusboyConfig, BusboyHeaders, Busboy, BusboyEvents } from '../..';
+import BusboyDefault, { BusboyConstructor, BusboyConfig, BusboyHeaders, Busboy, BusboyEvents, BusboyFileStream } from '../..';
 import {expectError, expectType} from "tsd";
-import {Readable} from "stream";
 
 // test type exports
 type Constructor = BusboyConstructor;
@@ -26,7 +25,7 @@ new BusboyDefault({ headers: { 'content-type': 'foo' }, limits: { headerPairs: 2
 
 busboy.addListener('file', (fieldname, file, filename, encoding, mimetype) => {
     expectType<string> (fieldname)
-    expectType<Readable>(file);
+    expectType<BusboyFileStream>(file);
     expectType<string>(filename);
     expectType<string>(encoding);
     expectType<string>(mimetype);
@@ -56,7 +55,7 @@ busboy.on(Symbol('foo'), foo => {
 
 busboy.on('file', (fieldname, file, filename, encoding, mimetype) => {
     expectType<string> (fieldname);
-    expectType<Readable> (file);
+    expectType<BusboyFileStream> (file);
     expectType<string> (filename);
     expectType<string> (encoding);
     expectType<string> (mimetype);
@@ -86,7 +85,7 @@ busboy.on(Symbol('foo'), foo => {
 
 busboy.once('file', (fieldname, file, filename, encoding, mimetype) => {
     expectType<string> (fieldname);
-    expectType<Readable> (file);
+    expectType<BusboyFileStream> (file);
     expectType<string> (filename);
     expectType<string> (encoding);
     expectType<string> (mimetype);
@@ -116,7 +115,7 @@ busboy.once(Symbol('foo'), foo => {
 
 busboy.removeListener('file', (fieldname, file, filename, encoding, mimetype) => {
     expectType<string> (fieldname);
-    expectType<Readable> (file);
+    expectType<BusboyFileStream> (file);
     expectType<string> (filename);
     expectType<string> (encoding);
     expectType<string> (mimetype);
@@ -146,7 +145,7 @@ busboy.removeListener(Symbol('foo'), foo => {
 
 busboy.off('file', (fieldname, file, filename, encoding, mimetype) => {
     expectType<string> (fieldname);
-    expectType<Readable> (file);
+    expectType<BusboyFileStream> (file);
     expectType<string> (filename);
     expectType<string> (encoding);
     expectType<string> (mimetype);
@@ -176,7 +175,7 @@ busboy.off(Symbol('foo'), foo => {
 
 busboy.prependListener('file', (fieldname, file, filename, encoding, mimetype) => {
     expectType<string> (fieldname);
-    expectType<Readable> (file);
+    expectType<BusboyFileStream> (file);
     expectType<string> (filename);
     expectType<string> (encoding);
     expectType<string> (mimetype);
@@ -206,7 +205,7 @@ busboy.prependListener(Symbol('foo'), foo => {
 
 busboy.prependOnceListener('file', (fieldname, file, filename, encoding, mimetype) => {
     expectType<string> (fieldname);
-    expectType<Readable> (file);
+    expectType<BusboyFileStream> (file);
     expectType<string> (filename);
     expectType<string> (encoding);
     expectType<string> (mimetype);
