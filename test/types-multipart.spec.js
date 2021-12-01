@@ -271,7 +271,32 @@ describe('types-multipart', () => {
         ['field', 'upload_file_0', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', false, false, '7bit', 'application/json'],
         ['file', 'file', 26, 0, 'näme.txt', '7bit', 'application/octet-stream']
       ],
-      what: 'Blob uploads should be handled as fields if isPartAFile is provided. Other fields should be files.'
+      what: 'Blob uploads should be handled as fields if isPartAFile is provided. Other parts should be files.'
+    },
+    {
+      config: {
+        isPartAFile: (fieldName) => (fieldName === 'upload_file_0')
+      },
+      source: [
+        ['-----------------------------paZqsnEHRufoShdX6fh0lUhXBP4k',
+          'Content-Disposition: form-data; name="upload_file_0"; filename="blob"',
+          'Content-Type: application/json',
+          '',
+          'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+          '-----------------------------paZqsnEHRufoShdX6fh0lUhXBP4k',
+          'Content-Disposition: form-data; name="file"; filename*=utf-8\'\'n%C3%A4me.txt',
+          'Content-Type: application/octet-stream',
+          '',
+          'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+          '-----------------------------paZqsnEHRufoShdX6fh0lUhXBP4k--'
+        ].join('\r\n')
+      ],
+      boundary: '---------------------------paZqsnEHRufoShdX6fh0lUhXBP4k',
+      expected: [
+        ['file', 'upload_file_0', 26, 0, 'blob', '7bit', 'application/json'],
+        ['field', 'file', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', false, false, '7bit', 'application/octet-stream']
+      ],
+      what: 'Blob uploads should be handled as files if corresponding isPartAFile is provided. Other parts should be fields.'
     },
     {
       source: [
