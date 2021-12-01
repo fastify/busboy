@@ -1,6 +1,6 @@
 const {validateEqual} = require("validation-utils");
 
-const EXPECTED_RESULT = 'REPLACE_WITH_ACTUAL_CONTENT'
+const EXPECTED_RESULT = true
 
 async function validateAccuracy(actualResultPromise) {
     const result = await actualResultPromise
