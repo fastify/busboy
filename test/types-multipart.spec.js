@@ -179,6 +179,113 @@ describe('types-multipart', () => {
         ['file', 'upload_file_2', 26, 0, '1k_c.dat', '7bit', 'application/octet-stream']
       ],
       what: 'Files with filenames containing paths'
+    },    {
+      source: [
+        ['-----------------------------paZqsnEHRufoShdX6fh0lUhXBP4k',
+          'Content-Disposition: form-data; name="upload_file_0"; filename=""',
+          'Content-Type: application/octet-stream',
+          '',
+          'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+          '-----------------------------paZqsnEHRufoShdX6fh0lUhXBP4k--'
+        ].join('\r\n')
+      ],
+      boundary: '---------------------------paZqsnEHRufoShdX6fh0lUhXBP4k',
+      expected: [
+        ['file', 'upload_file_0', 26, 0, '', '7bit', 'application/octet-stream']
+      ],
+      what: 'Files with empty filename keep the empty filename if preserveEmptyFilename is not set'
+    },
+    {
+      source: [
+        ['-----------------------------paZqsnEHRufoShdX6fh0lUhXBP4k',
+          'Content-Disposition: form-data; name="upload_file_0"; filename=""',
+          'Content-Type: application/octet-stream',
+          '',
+          'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+          '-----------------------------paZqsnEHRufoShdX6fh0lUhXBP4k--'
+        ].join('\r\n')
+      ],
+      boundary: '---------------------------paZqsnEHRufoShdX6fh0lUhXBP4k',
+      config: {
+        preserveEmptyFilename: false
+      },
+      expected: [
+        ['file', 'upload_file_0', 26, 0, undefined, '7bit', 'application/octet-stream']
+      ],
+      what: 'Files with empty filename have undefined set as filename if preserveEmptyFilename is set to false'
+    },
+    {
+      source: [
+        ['-----------------------------paZqsnEHRufoShdX6fh0lUhXBP4k',
+          'Content-Disposition: form-data; name="upload_file_0"; filename=""',
+          'Content-Type: application/octet-stream',
+          '',
+          'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+          '-----------------------------paZqsnEHRufoShdX6fh0lUhXBP4k--'
+        ].join('\r\n')
+      ],
+      boundary: '---------------------------paZqsnEHRufoShdX6fh0lUhXBP4k',
+      config: {
+        preserveEmptyFilename: true
+      },
+      expected: [
+        ['file', 'upload_file_0', 26, 0, '', '7bit', 'application/octet-stream']
+      ],
+      what: 'Files with empty filename keep the filename if preserveEmptyFilename is set to true'
+    },
+    {
+      source: [
+        ['-----------------------------paZqsnEHRufoShdX6fh0lUhXBP4k',
+          'Content-Disposition: form-data; name="upload_file_0"; filename="blob"',
+          'Content-Type: application/octet-stream',
+          '',
+          'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+          '-----------------------------paZqsnEHRufoShdX6fh0lUhXBP4k--'
+        ].join('\r\n')
+      ],
+      boundary: '---------------------------paZqsnEHRufoShdX6fh0lUhXBP4k',
+      expected: [
+        ['file', 'upload_file_0', 26, 0, 'blob', '7bit', 'application/octet-stream']
+      ],
+      what: 'Files with filename blob keep the filename as blob if preserveBlobFilename is not set'
+    },
+    {
+      source: [
+        ['-----------------------------paZqsnEHRufoShdX6fh0lUhXBP4k',
+          'Content-Disposition: form-data; name="upload_file_0"; filename="blob"',
+          'Content-Type: application/octet-stream',
+          '',
+          'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+          '-----------------------------paZqsnEHRufoShdX6fh0lUhXBP4k--'
+        ].join('\r\n')
+      ],
+      boundary: '---------------------------paZqsnEHRufoShdX6fh0lUhXBP4k',
+      config: {
+        preserveBlobFilename: false
+      },
+      expected: [
+        ['file', 'upload_file_0', 26, 0, undefined, '7bit', 'application/octet-stream']
+      ],
+      what: 'Files with filename blob have undefined set as filename if preserveBlobFilename is set to false'
+    },
+    {
+      source: [
+        ['-----------------------------paZqsnEHRufoShdX6fh0lUhXBP4k',
+          'Content-Disposition: form-data; name="upload_file_0"; filename="blob"',
+          'Content-Type: application/octet-stream',
+          '',
+          'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+          '-----------------------------paZqsnEHRufoShdX6fh0lUhXBP4k--'
+        ].join('\r\n')
+      ],
+      boundary: '---------------------------paZqsnEHRufoShdX6fh0lUhXBP4k',
+      config: {
+        preserveBlobFilename: true
+      },
+      expected: [
+        ['file', 'upload_file_0', 26, 0, 'blob', '7bit', 'application/octet-stream']
+      ],
+      what: 'Files with filename blob keep the filename as blob if preserveBlobFilename is set to true'
     },
     {
       source: [
@@ -289,6 +396,7 @@ describe('types-multipart', () => {
   tests.forEach((v) => {
     it(v.what, () => {
       const busboy = new Busboy({
+        ...v.config,
         limits: v.limits,
         preservePath: v.preservePath,
         headers: {

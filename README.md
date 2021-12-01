@@ -221,6 +221,10 @@ Busboy methods
 
         * **preservePath** - _boolean_ - If paths in the multipart 'filename' field shall be preserved. (Default: false).
 
+        * **preserveEmptyFilename** - _boolean_ - Preserve the multipart 'filename' field as an empty string if it is an empty string. (Default: false).
+
+        * **preserveBlobFilename** - _boolean_ - Preserve the multipart 'filename' field as 'blob' if it is set as 'blob'. (Default: false).
+
         * **limits** - _object_ - Various limits on incoming data. Valid properties are:
 
             * **fieldNameSize** - _integer_ - Max field name size (in bytes) (Default: 100 bytes).
