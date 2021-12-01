@@ -231,7 +231,7 @@ describe('types-multipart', () => {
     },
     {
       config: {
-        isPartAFile: (fieldName) => (fieldName !== 'upload_file_0'),
+        isPartAFile: (fieldName) => (fieldName !== 'upload_file_0')
       },
       source: [
         ['-----------------------------paZqsnEHRufoShdX6fh0lUhXBP4k',
