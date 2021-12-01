@@ -39,7 +39,7 @@ export interface BusboyConfig {
      * 
      * Modify this to handle e.g. Blobs.
      */
-    isPartAFile?: ((fieldName?: string | undefined, contentType?: string | undefined, fileName?: string | undefined) => boolean) | undefined;
+    isPartAFile?: ((fieldName: string | undefined, contentType: string | undefined, fileName: string | undefined) => boolean) | undefined;
     /**
      * If paths in the multipart 'filename' field shall be preserved.
      * @default false
