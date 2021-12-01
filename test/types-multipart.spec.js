@@ -230,6 +230,9 @@ describe('types-multipart', () => {
       what: 'Empty content-type and empty content-disposition'
     },
     {
+      config: {
+        isPartAFile: (fieldName) => (fieldName !== 'upload_file_0'),
+      },
       source: [
         ['-----------------------------paZqsnEHRufoShdX6fh0lUhXBP4k',
           'Content-Disposition: form-data; name="upload_file_0"; filename="blob"',
@@ -305,6 +308,7 @@ describe('types-multipart', () => {
   tests.forEach((v) => {
     it(v.what, () => {
       const busboy = new Busboy({
+        ...v.config,
         limits: v.limits,
         preservePath: v.preservePath,
         headers: {
