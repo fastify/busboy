@@ -69,7 +69,10 @@
     }
   },
   "standard": {
-    "globals": [ "describe", "it" ],
+    "globals": [
+      "describe",
+      "it"
+    ],
     "ignore": [
       "deps/encoding",
       "bench"

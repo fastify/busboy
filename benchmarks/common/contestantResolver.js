@@ -14,7 +14,7 @@ function resolveContestant(contestants) {
       contestants[contestantId];
 
   if (!contestant) {
-    throw new Error(`Unknown contestant ${contestandId}`);
+    throw new Error(`Unknown contestant ${contestantId}`);
   }
   return contestant;
 }
