@@ -179,7 +179,7 @@ describe('types-multipart', () => {
         ['file', 'upload_file_2', 26, 0, '1k_c.dat', '7bit', 'application/octet-stream']
       ],
       what: 'Files with filenames containing paths'
-    },    {
+    }, {
       source: [
         ['-----------------------------paZqsnEHRufoShdX6fh0lUhXBP4k',
           'Content-Disposition: form-data; name="upload_file_0"; filename=""',
