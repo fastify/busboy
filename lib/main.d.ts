@@ -39,12 +39,12 @@ export interface BusboyConfig {
      * If preserveEmptyFilename is set, an empty filename will be preserved.
      * @default true
      */
-     preserveEmptyFilename: boolean | undefined;
+     preserveEmptyFilename?: boolean | undefined;
     /**
      * If preserveBlobFilename is set, the filename 'blob' will be preserved.
      * @default true
      */
-     preserveBlobFilename: boolean | undefined;
+     preserveBlobFilename?: boolean | undefined;
     /**
      * Various limits on incoming data.
      */
