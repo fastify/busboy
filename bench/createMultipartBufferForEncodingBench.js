@@ -1,4 +1,4 @@
-function createMultipartBufferForFormBench(boundary, amount, charset) {
+function createMultipartBufferForEncodingBench(boundary, amount, charset) {
   const filename = charset === 'utf-8' ? 'utf-8\'\'%c2%a3%20and%20%e2%82%ac%20rates' : 'iso-8859-1\'en\'%A3%20rates';
   const head = '--' + boundary + '\r\n'
     + 'content-disposition: form-data; name="field1"\r\n'
@@ -18,4 +18,4 @@ Nam hendrerit justo eu lectus molestie, sit amet fringilla ipsum semper. Maecena
   buffers.push(Buffer.from(tail));
   return Buffer.concat(buffers);
 }
-exports.createMultipartBufferForFormBench = createMultipartBufferForFormBench;
+exports.createMultipartBufferForEncodingBench = createMultipartBufferForEncodingBench;
