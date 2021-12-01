@@ -4,7 +4,7 @@ function createMultipartBuffer(boundary, amount) {
   const head =
     '--' + boundary + '\r\n'
     + 'content-disposition: form-data; name="field1"\r\n'
-    + 'content-type: text/plain; filename*=iso-8859-1\'en\'%A3%20rates; altfilename*=utf-8\'\'%c2%a3%20and%20%e2%82%ac%20rates\r\n'
+    + 'content-type: text/plain;charset=utf-8; filename*=utf-8\'\'%c2%a3%20and%20%e2%82%ac%20rates\r\n'
     + '\r\n'
     , tail = '\r\n--' + boundary + '--\r\n'
     , buffer = Buffer.concat([Buffer.from(head), Buffer.from(`

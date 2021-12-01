@@ -1,10 +1,10 @@
-const Busboy = require('../lib/main');
+const Busboy = require('busboy');
 
 function createMultipartBuffer(boundary, amount) {
   const head =
     '--' + boundary + '\r\n'
     + 'content-disposition: form-data; name="field1"\r\n'
-    + 'content-type: text/plain; filename*=utf-8\'\'%c2%a3%20and%20%e2%82%ac%20rates\r\n'
+    + 'content-type: text/plain;charset=latin1; filename*=iso-8859-1\'en\'%A3%20rates; altfilename*=utf-8\'\'%c2%a3%20and%20%e2%82%ac%20rates\r\n'
     + '\r\n'
     , tail = '\r\n--' + boundary + '--\r\n'
     , buffer = Buffer.concat([Buffer.from(head), Buffer.from(`
@@ -45,7 +45,6 @@ for (var i = 0, il = 10; i < il; i++) { // eslint-disable-line no-var
   d.on('part', function (p) {
     callbacks.partBegin++;
     p.on('header', function (header) {
-      console.log('errr')
     });
     p.on('data', function (data) {
       callbacks.partData++;
@@ -57,12 +56,9 @@ for (var i = 0, il = 10; i < il; i++) { // eslint-disable-line no-var
   d.on('end', function () {
     callbacks.end++;
   });
-  d.on('error', function () {
-    callbacks.end++;
-  });
 
   const start = +new Date();
-  const result = d.write(buffer);
+  d.write(buffer);
   const duration = +new Date - start;
   const mbPerSec = (mb / (duration / 1000)).toFixed(2);
 
