@@ -283,7 +283,29 @@ describe('types-multipart', () => {
       boundary: '----WebKitFormBoundaryTB2MiQ36fnSJlrhY',
       expected: [],
       what: 'empty form'
-    }
+    },
+    {
+    source: [
+      ['-----------------------------paZqsnEHRufoShdX6fh0lUhXBP4k',
+        'Content-Disposition: form-data; name="field1"',
+        'content-type: text/plain; charset=utf-8',
+        '',
+        'Aufklärung ist der Ausgang des Menschen aus seiner selbstverschuldeten Unmündigkeit.',
+        '-----------------------------paZqsnEHRufoShdX6fh0lUhXBP4k',
+        'Content-Disposition: form-data; name="field2"',
+        'content-type: text/plain; charset=iso-8859-1',
+        '',
+        'sapere aude!',
+        '-----------------------------paZqsnEHRufoShdX6fh0lUhXBP4k--'
+      ].join('\r\n')
+    ],
+    boundary: '---------------------------paZqsnEHRufoShdX6fh0lUhXBP4k',
+    expected: [
+      ['field', 'field1', 'Aufklärung ist der Ausgang des Menschen aus seiner selbstverschuldeten Unmündigkeit.', false, false, '7bit', 'text/plain'],
+      ['field', 'field2', 'sapere aude!', false, false, '7bit', 'text/plain'],
+    ],
+    what: 'Fields and files'
+  },
   ]
 
   tests.forEach((v) => {
