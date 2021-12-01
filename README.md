@@ -225,7 +225,7 @@ Busboy methods
 
             * fieldName - __string__ The name of the field.
 
-            * contentType - __string__ The content-type of the Part, e.g. `text/plain`, `image/jpeg`, `application/octet-stream`
+            * contentType - __string__ The content-type of the part, e.g. `text/plain`, `image/jpeg`, `application/octet-stream`
 
             * fileName - __string__ The name of a file supplied by the part.
 
