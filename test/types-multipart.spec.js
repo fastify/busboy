@@ -374,11 +374,73 @@ describe('types-multipart', () => {
         ['field', 'field2', 'sapere aude!', false, false, '7bit', 'text/plain']
       ],
       what: 'Fields and files'
+    },
+    {
+      source: [[
+        '------WebKitFormBoundaryzca7IDMnT6QwqBp7',
+        'Content-Disposition: form-data; name="regsubmit"',
+        '',
+        'yes',
+        '------WebKitFormBoundaryzca7IDMnT6QwqBp7',
+        '------WebKitFormBoundaryzca7IDMnT6QwqBp7',
+        'Content-Disposition: form-data; name="referer"',
+        '',
+        'http://domainExample/./',
+        '------WebKitFormBoundaryzca7IDMnT6QwqBp7',
+        'Content-Disposition: form-data; name="activationauth"',
+        '',
+        '',
+        '------WebKitFormBoundaryzca7IDMnT6QwqBp7',
+        'Content-Disposition: form-data; name="seccodemodid"',
+        '',
+        'member::register',
+        '------WebKitFormBoundaryzca7IDMnT6QwqBp7--'].join('\r\n')
+      ],
+      boundary: '----WebKitFormBoundaryzca7IDMnT6QwqBp7',
+      expected: [
+        ['field', 'regsubmit', 'yes', false, false, '7bit', 'text/plain'],
+        ['field', 'referer', 'http://domainExample/./', false, false, '7bit', 'text/plain'],
+        ['field', 'activationauth', '', false, false, '7bit', 'text/plain'],
+        ['field', 'seccodemodid', 'member::register', false, false, '7bit', 'text/plain']
+      ],
+      what: 'one empty part should get ignored'
+    },
+    {
+      source: [[
+        '------WebKitFormBoundaryzca7IDMnT6QwqBp7',
+        'Content-Disposition: form-data; name="regsubmit"',
+        '',
+        'yes',
+        '------WebKitFormBoundaryzca7IDMnT6QwqBp7',
+        '------WebKitFormBoundaryzca7IDMnT6QwqBp7',
+        '------WebKitFormBoundaryzca7IDMnT6QwqBp7',
+        '------WebKitFormBoundaryzca7IDMnT6QwqBp7',
+        'Content-Disposition: form-data; name="referer"',
+        '',
+        'http://domainExample/./',
+        '------WebKitFormBoundaryzca7IDMnT6QwqBp7',
+        'Content-Disposition: form-data; name="activationauth"',
+        '',
+        '',
+        '------WebKitFormBoundaryzca7IDMnT6QwqBp7',
+        'Content-Disposition: form-data; name="seccodemodid"',
+        '',
+        'member::register',
+        '------WebKitFormBoundaryzca7IDMnT6QwqBp7--'].join('\r\n')
+      ],
+      boundary: '----WebKitFormBoundaryzca7IDMnT6QwqBp7',
+      expected: [
+        ['field', 'regsubmit', 'yes', false, false, '7bit', 'text/plain'],
+        ['field', 'referer', 'http://domainExample/./', false, false, '7bit', 'text/plain'],
+        ['field', 'activationauth', '', false, false, '7bit', 'text/plain'],
+        ['field', 'seccodemodid', 'member::register', false, false, '7bit', 'text/plain']
+      ],
+      what: 'multiple empty parts should get ignored'
     }
   ]
 
   tests.forEach((v) => {
-    it(v.what, () => {
+    it(v.what, (done) => {
       const busboy = new Busboy({
         ...v.config,
         limits: v.limits,
@@ -431,8 +493,9 @@ describe('types-multipart', () => {
                         '\nExpected: ' + inspect(v.expected[i])
           )
         })
+        done()
       }).on('error', function (err) {
-        if (!v.shouldError || v.shouldError !== err.message) { assert(false, 'Unexpected error: ' + err) }
+        if (!v.shouldError || v.shouldError !== err.message) { assert(false, 'Unexpected error: ' + err); done(err) }
       })
 
       v.source.forEach(function (s) {
