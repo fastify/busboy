@@ -230,6 +230,75 @@ describe('types-multipart', () => {
       what: 'Empty content-type and empty content-disposition'
     },
     {
+      config: {
+        isPartAFile: (fieldName) => (fieldName !== 'upload_file_0')
+      },
+      source: [
+        ['-----------------------------paZqsnEHRufoShdX6fh0lUhXBP4k',
+          'Content-Disposition: form-data; name="upload_file_0"; filename="blob"',
+          'Content-Type: application/json',
+          '',
+          'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+          '-----------------------------paZqsnEHRufoShdX6fh0lUhXBP4k--'
+        ].join('\r\n')
+      ],
+      boundary: '---------------------------paZqsnEHRufoShdX6fh0lUhXBP4k',
+      expected: [
+        ['field', 'upload_file_0', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', false, false, '7bit', 'application/json']
+      ],
+      what: 'Blob uploads should be handled as fields if isPartAFile is provided.'
+    },
+    {
+      config: {
+        isPartAFile: (fieldName) => (fieldName !== 'upload_file_0')
+      },
+      source: [
+        ['-----------------------------paZqsnEHRufoShdX6fh0lUhXBP4k',
+          'Content-Disposition: form-data; name="upload_file_0"; filename="blob"',
+          'Content-Type: application/json',
+          '',
+          'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+          '-----------------------------paZqsnEHRufoShdX6fh0lUhXBP4k',
+          'Content-Disposition: form-data; name="file"; filename*=utf-8\'\'n%C3%A4me.txt',
+          'Content-Type: application/octet-stream',
+          '',
+          'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+          '-----------------------------paZqsnEHRufoShdX6fh0lUhXBP4k--'
+        ].join('\r\n')
+      ],
+      boundary: '---------------------------paZqsnEHRufoShdX6fh0lUhXBP4k',
+      expected: [
+        ['field', 'upload_file_0', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', false, false, '7bit', 'application/json'],
+        ['file', 'file', 26, 0, 'näme.txt', '7bit', 'application/octet-stream']
+      ],
+      what: 'Blob uploads should be handled as fields if isPartAFile is provided. Other parts should be files.'
+    },
+    {
+      config: {
+        isPartAFile: (fieldName) => (fieldName === 'upload_file_0')
+      },
+      source: [
+        ['-----------------------------paZqsnEHRufoShdX6fh0lUhXBP4k',
+          'Content-Disposition: form-data; name="upload_file_0"; filename="blob"',
+          'Content-Type: application/json',
+          '',
+          'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+          '-----------------------------paZqsnEHRufoShdX6fh0lUhXBP4k',
+          'Content-Disposition: form-data; name="file"; filename*=utf-8\'\'n%C3%A4me.txt',
+          'Content-Type: application/octet-stream',
+          '',
+          'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+          '-----------------------------paZqsnEHRufoShdX6fh0lUhXBP4k--'
+        ].join('\r\n')
+      ],
+      boundary: '---------------------------paZqsnEHRufoShdX6fh0lUhXBP4k',
+      expected: [
+        ['file', 'upload_file_0', 26, 0, 'blob', '7bit', 'application/json'],
+        ['field', 'file', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', false, false, '7bit', 'application/octet-stream']
+      ],
+      what: 'Blob uploads should be handled as files if corresponding isPartAFile is provided. Other parts should be fields.'
+    },
+    {
       source: [
         ['-----------------------------paZqsnEHRufoShdX6fh0lUhXBP4k',
           'Content-Disposition: form-data; name="file"; filename*=utf-8\'\'n%C3%A4me.txt',
@@ -283,12 +352,75 @@ describe('types-multipart', () => {
       boundary: '----WebKitFormBoundaryTB2MiQ36fnSJlrhY',
       expected: [],
       what: 'empty form'
+    },
+    {
+      source: [[
+        '------WebKitFormBoundaryzca7IDMnT6QwqBp7',
+        'Content-Disposition: form-data; name="regsubmit"',
+        '',
+        'yes',
+        '------WebKitFormBoundaryzca7IDMnT6QwqBp7',
+        '------WebKitFormBoundaryzca7IDMnT6QwqBp7',
+        'Content-Disposition: form-data; name="referer"',
+        '',
+        'http://domainExample/./',
+        '------WebKitFormBoundaryzca7IDMnT6QwqBp7',
+        'Content-Disposition: form-data; name="activationauth"',
+        '',
+        '',
+        '------WebKitFormBoundaryzca7IDMnT6QwqBp7',
+        'Content-Disposition: form-data; name="seccodemodid"',
+        '',
+        'member::register',
+        '------WebKitFormBoundaryzca7IDMnT6QwqBp7--'].join('\r\n')
+      ],
+      boundary: '----WebKitFormBoundaryzca7IDMnT6QwqBp7',
+      expected: [
+        ['field', 'regsubmit', 'yes', false, false, '7bit', 'text/plain'],
+        ['field', 'referer', 'http://domainExample/./', false, false, '7bit', 'text/plain'],
+        ['field', 'activationauth', '', false, false, '7bit', 'text/plain'],
+        ['field', 'seccodemodid', 'member::register', false, false, '7bit', 'text/plain']
+      ],
+      what: 'one empty part should get ignored'
+    },
+    {
+      source: [[
+        '------WebKitFormBoundaryzca7IDMnT6QwqBp7',
+        'Content-Disposition: form-data; name="regsubmit"',
+        '',
+        'yes',
+        '------WebKitFormBoundaryzca7IDMnT6QwqBp7',
+        '------WebKitFormBoundaryzca7IDMnT6QwqBp7',
+        '------WebKitFormBoundaryzca7IDMnT6QwqBp7',
+        '------WebKitFormBoundaryzca7IDMnT6QwqBp7',
+        'Content-Disposition: form-data; name="referer"',
+        '',
+        'http://domainExample/./',
+        '------WebKitFormBoundaryzca7IDMnT6QwqBp7',
+        'Content-Disposition: form-data; name="activationauth"',
+        '',
+        '',
+        '------WebKitFormBoundaryzca7IDMnT6QwqBp7',
+        'Content-Disposition: form-data; name="seccodemodid"',
+        '',
+        'member::register',
+        '------WebKitFormBoundaryzca7IDMnT6QwqBp7--'].join('\r\n')
+      ],
+      boundary: '----WebKitFormBoundaryzca7IDMnT6QwqBp7',
+      expected: [
+        ['field', 'regsubmit', 'yes', false, false, '7bit', 'text/plain'],
+        ['field', 'referer', 'http://domainExample/./', false, false, '7bit', 'text/plain'],
+        ['field', 'activationauth', '', false, false, '7bit', 'text/plain'],
+        ['field', 'seccodemodid', 'member::register', false, false, '7bit', 'text/plain']
+      ],
+      what: 'multiple empty parts should get ignored'
     }
   ]
 
   tests.forEach((v) => {
-    it(v.what, () => {
+    it(v.what, (done) => {
       const busboy = new Busboy({
+        ...v.config,
         limits: v.limits,
         preservePath: v.preservePath,
         headers: {
@@ -341,8 +473,9 @@ describe('types-multipart', () => {
                         '\nExpected: ' + inspect(v.expected[i])
           )
         })
+        done()
       }).on('error', function (err) {
-        if (!v.shouldError || v.shouldError !== err.message) { assert(false, 'Unexpected error: ' + err) }
+        if (!v.shouldError || v.shouldError !== err.message) { assert(false, 'Unexpected error: ' + err); done(err) }
       })
 
       v.source.forEach(function (s) {
