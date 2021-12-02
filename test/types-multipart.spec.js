@@ -441,7 +441,7 @@ describe('types-multipart', () => {
         })
         done()
       }).on('error', function (err) {
-        if (!v.shouldError || v.shouldError !== err.message) { assert(false, 'Unexpected error: ' + err); done(err)}
+        if (!v.shouldError || v.shouldError !== err.message) { assert(false, 'Unexpected error: ' + err); done(err) }
       })
 
       v.source.forEach(function (s) {
