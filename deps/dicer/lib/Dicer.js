@@ -171,7 +171,7 @@ Dicer.prototype._oninfo = function (isMatch, data, start, end) {
   if (isMatch) {
     this._hparser.reset()
     if (this._isPreamble) { this._isPreamble = false } else {
-      if (end > start) {
+      if (start !== end) {
         ++this._parts
         this._part.on('end', function () {
           if (--self._parts === 0) {
