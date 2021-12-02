@@ -382,7 +382,7 @@ describe('types-multipart', () => {
         ['field', 'seccodemodid', 'member::register', false, false, '7bit', 'text/plain']
       ],
       what: 'empty part'
-    },
+    }
   ]
 
   tests.forEach((v) => {

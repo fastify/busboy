@@ -172,18 +172,18 @@ Dicer.prototype._oninfo = function (isMatch, data, start, end) {
     this._hparser.reset()
     if (this._isPreamble) { this._isPreamble = false } else {
       // if (end > start) {
-        ++this._parts
-        this._part.on('end', function () {
-          if (--self._parts === 0) {
-            if (self._finished) {
-              self._realFinish = true
-              self.emit('finish')
-              self._realFinish = false
-            } else {
-              self._unpause()
-            }
+      ++this._parts
+      this._part.on('end', function () {
+        if (--self._parts === 0) {
+          if (self._finished) {
+            self._realFinish = true
+            self.emit('finish')
+            self._realFinish = false
+          } else {
+            self._unpause()
           }
-        })
+        }
+      })
       // }
     }
     this._part.push(null)
