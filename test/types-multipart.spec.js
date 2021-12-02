@@ -352,7 +352,37 @@ describe('types-multipart', () => {
       boundary: '----WebKitFormBoundaryTB2MiQ36fnSJlrhY',
       expected: [],
       what: 'empty form'
-    }
+    },
+    {
+      source: [[
+        '------WebKitFormBoundaryzca7IDMnT6QwqBp7',
+        'Content-Disposition: form-data; name="regsubmit"',
+        '',
+        'yes',
+        '------WebKitFormBoundaryzca7IDMnT6QwqBp7',
+        '------WebKitFormBoundaryzca7IDMnT6QwqBp7',
+        'Content-Disposition: form-data; name="referer"',
+        '',
+        'http://domainExample/./',
+        '------WebKitFormBoundaryzca7IDMnT6QwqBp7',
+        'Content-Disposition: form-data; name="activationauth"',
+        '',
+        '',
+        '------WebKitFormBoundaryzca7IDMnT6QwqBp7',
+        'Content-Disposition: form-data; name="seccodemodid"',
+        '',
+        'member::register',
+        '------WebKitFormBoundaryzca7IDMnT6QwqBp7--'].join('\r\n')
+      ],
+      boundary: '----WebKitFormBoundaryzca7IDMnT6QwqBp7',
+      expected: [
+        // ['field', 'regsubmit', 'yes', false, false, '7bit', 'text/plain'],
+        ['field', 'referer', 'http://domainExample/./', false, false, '7bit', 'text/plain'],
+        ['field', 'activationauth', '', false, false, '7bit', 'text/plain'],
+        ['field', 'seccodemodid', 'member::register', false, false, '7bit', 'text/plain']
+      ],
+      what: 'empty part'
+    },
   ]
 
   tests.forEach((v) => {
