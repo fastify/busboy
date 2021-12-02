@@ -1,24 +1,24 @@
-const getopts = require("getopts");
+const getopts = require('getopts')
 
 const options = getopts(process.argv.slice(1), {
   alias: {
-    contestant: "c",
+    contestant: 'c'
   },
-  default: {},
-});
+  default: {}
+})
 
-function resolveContestant(contestants) {
-  const contestantId = options.contestant;
-  const contestant = Number.isFinite(contestantId) ?
-      Object.values(contestants)[contestantId] :
-      contestants[contestantId];
+function resolveContestant (contestants) {
+  const contestantId = options.contestant
+  const contestant = Number.isFinite(contestantId)
+    ? Object.values(contestants)[contestantId]
+    : contestants[contestantId]
 
   if (!contestant) {
-    throw new Error(`Unknown contestant ${contestantId}`);
+    throw new Error(`Unknown contestant ${contestantId}`)
   }
-  return contestant;
+  return contestant
 }
 
 module.exports = {
-  resolveContestant,
-};
+  resolveContestant
+}
