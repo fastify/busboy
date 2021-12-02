@@ -23,7 +23,7 @@ async function measureBusboy () {
 async function measureFastify () {
   const benchmark = getCommonBuilder()
     .benchmarkName('Busboy comparison')
-    .benchmarkEntryName('@fastify/busboy')
+    .benchmarkEntryName('fastify-busboy')
     .asyncFunctionUnderTest(processFastify)
     .build()
   const benchmarkResults = await benchmark.executeAsync()
