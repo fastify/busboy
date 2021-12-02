@@ -1,7 +1,7 @@
 const {process: processBusboy} = require("./contestants/busboy");
 const {process: processFastify} = require("./contestants/fastify-busboy");
 const {getCommonBuilder} = require("../common/commonBuilder");
-const {validateAccuracy} = require("./contestants/validator");
+const {validateAccuracy} = require("./validator");
 const {resolveContestant} = require("../common/contestantResolver");
 const {outputResults} = require("../common/resultUtils");
 
@@ -34,7 +34,7 @@ function execute() {
     return validateAccuracy(processBusboy())
         .then(() => {
             console.log('second')
-            return validateAccuracy(processFastify());
+            //return validateAccuracy(processFastify());
         })
         .then(() => {
             const contestant = resolveContestant(contestants);

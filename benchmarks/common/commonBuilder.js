@@ -12,8 +12,8 @@ const options = getopts(process.argv.slice(1), {
 const PRESET = {
   LOW: (builder) => {
     return builder
-        .warmupCycles(10000)
-        .benchmarkCycles(100000)
+        .warmupCycles(10)
+        .benchmarkCycles(20)
   },
 
   MEDIUM: (builder) => {
@@ -30,7 +30,7 @@ const PRESET = {
 }
 
 function getCommonBuilder() {
-  const presetId = options.preset || 'HIGH';
+  const presetId = options.preset || 'LOW';
   const preset = validateNotNil(PRESET[presetId.toUpperCase()], `Unknown preset: ${presetId}`);
 
   const builder = new BenchmarkBuilder();

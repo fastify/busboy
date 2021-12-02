@@ -1,19 +1,5 @@
 const Busboy = require('busboy');
-const { randomBytes } = require('crypto');
-
-const boundary = '-----------------------------paZqsnEHRufoShdX6fh0lUhXBP4k'
-
-function createMultipartBuffer(boundary, size) {
-    const payload = [
-        boundary,
-        'Content-Disposition: form-data; name="upload_file_0"; filename="1k_a.dat"',
-        'Content-Type: application/octet-stream',
-        '',
-        randomBytes(size).toString('base64'),
-        boundary + '--'
-    ].join('\r\n')
-    return Buffer.from(payload, 'ascii')
-}
+const {buffer, boundary} = require("../data");
 
 function process() {
     const busboy = new Busboy({
@@ -22,7 +8,6 @@ function process() {
         }
     })
     const mb = 1
-    const buffer = createMultipartBuffer(boundary, mb * 1024 * 1024)
     const callbacks =
     {
         partBegin: -1,
@@ -36,7 +21,15 @@ function process() {
     let processedData = ''
 
     return new Promise((resolve, reject) => {
-        busboy.on('file', () => { });
+        busboy.on('file', (field, file, filename, encoding, mimetype) => {
+            console.log('read file')
+            file.on('data', (fieldname, data) => {
+                console.log(`File [${fieldname}] got ${data.length} bytes`);
+            });
+            file.on('end', (fieldname) => {
+                console.log(`File [${fieldname}] Finished`);
+            });
+        });
 
         busboy.on('error', function () {
             reject();
