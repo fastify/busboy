@@ -1,16 +1,14 @@
-const {randomBytes} = require ("crypto");
-
-const mb = 1
 const boundary = '-----------------------------paZqsnEHRufoShdX6fh0lUhXBP4k'
-const buffer = createMultipartBuffer(boundary, mb * 1024 * 1024)
+const randomContent = Buffer.allocUnsafe(1024)
+const buffer = createMultipartBuffer(boundary)
 
-function createMultipartBuffer(boundary, size) {
+function createMultipartBuffer(boundary) {
     const payload = [
         '--' + boundary,
         'Content-Disposition: form-data; name="upload_file_0"; filename="1k_a.dat"',
         'Content-Type: application/octet-stream',
         '',
-        Buffer.allocUnsafe(size),
+        randomContent,
         '--' + boundary + '--'
     ].join('\r\n')
     return Buffer.from(payload, 'ascii')
@@ -18,5 +16,6 @@ function createMultipartBuffer(boundary, size) {
 
 module.exports = {
     boundary,
-    buffer
+    buffer,
+    randomContent
 }

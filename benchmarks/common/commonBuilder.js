@@ -18,14 +18,14 @@ const PRESET = {
 
   MEDIUM: (builder) => {
     return builder
-        .warmupCycles(10000)
-        .benchmarkCycles(100000)
+        .warmupCycles(100)
+        .benchmarkCycles(200)
   },
 
   HIGH: (builder) => {
     return builder
-        .warmupCycles(10000)
-        .benchmarkCycles(100000)
+        .warmupCycles(1000)
+        .benchmarkCycles(2000)
   },
 }
 

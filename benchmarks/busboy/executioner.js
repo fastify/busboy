@@ -33,8 +33,7 @@ async function measureFastify() {
 function execute() {
     return validateAccuracy(processBusboy())
         .then(() => {
-            console.log('second')
-            //return validateAccuracy(processFastify());
+            return validateAccuracy(processFastify());
         })
         .then(() => {
             const contestant = resolveContestant(contestants);
