@@ -23,8 +23,8 @@ function process() {
     return new Promise((resolve, reject) => {
         busboy.on('file', (field, file, filename, encoding, mimetype) => {
             console.log('read file')
-            file.on('data', (fieldname, data) => {
-                console.log(`File [${fieldname}] got ${data.length} bytes`);
+            file.on('data', (data) => {
+                console.log(`File [${filename}] got ${data.length} bytes`);
             });
             file.on('end', (fieldname) => {
                 console.log(`File [${fieldname}] Finished`);
