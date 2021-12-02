@@ -12,20 +12,20 @@ const options = getopts(process.argv.slice(1), {
 const PRESET = {
   LOW: (builder) => {
     return builder
-      .warmupCycles(10)
-      .benchmarkCycles(20)
+      .warmupCycles(1000)
+      .benchmarkCycles(100)
   },
 
   MEDIUM: (builder) => {
     return builder
-      .warmupCycles(100)
-      .benchmarkCycles(200)
+      .warmupCycles(1000)
+      .benchmarkCycles(1000)
   },
 
   HIGH: (builder) => {
     return builder
       .warmupCycles(1000)
-      .benchmarkCycles(2000)
+      .benchmarkCycles(100000)
   }
 }
 
