@@ -13,19 +13,19 @@ const PRESET = {
   LOW: (builder) => {
     return builder
       .warmupCycles(1000)
-      .benchmarkCycles(100)
+      .benchmarkCycles(1000)
   },
 
   MEDIUM: (builder) => {
     return builder
       .warmupCycles(1000)
-      .benchmarkCycles(1000)
+      .benchmarkCycles(2000)
   },
 
   HIGH: (builder) => {
     return builder
       .warmupCycles(1000)
-      .benchmarkCycles(100000)
+      .benchmarkCycles(10000)
   }
 }
 
