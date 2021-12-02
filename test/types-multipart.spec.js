@@ -376,7 +376,7 @@ describe('types-multipart', () => {
       ],
       boundary: '----WebKitFormBoundaryzca7IDMnT6QwqBp7',
       expected: [
-        // ['field', 'regsubmit', 'yes', false, false, '7bit', 'text/plain'],
+        ['field', 'regsubmit', 'yes', false, false, '7bit', 'text/plain'],
         ['field', 'referer', 'http://domainExample/./', false, false, '7bit', 'text/plain'],
         ['field', 'activationauth', '', false, false, '7bit', 'text/plain'],
         ['field', 'seccodemodid', 'member::register', false, false, '7bit', 'text/plain']
@@ -386,7 +386,7 @@ describe('types-multipart', () => {
   ]
 
   tests.forEach((v) => {
-    it(v.what, () => {
+    it(v.what, (done) => {
       const busboy = new Busboy({
         ...v.config,
         limits: v.limits,
@@ -439,8 +439,9 @@ describe('types-multipart', () => {
                         '\nExpected: ' + inspect(v.expected[i])
           )
         })
+        done()
       }).on('error', function (err) {
-        if (!v.shouldError || v.shouldError !== err.message) { assert(false, 'Unexpected error: ' + err) }
+        if (!v.shouldError || v.shouldError !== err.message) { assert(false, 'Unexpected error: ' + err); done(err)}
       })
 
       v.source.forEach(function (s) {
