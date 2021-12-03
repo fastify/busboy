@@ -1,14 +1,14 @@
 const Busboy = require('../lib/main');
 const { createMultipartBufferForEncodingBench } = require("./createMultipartBufferForEncodingBench");
 
-  for (var i = 0, il = 100; i < il; i++) { // eslint-disable-line no-var
+  for (var i = 0, il = 10000; i < il; i++) { // eslint-disable-line no-var
     const boundary = '-----------------------------168072824752491622650073',
       busboy = new Busboy({
         headers: {
           'content-type': 'multipart/form-data; boundary=' + boundary
         }
       }),
-      buffer = createMultipartBufferForEncodingBench(boundary, 100000, 'iso-8859-1'),
+      buffer = createMultipartBufferForEncodingBench(boundary, 100, 'iso-8859-1'),
       mb = buffer.length / 1048576;
 
     let processedData = 0;
