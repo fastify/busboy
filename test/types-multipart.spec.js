@@ -116,7 +116,7 @@ describe('types-multipart', () => {
       expected: [
         ['file', 'upload_file_0', 26, 0, '1k_a.dat', '7bit', 'application/octet-stream']
       ],
-      what: 'should shot emit fieldsLimit if no field was sent'
+      what: 'should not emit fieldsLimit if no field was sent'
     },
     {
       source: [
@@ -188,7 +188,7 @@ describe('types-multipart', () => {
       expected: [
         ['field', 'file_name_0', 'super alpha file', false, false, '7bit', 'text/plain']
       ],
-      what: 'should shot emit filesLimit if no file was sent'
+      what: 'should not emit filesLimit if no file was sent'
     },
     {
       source: [
