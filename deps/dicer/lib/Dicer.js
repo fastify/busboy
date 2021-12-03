@@ -103,11 +103,8 @@ Dicer.prototype.reset = function () {
 }
 
 Dicer.prototype.setBoundary = function (boundary) {
-  const self = this
   this._bparser = new StreamSearch('\r\n--' + boundary)
-  this._bparser.on('info', function (isMatch, data, start, end) {
-    self._oninfo(isMatch, data, start, end)
-  })
+  this._bparser.on('info', this._oninfo.bind(this));
 }
 
 Dicer.prototype._ignore = function () {
