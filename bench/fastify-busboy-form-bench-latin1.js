@@ -8,7 +8,7 @@ for (var i = 0, il = 10; i < il; i++) { // eslint-disable-line no-var
         'content-type': 'multipart/form-data; boundary=' + boundary
       }
     }),
-    buffer = createMultipartBufferForEncodingBench(boundary, 100000, 'latin1'),
+    buffer = createMultipartBufferForEncodingBench(boundary, 100000, 'iso-8859-1'),
     mb = buffer.length / 1048576,
     callbacks =
     {
@@ -40,7 +40,7 @@ for (var i = 0, il = 10; i < il; i++) { // eslint-disable-line no-var
   });
 
   const start = +new Date();
-  const result = d.write(buffer, 'latin1');
+  const result = d.write(buffer);
   const duration = +new Date - start;
   const mbPerSec = (mb / (duration / 1000)).toFixed(2);
 
