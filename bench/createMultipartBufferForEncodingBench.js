@@ -1,5 +1,5 @@
 function createMultipartBufferForEncodingBench(boundary, amount, charset) {
-  const filename = charset === 'utf-8' ? 'utf-8\'\'%c2%a3%20and%20%e2%82%ac%20rates' : 'iso-8859-1\'en\'%A3%20rates';
+  const filename = charset === 'utf-8' ? 'utf-8\'\'%c2%a3%20and%20%e2%82%ac%20rates' : `${charset}\'en\'%A3%20rates`;
   const head = '--' + boundary + '\r\n'
     + 'content-disposition: form-data; name="field1"\r\n'
     + 'content-type: text/plain;charset=' + charset + '; filename*=' + filename + '\r\n'
