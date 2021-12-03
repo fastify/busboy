@@ -104,7 +104,7 @@ Dicer.prototype.reset = function () {
 
 Dicer.prototype.setBoundary = function (boundary) {
   this._bparser = new StreamSearch('\r\n--' + boundary)
-  this._bparser.on('info', this._oninfo.bind(this));
+  this._bparser.on('info', this._oninfo.bind(this))
 }
 
 Dicer.prototype._ignore = function () {
