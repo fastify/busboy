@@ -6,8 +6,7 @@
 [![Coverage Status](https://coveralls.io/repos/fastify/busboy/badge.svg?branch=master)](https://coveralls.io/r/fastify/busboy?branch=master)
 [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat)](https://standardjs.com/)
 [![Known Vulnerabilities](https://snyk.io/test/github/fastify/busboy/badge.svg)](https://snyk.io/test/github/fastify/busboy)
-[![Security Responsible
-Disclosure](https://img.shields.io/badge/Security-Responsible%20Disclosure-yellow.svg)](https://github.com/nodejs/security-wg/blob/HEAD/processes/responsible_disclosure_template.md)
+[![Security Responsible Disclosure](https://img.shields.io/badge/Security-Responsible%20Disclosure-yellow.svg)](https://github.com/nodejs/security-wg/blob/HEAD/processes/responsible_disclosure_template.md)
 
 </div>
 
@@ -26,6 +25,14 @@ A Node.js module for parsing incoming HTML form data.
 This is an officially supported fork by [fastify](https://github.com/fastify/) organization of the amazing library [originally created](https://github.com/mscdex/busboy) by Brian White,
 aimed at addressing long-standing issues with it.
 
+Benchmark (Mean time for 500 Kb payload, 2000 cycles, 1000 cycle warmup):
+
+| Library               | Mean time in nanoseconds |
+|-----------------------|--------------------------|
+| busboy 0.31           |                          |
+| @fastify/busboy 1.0.0 |                          |
+
+[Changelog](https://github.com/fastify/busboy/blob/master/CHANGELOG.md) since busboy 0.31.
 
 Requirements
 ============
@@ -194,6 +201,7 @@ Busboy (special) events
 * **file**(< _string_ >fieldname, < _ReadableStream_ >stream, < _string_ >filename, < _string_ >transferEncoding, < _string_ >mimeType) - Emitted for each new file form field found. `transferEncoding` contains the 'Content-Transfer-Encoding' value for the file stream. `mimeType` contains the 'Content-Type' value for the file stream.
     * Note: if you listen for this event, you should always handle the `stream` no matter if you care about the file contents or not (e.g. you can simply just do `stream.resume();` if you want to discard the contents), otherwise the 'finish' event will never fire on the Busboy instance. However, if you don't care about **any** incoming files, you can simply not listen for the 'file' event at all and any/all files will be automatically and safely discarded (these discarded files do still count towards `files` and `parts` limits).
     * If a configured file size limit was reached, `stream` will both have a boolean property `truncated` (best checked at the end of the stream) and emit a 'limit' event to notify you when this happens.
+    * The property `bytesRead` informs about the number of bytes that have been read so far.
 
 * **field**(< _string_ >fieldname, < _string_ >value, < _boolean_ >fieldnameTruncated, < _boolean_ >valueTruncated, < _string_ >transferEncoding, < _string_ >mimeType) - Emitted for each new non-file field found.
 

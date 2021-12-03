@@ -12,3 +12,4 @@ Major changes since the last busboy release (0.31):
 * Using the native TextDecoder and the package 'text-decoding' for fallback if nodejs does not support the requested encoding (#50)
 * Add isPartAFile-option, to make the file-detection configurable (#53)
 * Empty Parts will not hang the process (#55)
+* FileStreams also provide the property `bytesRead`
