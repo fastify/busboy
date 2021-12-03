@@ -29,7 +29,7 @@ describe('busboy-constructor', () => {
     expect(busboyInstance._writableState.autoDestroy).to.be.equal(false)
   })
   it('if busboy is called with invalid value for stream option highWaterMark we should throw', () => {
-    expect(() => Busboy({ highWaterMark: 'alot', headers: { 'content-type': 'application/x-www-form-urlencoded' } })).to.throw('The value "alot" is invalid for option "highWaterMark"')
+    expect(() => Busboy({ highWaterMark: 'not_allowed_value_for_highWaterMark', headers: { 'content-type': 'application/x-www-form-urlencoded' } })).to.throw('not_allowed_value_for_highWaterMark')
   })
   it('if busboy is called with stream options and autoDestroy:true, autoDestroy should be set to true', () => {
     const busboyInstance = Busboy({ autoDestroy: true, headers: { 'content-type': 'application/x-www-form-urlencoded' } })
