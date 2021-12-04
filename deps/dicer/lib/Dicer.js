@@ -9,19 +9,16 @@ const HeaderParser = require('./HeaderParser')
 const DASH = 45
 const B_ONEDASH = Buffer.from('-')
 const B_CRLF = Buffer.from('\r\n')
-const EMPTY_FN = function () {}
 
 function Dicer (cfg) {
   if (!(this instanceof Dicer)) { return new Dicer(cfg) }
   WritableStream.call(this, cfg)
 
-  if (!cfg || (!cfg.headerFirst && typeof cfg.boundary !== 'string')) { throw new TypeError('Boundary required') }
+  if (typeof cfg !== 'object' || (!cfg.headerFirst && typeof cfg.boundary !== 'string')) { throw new TypeError('Boundary required') }
 
   if (typeof cfg.boundary === 'string') { this.setBoundary(cfg.boundary) } else { this._bparser = undefined }
 
   this._headerFirst = cfg.headerFirst
-
-  const self = this
 
   this._dashes = 0
   this._parts = 0
@@ -34,11 +31,10 @@ function Dicer (cfg) {
   this._part = undefined
   this._cb = undefined
   this._ignoreData = false
-  this._partOpts = (typeof cfg.partHwm === 'number'
-    ? { highWaterMark: cfg.partHwm }
-    : {})
+  this._partOpts = { partHwm: cfg.partHwm }
   this._pause = false
 
+  const self = this
   this._hparser = new HeaderParser(cfg)
   this._hparser.on('header', function (header) {
     self._inHeader = false
@@ -113,7 +109,7 @@ Dicer.prototype.setBoundary = function (boundary) {
 Dicer.prototype._ignore = function () {
   if (this._part && !this._ignoreData) {
     this._ignoreData = true
-    this._part.on('error', EMPTY_FN)
+    this._part.on('error', function () {})
     // we must perform some kind of read on the stream even though we are
     // ignoring the data, otherwise node's Readable stream will not emit 'end'
     // after pushing null to the stream
