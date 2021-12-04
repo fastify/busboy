@@ -12,4 +12,4 @@ Major changes since the last busboy release (0.3.1):
 * Add isPartAFile-option, to make the file-detection configurable (#53)
 * Empty Parts will not hang the process (#55)
 * FileStreams also provide the property `bytesRead` (#51)
-* add and expose headerSize limit
+* add and expose headerSize limit (#64)
