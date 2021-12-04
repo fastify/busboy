@@ -134,7 +134,7 @@ describe('dicer-headerparser', () => {
         ...v.cfg
       }
 
-      const parser = Object.keys(cfg).length ? new HeaderParser(cfg) : new HeaderParser
+      const parser = Object.keys(cfg).length ? new HeaderParser(cfg) : new HeaderParser()
       let fired = false
 
       parser.on('header', function (header) {
