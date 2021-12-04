@@ -32,7 +32,7 @@ function Dicer (cfg) {
   this._part = undefined
   this._cb = undefined
   this._ignoreData = false
-  this._partOpts = { partHwm: cfg.partHwm }
+  this._partOpts = { highWaterMark: cfg.partHwm }
   this._pause = false
 
   const self = this
