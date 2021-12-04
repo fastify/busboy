@@ -11,7 +11,6 @@ const { createMultipartBufferForEncodingBench } = require("./createMultipartBuff
       buffer = createMultipartBufferForEncodingBench(boundary, 100, 'utf-8'),
       mb = buffer.length / 1048576;
 
-    let processedData = 0;
     busboy.on('file', (field, file, filename, encoding, mimetype) => {
       file.resume()
     })
@@ -22,7 +21,7 @@ const { createMultipartBufferForEncodingBench } = require("./createMultipartBuff
     })
 
     const start = +new Date();
-    const result = busboy.write(buffer, () => { });
+    busboy.write(buffer, () => { });
     busboy.end();
     const duration = +new Date - start;
     const mbPerSec = (mb / (duration / 1000)).toFixed(2);
