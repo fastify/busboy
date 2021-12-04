@@ -37,7 +37,7 @@ Benchmark (Mean time for 500 Kb payload, 2000 cycles, 1000 cycle warmup):
 Requirements
 ============
 
-* [node.js](http://nodejs.org/) -- v10 or newer
+* [Node.js](http://nodejs.org/) 12+.
 
 
 Install

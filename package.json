@@ -1,6 +1,6 @@
 {
   "name": "@fastify/busboy",
-  "version": "1.0.0-next1",
+  "version": "1.0.0-next2",
   "private": false,
   "author": "Brian White <mscdex@mscdex.net>",
   "contributors": [
@@ -32,7 +32,7 @@
     "test": "npm run test:mocha"
   },
   "engines": {
-    "node": ">=10.17.0"
+    "node": ">=12.20.0"
   },
   "devDependencies": {
     "@types/node": "^16.11.10",
