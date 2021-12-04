@@ -9,6 +9,7 @@ const HeaderParser = require('./HeaderParser')
 const DASH = 45
 const B_ONEDASH = Buffer.from('-')
 const B_CRLF = Buffer.from('\r\n')
+const EMPTY_FN = function () {}
 
 function Dicer (cfg) {
   if (!(this instanceof Dicer)) { return new Dicer(cfg) }
@@ -109,7 +110,7 @@ Dicer.prototype.setBoundary = function (boundary) {
 Dicer.prototype._ignore = function () {
   if (this._part && !this._ignoreData) {
     this._ignoreData = true
-    this._part.on('error', function () {})
+    this._part.on('error', EMPTY_FN)
     // we must perform some kind of read on the stream even though we are
     // ignoring the data, otherwise node's Readable stream will not emit 'end'
     // after pushing null to the stream
