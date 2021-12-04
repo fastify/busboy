@@ -10,6 +10,7 @@ type Events = BusboyEvents;
 type BB = Busboy;
 
 expectType<Busboy>(new BusboyESM({ headers: { 'content-type': 'foo' } }));
+expectType<Busboy>(new Busboy({ headers: { 'content-type': 'foo' } }));
 
 expectError(new BusboyDefault({}));
 const busboy = BusboyDefault({ headers: { 'content-type': 'foo' } }); // $ExpectType Busboy
