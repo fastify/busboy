@@ -4,6 +4,7 @@ Major changes since the last busboy release (0.31):
 
 # 1.0.0 - TBD, 2021
 
+* Busboy is importable as ESM (#61)
 * autoDestroy is by default false to avoid regressions when upgrading from node 12 to node 14 (#9)
 * TypeScript types are now included in the package itself (#13)
 * Non-deprecated Buffer creation is used (#8, #10)
