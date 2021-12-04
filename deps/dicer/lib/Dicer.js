@@ -15,7 +15,7 @@ function Dicer (cfg) {
   if (!(this instanceof Dicer)) { return new Dicer(cfg) }
   WritableStream.call(this, cfg)
 
-  if (typeof cfg !== 'object' || (!cfg.headerFirst && typeof cfg.boundary !== 'string')) { throw new TypeError('Boundary required') }
+  if (!cfg || (!cfg.headerFirst && typeof cfg.boundary !== 'string')) { throw new TypeError('Boundary required') }
 
   if (typeof cfg.boundary === 'string') { this.setBoundary(cfg.boundary) } else { this._bparser = undefined }
 
