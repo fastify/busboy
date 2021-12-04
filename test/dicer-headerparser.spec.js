@@ -107,6 +107,14 @@ describe('dicer-headerparser', () => {
       what: 'Folded values'
     },
     {
+      source: [
+        'Foo: bar',
+        'Foo: baz',
+      ].join('\r\n') + DCRLF,
+      expected: { foo: ['bar', 'baz'] },
+      what: 'Folded values'
+    },
+    {
       source: ['Content-Type:',
         'Foo: '
       ].join('\r\n') + DCRLF,
