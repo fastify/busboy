@@ -103,10 +103,18 @@ describe('parse-params', () => {
       source: 'multipart/form-data; charset=utf-8; boundary=0xKhTmLbOuNdArY',
       expected: ['multipart/form-data', ['charset', 'utf-8'], ['boundary', '0xKhTmLbOuNdArY']],
       what: 'Multiple non-quoted parameters'
+    },
+    {
+      options: {
+        fieldNameSize: 2
+      },
+      source: 'text/plain; encoding="utf8";\t   foo=bar;test',
+      expected: ['text/plain', ['encoding', 'utf8'], ['fo', 'bar'], 'test'],
+      what: 'fieldNameSize should be respected'
     }
   ].forEach((v) => {
     it(v.what, () => {
-      const result = parseParams(v.source)
+      const result = parseParams(v.source, v.options)
       const msg = 'parsed parameters mismatch.\n' +
               'Saw: ' + inspect(result) + '\n' +
               'Expected: ' + inspect(v.expected)

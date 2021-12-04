@@ -90,7 +90,8 @@ describe('types-multipart', () => {
       boundary: '---------------------------paZqsnEHRufoShdX6fh0lUhXBP4k',
       limits: {
         fileSize: 13,
-        fieldSize: 5
+        fieldSize: 5,
+        fieldNameSize: 3
       },
       expected: [
         ['field', 'file_name_0', 'super', false, true, '7bit', 'text/plain'],
