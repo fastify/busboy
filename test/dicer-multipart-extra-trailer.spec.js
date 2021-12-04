@@ -55,6 +55,8 @@ describe('dicer-multipart-extra-trailer', () => {
         })
       }).on('error', function (err) {
         error = err
+      }).on('trailer', function (data) {
+        assert(data.toString() === 'Extra', 'trailer should contain the extra data')
       }).on('finish', function () {
         assert(finishes++ === 0, makeMsg(v.what, 'finish emitted multiple times'))
 
