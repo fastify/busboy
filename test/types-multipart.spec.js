@@ -11,6 +11,39 @@ describe('types-multipart', () => {
     {
       source: [
         ['-----------------------------paZqsnEHRufoShdX6fh0lUhXBP4k',
+          'Content-Disposition: form-data',
+          '',
+          'super alpha file',
+          '-----------------------------paZqsnEHRufoShdX6fh0lUhXBP4k--'
+        ].join('\r\n')
+      ],
+      boundary: '---------------------------paZqsnEHRufoShdX6fh0lUhXBP4k',
+      limits: {
+        files: 0
+      },
+      events: ['field'],
+      expected: [
+      ],
+      what: 'should ignore fields without name'
+    },
+    {
+      source: [
+        ['-----------------------------paZqsnEHRufoShdX6fh0lUhXBP4k',
+          'Content-Disposition: form-data; filename="1k_a.dat"',
+          'Content-Type: application/octet-stream',
+          '',
+          'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
+          '-----------------------------paZqsnEHRufoShdX6fh0lUhXBP4k--'
+        ].join('\r\n')
+      ],
+      boundary: '---------------------------paZqsnEHRufoShdX6fh0lUhXBP4k',
+      expected: [
+      ],
+      what: 'should ignore files without name'
+    },
+    {
+      source: [
+        ['-----------------------------paZqsnEHRufoShdX6fh0lUhXBP4k',
           'Content-Disposition: form-data; name="file_name_0"',
           '',
           'super alpha file',
