@@ -23,7 +23,7 @@ describe('types-multipart', () => {
       ],
       boundary: '---------------------------paZqsnEHRufoShdX6fh0lUhXBP4k',
       expected: [
-          ['field', 'file_name_1', 'super beta file', false, false, '7bit', 'text/plain'],
+        ['field', 'file_name_1', 'super beta file', false, false, '7bit', 'text/plain']
       ],
       what: 'should ignore fields without name'
     },
