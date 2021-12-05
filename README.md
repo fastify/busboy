@@ -231,6 +231,8 @@ Busboy methods
 
         * **preservePath** - _boolean_ - If paths in the multipart 'filename' field shall be preserved. (Default: false).
 
+        * **ignoreUndefinedFieldnames** - _boolean_ - Parts without a name will be ignored if set to true. (Default: false).
+
         * **isPartAFile** - __function__ - Use this function to override the default file detection functionality. It has following parameters:
 
             * fieldName - __string__ The name of the field.

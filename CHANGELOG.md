@@ -2,6 +2,10 @@
 
 Major changes since the last busboy release (0.31):
 
+# 1.0.1 - TBA
+
+* Add option `ignoreUndefinedFieldnames` (#71)
+
 # 1.0.0 - 04 December, 2021
 
 * Prevent malformed headers from crashing the web server (#34)
