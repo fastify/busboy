@@ -1,5 +1,6 @@
 const EventEmitter = require('events').EventEmitter
 const inherits = require('util').inherits
+const getLimit = require('../../../lib/utils/getLimit')
 
 const StreamSearch = require('../../streamsearch/sbmh')
 
@@ -92,21 +93,6 @@ HeaderParser.prototype._parseHeader = function () {
     this.header[h].push((m[2] || ''))
     if (++this.npairs === this.maxHeaderPairs) { break }
   }
-}
-
-function getLimit (limits, name, defaultLimit) {
-  if (
-    !limits ||
-    limits[name] === undefined ||
-    limits[name] === null
-  ) { return defaultLimit }
-
-  if (
-    typeof limits[name] !== 'number' ||
-    isNaN(limits[name])
-  ) { throw new TypeError('Limit ' + name + ' is not a valid number') }
-
-  return limits[name]
 }
 
 module.exports = HeaderParser
