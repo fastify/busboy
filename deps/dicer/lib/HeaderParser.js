@@ -1,3 +1,5 @@
+'use strict'
+
 const EventEmitter = require('events').EventEmitter
 const inherits = require('util').inherits
 const getLimit = require('../../../lib/utils/getLimit')
