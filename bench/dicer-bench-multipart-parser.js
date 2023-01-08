@@ -1,4 +1,6 @@
-const Dicer = require('../../deps/dicer/lib/Dicer')
+'use strict'
+const { performance } = require('node:perf_hooks')
+const Dicer = require('../deps/dicer/lib/Dicer')
 
 function createMultipartBuffer(boundary, size) {
   const head =
@@ -49,9 +51,9 @@ for (var i = 0, il = 10; i < il; i++) { // eslint-disable-line no-var
     callbacks.end++;
   });
 
-  const start = +new Date();
+  const start = performance.now();
   d.write(buffer);
-  const duration = +new Date - start;
+  const duration = performance.now() - start;
   const mbPerSec = (mb / (duration / 1000)).toFixed(2);
 
   console.log(mbPerSec + ' mb/sec');
