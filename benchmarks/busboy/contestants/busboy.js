@@ -2,7 +2,7 @@ const Busboy = require('busboy')
 const { buffer, boundary } = require('../data')
 
 function process () {
-  const busboy = new Busboy({
+  const busboy = Busboy({
     headers: {
       'content-type': 'multipart/form-data; boundary=' + boundary
     }
