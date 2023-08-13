@@ -34,9 +34,6 @@
   "engines": {
     "node": ">=14"
   },
-  "dependencies": {
-    "text-decoding": "^1.0.0"
-  },
   "devDependencies": {
     "@types/node": "^20.1.0",
     "busboy": "^1.0.0",
