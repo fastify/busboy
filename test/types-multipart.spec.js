@@ -71,6 +71,7 @@ describe('types-multipart', () => {
       ],
       boundary: '----WebKitFormBoundaryTB2MiQ36fnSJlrhY',
       expected: [],
+      shouldError: 'Unexpected end of multipart data',
       what: 'No fields and no files'
     },
     {
