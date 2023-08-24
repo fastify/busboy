@@ -646,7 +646,7 @@ tests.forEach((v) => {
       })
       t.pass()
     }).on('error', function (err) {
-      if (!v.shouldError || v.shouldError !== err.message) { t.err(err) }
+      if (!v.shouldError || v.shouldError !== err.message) { t.error(err) }
     })
 
     v.source.forEach(function (s) {
