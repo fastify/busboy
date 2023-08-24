@@ -488,6 +488,15 @@ describe('types-multipart', () => {
     },
     {
       source: [
+        '------WebKitFormBoundaryTB2MiQ36fnSJlrhY--\r\n'
+      ],
+      boundary: '----WebKitFormBoundaryTB2MiQ36fnSJlrhYY',
+      expected: [],
+      shouldError: 'Unexpected end of multipart data',
+      what: 'empty form with wrong boundary (extra Y)'
+    },
+    {
+      source: [
         ['-----------------------------paZqsnEHRufoShdX6fh0lUhXBP4k',
           'Content-Disposition: form-data; name="field1"',
           'content-type: text/plain; charset=utf-8',
