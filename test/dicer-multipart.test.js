@@ -1,61 +1,69 @@
+'use strict'
+
 const Dicer = require('../deps/dicer/lib/Dicer')
 const assert = require('assert')
 const fs = require('fs')
 const path = require('path')
 const inspect = require('util').inspect
-
+const { test } = require('tap')
 const FIXTURES_ROOT = path.join(__dirname, 'fixtures/')
 
-describe('dicer-multipart', () => {
-  [
-    {
-      source: 'nested',
-      opts: { boundary: 'AaB03x' },
-      chsize: 32,
-      nparts: 2,
-      what: 'One nested multipart'
-    },
-    {
-      source: 'many',
-      opts: { boundary: '----WebKitFormBoundaryWLHCs9qmcJJoyjKR' },
-      chsize: 16,
-      nparts: 7,
-      what: 'Many parts'
-    },
-    {
-      source: 'many-wrongboundary',
-      opts: { boundary: 'LOLOLOL' },
-      chsize: 8,
-      nparts: 0,
-      dicerError: true,
-      what: 'Many parts, wrong boundary'
-    },
-    {
-      source: 'many-noend',
-      opts: { boundary: '----WebKitFormBoundaryWLHCs9qmcJJoyjKR' },
-      chsize: 16,
-      nparts: 7,
-      npartErrors: 1,
-      dicerError: true,
-      what: 'Many parts, end boundary missing, 1 file open'
-    },
-    {
-      source: 'nested-full',
-      opts: { boundary: 'AaB03x', headerFirst: true },
-      chsize: 32,
-      nparts: 2,
-      what: 'One nested multipart with preceding header'
-    },
-    {
-      source: 'nested-full',
-      opts: { headerFirst: true },
-      chsize: 32,
-      nparts: 2,
-      setBoundary: 'AaB03x',
-      what: 'One nested multipart with preceding header, using setBoundary'
-    }
-  ].forEach(function (v) {
-    it(v.what, (done) => {
+test('dicer-multipart', t => {
+  const tests =
+    [
+      {
+        source: 'nested',
+        opts: { boundary: 'AaB03x' },
+        chsize: 32,
+        nparts: 2,
+        what: 'One nested multipart'
+      },
+      {
+        source: 'many',
+        opts: { boundary: '----WebKitFormBoundaryWLHCs9qmcJJoyjKR' },
+        chsize: 16,
+        nparts: 7,
+        what: 'Many parts'
+      },
+      {
+        source: 'many-wrongboundary',
+        opts: { boundary: 'LOLOLOL' },
+        chsize: 8,
+        nparts: 0,
+        dicerError: true,
+        what: 'Many parts, wrong boundary'
+      },
+      {
+        source: 'many-noend',
+        opts: { boundary: '----WebKitFormBoundaryWLHCs9qmcJJoyjKR' },
+        chsize: 16,
+        nparts: 7,
+        npartErrors: 1,
+        dicerError: true,
+        what: 'Many parts, end boundary missing, 1 file open'
+      },
+      {
+        source: 'nested-full',
+        opts: { boundary: 'AaB03x', headerFirst: true },
+        chsize: 32,
+        nparts: 2,
+        what: 'One nested multipart with preceding header'
+      },
+      {
+        source: 'nested-full',
+        opts: { headerFirst: true },
+        chsize: 32,
+        nparts: 2,
+        setBoundary: 'AaB03x',
+        what: 'One nested multipart with preceding header, using setBoundary'
+      }
+    ]
+
+  t.plan(tests.length)
+
+  tests.forEach(function (v) {
+    t.test(v.what, t => {
+      t.plan(1)
       const fixtureBase = FIXTURES_ROOT + v.source
       const state = { parts: [], preamble: undefined }
 
@@ -201,7 +209,7 @@ describe('dicer-multipart', () => {
               '\nExpected: ' +
               inspect(header)))
         }
-        done()
+        t.pass()
       })
 
       fs.createReadStream(fixtureBase + '/original').pipe(dicer)

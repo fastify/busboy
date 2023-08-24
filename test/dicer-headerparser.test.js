@@ -6,7 +6,7 @@ const HeaderParser = require('../deps/dicer/lib/HeaderParser')
 test('dicer-headerparser', t => {
   const DCRLF = '\r\n\r\n'
   const MAXED_BUFFER = Buffer.allocUnsafe(128 * 1024)
-  MAXED_BUFFER.fill(0x41); // 'A'
+  MAXED_BUFFER.fill(0x41) // 'A'
 
   const tests = [
     {

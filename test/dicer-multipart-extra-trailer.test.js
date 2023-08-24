@@ -21,7 +21,6 @@ test('dicer-multipart-extra-trailer', t => {
 
     const dicer = new Dicer({ boundary: '----WebKitFormBoundaryWLHCs9qmcJJoyjKR' })
     let error
-    let partErrors = 0
     let finishes = 0
     let trailerEmitted = false
 
@@ -44,7 +43,7 @@ test('dicer-multipart-extra-trailer', t => {
         part.bodylen += data.length
       }).on('error', function (err) {
         part.error = err
-        ++partErrors
+        t.fail()
       }).on('end', function () {
         if (part.body) { part.body = Buffer.concat(part.body, part.bodylen) }
         state.parts.push(part)
@@ -78,6 +77,6 @@ test('dicer-multipart-extra-trailer', t => {
   })
 })
 
-function makeMsg(what, msg) {
+function makeMsg (what, msg) {
   return what + ': ' + msg
 }
