@@ -1,12 +1,14 @@
-const { assert } = require('chai')
+'use strict'
+
+const { test } = require('tap')
 const HeaderParser = require('../deps/dicer/lib/HeaderParser')
 
-describe('dicer-headerparser', () => {
+test('dicer-headerparser', t => {
   const DCRLF = '\r\n\r\n'
   const MAXED_BUFFER = Buffer.allocUnsafe(128 * 1024)
   MAXED_BUFFER.fill(0x41); // 'A'
 
-  [
+  const tests = [
     {
       source: DCRLF,
       expected: {},
@@ -26,7 +28,7 @@ describe('dicer-headerparser', () => {
       cfg: {
         maxHeaderPairs: 0
       },
-      expected: { },
+      expected: {},
       what: 'should enforce maxHeaderPairs of 0'
     },
     {
@@ -157,8 +159,14 @@ describe('dicer-headerparser', () => {
       expected: {},
       what: 'Max header size (multiple chunk #2)'
     }
-  ].forEach(function (v) {
-    it(v.what, (done) => {
+  ]
+
+  t.plan(tests.length)
+
+  tests.forEach(function (v) {
+    t.test(v.what, t => {
+      t.plan(4)
+
       const cfg = {
         ...v.cfg
       }
@@ -167,9 +175,9 @@ describe('dicer-headerparser', () => {
       let fired = false
 
       parser.on('header', function (header) {
-        assert(!fired, `${v.what}: Header event fired more than once`)
+        t.ok(!fired, `${v.what}: Header event fired more than once`)
         fired = true
-        assert.deepEqual(header,
+        t.strictSame(header,
           v.expected,
           `${v.what}: Parsed result mismatch`)
       })
@@ -177,8 +185,8 @@ describe('dicer-headerparser', () => {
       v.source.forEach(function (s) {
         parser.push(s)
       })
-      assert(fired, `${v.what}: Did not receive header from parser`)
-      done()
+      t.ok(fired, `${v.what}: Did not receive header from parser`)
+      t.pass()
     })
   })
 })
