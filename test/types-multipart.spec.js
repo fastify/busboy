@@ -71,6 +71,7 @@ describe('types-multipart', () => {
       ],
       boundary: '----WebKitFormBoundaryTB2MiQ36fnSJlrhY',
       expected: [],
+      shouldError: 'Unexpected end of multipart data',
       what: 'No fields and no files'
     },
     {
@@ -475,6 +476,24 @@ describe('types-multipart', () => {
       boundary: '----WebKitFormBoundaryTB2MiQ36fnSJlrhY',
       expected: [],
       what: 'empty form'
+    },
+    {
+      source: [
+        '    ------WebKitFormBoundaryTB2MiQ36fnSJlrhY--\r\n'
+      ],
+      boundary: '----WebKitFormBoundaryTB2MiQ36fnSJlrhY',
+      expected: [],
+      shouldError: 'Unexpected end of multipart data',
+      what: 'empty form with preceding whitespace'
+    },
+    {
+      source: [
+        '------WebKitFormBoundaryTB2MiQ36fnSJlrhY--\r\n'
+      ],
+      boundary: '----WebKitFormBoundaryTB2MiQ36fnSJlrhYY',
+      expected: [],
+      shouldError: 'Unexpected end of multipart data',
+      what: 'empty form with wrong boundary (extra Y)'
     },
     {
       source: [
