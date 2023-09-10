@@ -51,8 +51,8 @@ Examples
 * Parsing (multipart) with default options:
 
 ```javascript
-const http = require('http');
-const { inspect } = require('util');
+const http = require('node:http');
+const { inspect } = require('node:util');
 const Busboy = require('busboy');
 
 http.createServer((req, res) => {
@@ -103,10 +103,10 @@ http.createServer((req, res) => {
 * Save all incoming files to disk:
 
 ```javascript
-const http = require('http');
-const path = require('path');
-const os = require('os');
-const fs = require('fs');
+const http = require('node:http');
+const path = require('node:path');
+const os = require('node:os');
+const fs = require('node:fs');
 
 const Busboy = require('busboy');
 
@@ -133,8 +133,8 @@ http.createServer(function(req, res) {
 * Parsing (urlencoded) with default options:
 
 ```javascript
-const http = require('http');
-const { inspect } = require('util');
+const http = require('node:http');
+const { inspect } = require('node:util');
 
 const Busboy = require('busboy');
 
