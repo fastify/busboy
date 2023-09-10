@@ -26,8 +26,8 @@
  * Based heavily on the Streaming Boyer-Moore-Horspool C++ implementation
  * by Hongli Lai at: https://github.com/FooBarWidget/boyer-moore-horspool
  */
-const EventEmitter = require('events').EventEmitter
-const inherits = require('util').inherits
+const EventEmitter = require('node:events').EventEmitter
+const inherits = require('node:util').inherits
 
 function SBMH (needle) {
   if (typeof needle === 'string') {

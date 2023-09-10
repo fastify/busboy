@@ -1,4 +1,4 @@
-const { inspect } = require('util')
+const { inspect } = require('node:util')
 const { assert } = require('chai')
 const parseParams = require('../lib/utils/parseParams')
 

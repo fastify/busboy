@@ -1,4 +1,4 @@
-var assert = require('assert'),
+var assert = require('node:assert'),
     Form = require('multiparty').Form,
     boundary = '-----------------------------168072824752491622650073',
     mb = 100,
