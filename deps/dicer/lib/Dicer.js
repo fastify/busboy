@@ -1,7 +1,7 @@
 'use strict'
 
-const WritableStream = require('stream').Writable
-const inherits = require('util').inherits
+const WritableStream = require('node:stream').Writable
+const inherits = require('node:util').inherits
 
 const StreamSearch = require('../../streamsearch/sbmh')
 

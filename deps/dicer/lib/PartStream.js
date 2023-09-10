@@ -1,7 +1,7 @@
 'use strict'
 
-const inherits = require('util').inherits
-const ReadableStream = require('stream').Readable
+const inherits = require('node:util').inherits
+const ReadableStream = require('node:stream').Readable
 
 function PartStream (opts) {
   ReadableStream.call(this, opts)

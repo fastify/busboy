@@ -1,6 +1,6 @@
 const Busboy = require('..')
 
-const { inspect } = require('util')
+const { inspect } = require('node:util')
 const { assert } = require('chai')
 
 const EMPTY_FN = function () {

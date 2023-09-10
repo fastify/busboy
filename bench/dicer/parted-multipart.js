@@ -4,10 +4,10 @@
  * Copyright (c) 2011, Christopher Jeffrey. (MIT Licensed)
  */
 
-var fs = require('fs')
-  , path = require('path')
-  , EventEmitter = require('events').EventEmitter
-  , StringDecoder = require('string_decoder').StringDecoder
+var fs = require('node:fs')
+  , path = require('node:path')
+  , EventEmitter = require('node:events').EventEmitter
+  , StringDecoder = require('node:string_decoder').StringDecoder
   , set = require('qs').set
   , each = Array.prototype.forEach;
 
