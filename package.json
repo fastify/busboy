@@ -26,7 +26,7 @@
     "lint:everything": "npm run lint && npm run test:types",
     "lint:fix": "standard --fix",
     "lint:standard": "standard --verbose | snazzy",
-    "test:mocha": "mocha test",
+    "test:mocha": "tap",
     "test:types": "tsd",
     "test:coverage": "nyc npm run test",
     "test": "npm run test:mocha"
@@ -37,15 +37,10 @@
   "devDependencies": {
     "@types/node": "^20.1.0",
     "busboy": "^1.0.0",
-    "chai": "^4.3.6",
-    "eslint": "^8.23.0",
-    "eslint-config-standard": "^17.0.0",
-    "eslint-plugin-n": "^16.0.0",
-    "mocha": "^10.0.0",
-    "nyc": "^15.1.0",
     "photofinish": "^1.8.0",
     "snazzy": "^9.0.0",
     "standard": "^17.0.0",
+    "tap": "^16.3.8",
     "tsd": "^0.29.0",
     "typescript": "^5.0.2"
   },

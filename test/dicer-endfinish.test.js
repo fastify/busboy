@@ -1,8 +1,14 @@
-const Dicer = require('../deps/dicer/lib/Dicer')
-const { assert } = require('chai')
+'use strict'
 
-describe('dicer-endfinish', () => {
-  it('should properly handle finish', (done) => {
+const Dicer = require('../deps/dicer/lib/Dicer')
+const { test } = require('tap')
+
+test('dicer-endfinish', t => {
+  t.plan(1)
+
+  t.test('should properly handle finish', t => {
+    t.plan(4)
+
     const CRLF = '\r\n'
     const boundary = 'boundary'
 
@@ -39,12 +45,12 @@ describe('dicer-endfinish', () => {
       setImmediate(afterWrite)
     }
     function finishListener () {
-      assert(firedEnd, 'Failed to end before finishing')
+      t.ok(firedEnd, 'end before finishing')
       firedFinish = true
       test2()
     }
     function afterWrite () {
-      assert(firedFinish, 'Failed to finish')
+      t.ok(firedFinish, 'Failed to finish')
     }
 
     let isPausePush = true
@@ -77,9 +83,8 @@ describe('dicer-endfinish', () => {
       setImmediate(pauseAfterEnd)
     }
     function pauseAfterEnd () {
-      assert(firedPauseCallback, 'Failed to call callback after pause')
-      assert(firedPauseFinish, 'Failed to finish after pause')
-      done()
+      t.ok(firedPauseCallback, 'Called callback after pause')
+      t.ok(firedPauseFinish, 'Finish after pause')
     }
     function pauseFinish () {
       firedPauseFinish = true

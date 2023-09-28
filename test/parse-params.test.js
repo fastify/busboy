@@ -1,9 +1,11 @@
+'use strict'
+
 const { inspect } = require('node:util')
-const { assert } = require('chai')
+const { test } = require('tap')
 const parseParams = require('../lib/utils/parseParams')
 
-describe('parse-params', () => {
-  [
+test('parse-params', t => {
+  const tests = [
     {
       source: 'video/ogg',
       expected: ['video/ogg'],
@@ -104,13 +106,19 @@ describe('parse-params', () => {
       expected: ['multipart/form-data', ['charset', 'utf-8'], ['boundary', '0xKhTmLbOuNdArY']],
       what: 'Multiple non-quoted parameters'
     }
-  ].forEach((v) => {
-    it(v.what, () => {
+  ]
+
+  t.plan(tests.length)
+
+  tests.forEach((v) => {
+    t.test(v.what, t => {
+      t.plan(1)
+
       const result = parseParams(v.source)
-      const msg = 'parsed parameters mismatch.\n' +
-              'Saw: ' + inspect(result) + '\n' +
-              'Expected: ' + inspect(v.expected)
-      assert.deepEqual(result, v.expected, msg)
+      t.strictSame(
+        result,
+        v.expected,
+        `parsed parameters match.\nSaw: ${inspect(result)}\nExpected: ${inspect(v.expected)}`)
     })
   })
 })

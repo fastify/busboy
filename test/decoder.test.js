@@ -1,7 +1,10 @@
-const { assert, expect } = require('chai')
+'use strict'
+
+const { test } = require('tap')
 const Decoder = require('../lib/utils/Decoder')
 
-describe('Decoder', () => {
+test('Decoder', t => {
+  const tests =
   [
     {
       source: ['Hello world'],
@@ -63,8 +66,13 @@ describe('Decoder', () => {
       expected: '5 + 5 = 10',
       what: 'Spaces and encoded plus'
     }
-  ].forEach((v) => {
-    it(v.what, () => {
+  ]
+  t.plan(tests.length + 1)
+
+  tests.forEach((v) => {
+    t.test(v.what, t => {
+      t.plan(1)
+
       const dec = new Decoder()
       let result = ''
       v.source.forEach(function (s) {
@@ -73,16 +81,18 @@ describe('Decoder', () => {
       const msg = 'Decoded string mismatch.\n' +
                 'Saw: ' + result + '\n' +
                 'Expected: ' + v.expected
-      assert.deepEqual(result, v.expected, msg)
+      t.strictSame(result, v.expected, msg)
     })
   })
 
-  it('reset sets internal buffer to undefined', () => {
+  t.test('reset sets internal buffer to undefined', t => {
+    t.plan(2)
+
     const dec = new Decoder()
     dec.write('Hello+world%2')
 
-    expect(dec.buffer).to.be.not.equal(undefined)
+    t.notSame(dec.buffer, undefined)
     dec.reset()
-    expect(dec.buffer).to.be.equal(undefined)
+    t.equal(dec.buffer, undefined)
   })
 })
