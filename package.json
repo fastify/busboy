@@ -1,6 +1,6 @@
 {
   "name": "@fastify/busboy",
-  "version": "1.2.1",
+  "version": "2.0.0",
   "private": false,
   "author": "Brian White <mscdex@mscdex.net>",
   "contributors": [
@@ -34,9 +34,6 @@
   "engines": {
     "node": ">=14"
   },
-  "dependencies": {
-    "text-decoding": "^1.0.0"
-  },
   "devDependencies": {
     "@types/node": "^20.1.0",
     "busboy": "^1.0.0",
@@ -44,7 +41,7 @@
     "snazzy": "^9.0.0",
     "standard": "^17.0.0",
     "tap": "^16.3.8",
-    "tsd": "^0.28.0",
+    "tsd": "^0.29.0",
     "typescript": "^5.0.2"
   },
   "keywords": [

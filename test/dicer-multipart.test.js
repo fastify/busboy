@@ -1,11 +1,12 @@
 'use strict'
 
 const Dicer = require('../deps/dicer/lib/Dicer')
-const assert = require('assert')
-const fs = require('fs')
-const path = require('path')
-const inspect = require('util').inspect
+const assert = require('node:assert')
+const fs = require('node:fs')
+const path = require('node:path')
+const inspect = require('node:util').inspect
 const { test } = require('tap')
+
 const FIXTURES_ROOT = path.join(__dirname, 'fixtures/')
 
 test('dicer-multipart', t => {

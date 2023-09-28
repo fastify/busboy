@@ -74,6 +74,7 @@ const tests = [
     ],
     boundary: '----WebKitFormBoundaryTB2MiQ36fnSJlrhY',
     expected: [],
+    shouldError: 'Unexpected end of multipart data',
     what: 'No fields and no files',
     plan: 3
   },
@@ -551,6 +552,26 @@ const tests = [
     ],
     what: 'one empty part should get ignored',
     plan: 7
+  },
+  {
+    source: [
+      '    ------WebKitFormBoundaryTB2MiQ36fnSJlrhY--\r\n'
+    ],
+    boundary: '----WebKitFormBoundaryTB2MiQ36fnSJlrhY',
+    expected: [],
+    shouldError: 'Unexpected end of multipart data',
+    what: 'empty form with preceding whitespace',
+    plan: 3
+  },
+  {
+    source: [
+      '------WebKitFormBoundaryTB2MiQ36fnSJlrhY--\r\n'
+    ],
+    boundary: '----WebKitFormBoundaryTB2MiQ36fnSJlrhYY',
+    expected: [],
+    shouldError: 'Unexpected end of multipart data',
+    what: 'empty form with wrong boundary (extra Y)',
+    plan: 3
   },
   {
     source: [[

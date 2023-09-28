@@ -1,7 +1,4 @@
 module.exports = {
-  parserOptions: {
-    ecmaVersion: 2018
-  },
   ignorePatterns: [
     'bench',
     'deps/encoding'

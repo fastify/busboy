@@ -2,7 +2,7 @@
 // because otherwise it attempts to do some things above and beyond just parsing
 // -- like saving to disk and whatnot
 
-var assert = require('assert');
+var assert = require('node:assert');
 var Parser = require('./parted-multipart'),
     boundary = '-----------------------------168072824752491622650073',
     parser = new Parser('boundary=' + boundary),
