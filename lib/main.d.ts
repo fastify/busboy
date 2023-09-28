@@ -31,6 +31,12 @@ export interface BusboyConfig {
      * @default 'utf8'
      */
     defCharset?: string | undefined;
+
+    /**
+     * Parts without a name will be ignored if set to true.
+     * @default false
+     */
+    ignoreUndefinedFieldnames?: boolean | undefined;
     /**
      * Detect if a Part is a file.
      * 
