@@ -1,3 +1,5 @@
+'use strict'
+
 const getopts = require('getopts')
 
 const options = getopts(process.argv.slice(1), {

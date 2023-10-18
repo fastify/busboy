@@ -1,3 +1,5 @@
+'use strict'
+
 function createMultipartBufferForEncodingBench(boundary, amount, charset) {
   const filename = charset === 'utf-8' ? 'utf-8\'\'%c2%a3%20and%20%e2%82%ac%20rates' : `${charset}\'en\'%A3%20rates`;
   const head = '--' + boundary + '\r\n'

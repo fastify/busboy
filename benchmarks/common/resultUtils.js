@@ -1,3 +1,5 @@
+'use strict'
+
 const { exportResults } = require('photofinish')
 
 function outputResults (benchmark, benchmarkResults) {

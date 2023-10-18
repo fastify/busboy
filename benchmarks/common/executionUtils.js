@@ -1,3 +1,5 @@
+'use strict'
+
 const { getCommonBuilder } = require('./commonBuilder')
 const { outputResults } = require('./resultUtils')
 

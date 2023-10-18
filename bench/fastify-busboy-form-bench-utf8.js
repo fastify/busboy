@@ -1,3 +1,5 @@
+'use strict'
+
 const Busboy = require('../lib/main');
 const { createMultipartBufferForEncodingBench } = require("./createMultipartBufferForEncodingBench");
 

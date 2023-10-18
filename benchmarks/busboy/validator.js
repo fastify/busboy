@@ -1,3 +1,5 @@
+'use strict'
+
 const { validateEqual } = require('validation-utils')
 const { randomContent } = require('./data')
 

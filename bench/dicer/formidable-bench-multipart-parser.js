@@ -1,3 +1,5 @@
+'use strict'
+
 require('../node_modules/formidable/test/common');
 var multipartParser = require('../node_modules/formidable/lib/multipart_parser'),
     MultipartParser = multipartParser.MultipartParser,

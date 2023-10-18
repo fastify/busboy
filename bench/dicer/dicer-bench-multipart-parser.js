@@ -1,3 +1,5 @@
+'use strict'
+
 const Dicer = require('../../deps/dicer/lib/Dicer')
 
 function createMultipartBuffer(boundary, size) {

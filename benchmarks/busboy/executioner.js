@@ -1,3 +1,5 @@
+'use strict'
+
 const { process: processBusboy } = require('./contestants/busboy')
 const { process: processFastify } = require('./contestants/fastify-busboy')
 const { getCommonBuilder } = require('../common/commonBuilder')
