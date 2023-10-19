@@ -1,3 +1,5 @@
+'use strict'
+
 var assert = require('node:assert'),
     Form = require('multiparty').Form,
     boundary = '-----------------------------168072824752491622650073',

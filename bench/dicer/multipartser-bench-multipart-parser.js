@@ -1,3 +1,5 @@
+'use strict'
+
 var multipartser = require('multipartser'),
     boundary = '-----------------------------168072824752491622650073',
     parser = multipartser(),

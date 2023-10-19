@@ -1,3 +1,5 @@
+'use strict'
+
 /**
  * Parted (https://github.com/chjj/parted)
  * A streaming multipart state parser.

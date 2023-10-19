@@ -1,3 +1,5 @@
+'use strict'
+
 const boundary = '-----------------------------paZqsnEHRufoShdX6fh0lUhXBP4k'
 const randomContent = Buffer.from(makeString(1024 * 500), 'utf8')
 const buffer = createMultipartBuffer(boundary)

@@ -1,3 +1,5 @@
+'use strict'
+
 const Busboy = require('../../../lib/main')
 const { buffer, boundary } = require('../data')
 

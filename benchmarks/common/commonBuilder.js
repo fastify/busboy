@@ -1,3 +1,5 @@
+'use strict'
+
 const { validateNotNil } = require('validation-utils')
 const { BenchmarkBuilder } = require('photofinish')
 const getopts = require('getopts')
