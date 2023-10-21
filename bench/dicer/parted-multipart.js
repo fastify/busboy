@@ -389,7 +389,7 @@ Parser.middleware = function(options) {
 
     var type = req.headers['content-type'];
 
-    if (type) type = type.split(';')[0].trim().toLowerCase();
+    if (type) type = type.split(';', 1)[0].trim().toLowerCase();
 
     if (type === 'multipart/form-data') {
       Parser.handle(req, res, next, options);
