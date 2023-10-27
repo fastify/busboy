@@ -17,6 +17,7 @@
   ],
   "description": "A streaming parser for HTML form data for node.js",
   "main": "lib/main",
+  "type": "commonjs",
   "types": "lib/main.d.ts",
   "scripts": {
     "bench:busboy": "cd benchmarks && npm install && npm run benchmark-fastify",
