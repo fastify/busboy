@@ -38,6 +38,7 @@
   "devDependencies": {
     "@types/node": "^20.1.0",
     "busboy": "^1.0.0",
+    "multipasta": "^0.1.11",
     "photofinish": "^1.8.0",
     "snazzy": "^9.0.0",
     "standard": "^17.0.0",

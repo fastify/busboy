@@ -1,7 +1,7 @@
 'use strict'
 
 const Busboy = require('../../../lib/main')
-const { buffer, boundary } = require('../data')
+const { buffers, boundary } = require('../data')
 
 function process () {
   const busboy = new Busboy({
@@ -10,27 +10,26 @@ function process () {
     }
   })
 
-  let processedData = ''
+  let processedSize = 0
 
   return new Promise((resolve, reject) => {
     busboy.on('file', (field, file, filename, encoding, mimetype) => {
-      // console.log('read file')
       file.on('data', (data) => {
-        processedData += data.toString()
-        // console.log(`File [${filename}] got ${data.length} bytes`);
+        processedSize += data.length
       })
-      file.on('end', (fieldname) => {
-        // console.log(`File [${fieldname}] Finished`);
-      })
+    })
+    busboy.on('field', (field, value) => {
+      processedSize += value.length
     })
 
     busboy.on('error', function (err) {
       reject(err)
     })
     busboy.on('finish', function () {
-      resolve(processedData)
+      resolve(processedSize)
     })
-    busboy.write(buffer, () => { })
+
+    for (const buffer of buffers) { busboy.write(buffer, () => { }) }
 
     busboy.end()
   })
