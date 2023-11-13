@@ -39,10 +39,10 @@ function createMultipartBuffer (boundary) {
     '--' + boundary + '--'
   ].join('\r\n')
   const buf = Buffer.from(payload, 'ascii')
-  // split into 1400 byte chunks to simulate network packets
+  // split into 16000 byte chunks to simulate network packets
   const buffers = []
-  for (let i = 0; i < buf.length; i += 1400) {
-    buffers.push(buf.subarray(i, i + 1400))
+  for (let i = 0; i < buf.length; i += 16000) {
+    buffers.push(buf.subarray(i, i + 16000))
   }
   return buffers
 }

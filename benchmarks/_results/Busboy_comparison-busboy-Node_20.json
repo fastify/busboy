@@ -5,6 +5,6 @@
   "benchmarkCycles": 500,
   "benchmarkCycleSamples": 50,
   "warmupCycles": 50,
-  "meanTimeNs": 566429.1632040885,
-  "meanTimeMs": 0.5664291632040884
+  "meanTimeNs": 277264.27034383157,
+  "meanTimeMs": 0.27726427034383155
 }
