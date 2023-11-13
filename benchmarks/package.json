@@ -15,8 +15,8 @@
     "benchmark-fastify": "node busboy/executioner.js -c 1",
     "benchmark-multipasta": "node busboy/executioner.js -c 2",
     "benchmark-all": "npm run benchmark-busboy -- -p high && npm run benchmark-fastify -- -p high && npm run benchmark-multipasta -- -p high",
-    "benchmark-all-medium": "npm run benchmark-busboy -- -p medium && npm run benchmark-fastify -- -p medium",
-    "benchmark-all-low": "npm run benchmark-busboy -- -p low && npm run benchmark-fastify -- -p low",
+    "benchmark-all-medium": "npm run benchmark-busboy -- -p medium && npm run benchmark-fastify -- -p medium && npm run benchmark-multipasta -- -p medium",
+    "benchmark-all-low": "npm run benchmark-busboy -- -p low && npm run benchmark-fastify -- -p low && npm run benchmark-multipasta -- -p low",
     "combine-results": "node common/resultsCombinator.js -r _results -p 6"
   }
 }
