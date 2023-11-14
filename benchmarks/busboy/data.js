@@ -5,6 +5,8 @@ const fileContent = Buffer.from(makeString(1024 * 512), 'utf8')
 const fileCount = 2
 const fieldContent = Buffer.from(makeString(128), 'utf8')
 const fieldCount = 10
+const chunkSize = 16000
+
 const buffers = createMultipartBuffer(boundary)
 
 function makeString (length) {
@@ -41,8 +43,8 @@ function createMultipartBuffer (boundary) {
   const buf = Buffer.from(payload, 'ascii')
   // split into 16000 byte chunks to simulate network packets
   const buffers = []
-  for (let i = 0; i < buf.length; i += 16000) {
-    buffers.push(buf.subarray(i, i + 16000))
+  for (let i = 0; i < buf.length; i += chunkSize) {
+    buffers.push(buf.subarray(i, i + chunkSize))
   }
   return buffers
 }
