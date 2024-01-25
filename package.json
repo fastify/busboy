@@ -55,7 +55,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/fastify/busboy.git"
+    "url": "git+https://github.com/fastify/busboy.git"
   },
   "tsd": {
     "directory": "test/types",
