@@ -10,6 +10,7 @@ test('decodeText', t => {
     { description: 'Latin1 encoding', text: Buffer.from('Hello, World!', 'latin1'), initialCharset: 'latin1', outputCharset: 'latin1', expected: 'Hello, World!' },
     { description: 'Latin1 encoding empty', text: Buffer.from('', 'latin1'), initialCharset: 'latin1', outputCharset: 'latin1', expected: '' },
     { description: 'UTF-16LE encoding', text: Buffer.from('Hello, World!', 'utf16le'), initialCharset: 'utf16le', outputCharset: 'utf16le', expected: 'Hello, World!' },
+    { description: 'UTF-16LE encoding with special char', text: Buffer.from('Hello, World! 🌍🚀', 'utf16le'), initialCharset: 'utf16le', outputCharset: 'utf16le', expected: 'Hello, World! 🌍🚀' },
     { description: 'UTF-8 to UTF-16LE encoding', text: 'Hello, World!', initialCharset: 'utf16le', outputCharset: 'utf16le', expected: 'Hello, World!' },
     { description: 'UTF-16LE encoding empty', text: Buffer.from('', 'utf16le'), initialCharset: 'utf16le', outputCharset: 'utf16le', expected: '' },
     { description: 'Base64 encoding', text: Buffer.from('Hello, World!').toString('base64'), initialCharset: 'base64', outputCharset: 'base64', expected: 'SGVsbG8sIFdvcmxkIQ==' },
