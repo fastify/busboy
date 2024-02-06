@@ -1,4 +1,4 @@
-// FILEPATH: /home/rommel/workspace/contributions/busboy/test/decodeText.test.js
+'use strict'
 
 const { test } = require('tap')
 const decodeText = require('../lib/utils/decodeText')
