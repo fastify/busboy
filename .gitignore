@@ -148,5 +148,8 @@ yarn.lock
 .vscode
 .idea
 
+#tap files
+.tap/
+
 /benchmarks/node_modules/
 /benchmarks/package-lock.json
