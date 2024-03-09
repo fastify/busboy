@@ -152,6 +152,7 @@ class SBMH extends EventEmitter {
 
     if (pos !== -1) {
       ++this.matches
+
       if (pos > 0) { this.emit('info', true, data, this._bufpos, pos) } else { this.emit('info', true) }
 
       return (this._bufpos = pos + needleLength)
