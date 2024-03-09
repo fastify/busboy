@@ -193,7 +193,7 @@ class SBMH extends EventEmitter {
   }
 
   _sbmh_lookup_char (data, pos) {
-    return (pos < 0)
+    return pos < 0
       ? this._lookbehind[this._lookbehind_size + pos]
       : data[pos]
   }
