@@ -170,12 +170,10 @@ class SBMH extends EventEmitter {
       pos < len &&
       (
         data[pos] !== needle[0] ||
-        (
-          (Buffer.compare(
-            data.subarray(pos, pos + len - pos),
-            needle.subarray(0, len - pos)
-          ) !== 0)
-        )
+        Buffer.compare(
+          data.subarray(pos, pos + len - pos),
+          needle.subarray(0, len - pos)
+        ) !== 0
       )
     ) {
       ++pos
