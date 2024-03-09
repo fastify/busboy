@@ -148,15 +148,16 @@ class SBMH extends EventEmitter {
 
     // Lookbehind buffer is now empty. We only need to check if the
     // needle is in the haystack.
-    if (data.indexOf(needle, pos) !== -1) {
-      pos = data.indexOf(needle, pos)
+    pos = data.indexOf(needle, pos)
+
+    if (pos !== -1) {
       ++this.matches
       if (pos > 0) { this.emit('info', true, data, this._bufpos, pos) } else { this.emit('info', true) }
 
       return (this._bufpos = pos + needleLength)
-    } else {
-      pos = len - needleLength
     }
+
+    pos = len - needleLength
 
     // There was no match. If there's trailing haystack data that we cannot
     // match yet using the Boyer-Moore-Horspool algorithm (because the trailing
