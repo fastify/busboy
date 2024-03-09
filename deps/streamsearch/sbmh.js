@@ -27,35 +27,37 @@ class SBMH extends EventEmitter {
     this.maxMatches = Infinity
     this.matches = 0
 
-    this._occ = new Array(256)
-      .fill(needleLength) // Initialize occurrence table.
-    this._lookbehind_size = 0
     this._needle = needle
     this._bufpos = 0
-
+    this._lookbehind_size = 0
     this._lookbehind = Buffer.alloc(needleLength)
+    this._occ = new Array(256).fill(needleLength) // Initialize occurrence table.
 
-    // Populate occurrence table with analysis of the needle,
-    // ignoring last letter.
+    // Populate occurrence table with analysis of the needle, ignoring last letter.
     for (var i = 0; i < needleLength - 1; ++i) { // eslint-disable-line no-var
       this._occ[needle[i]] = needleLength - 1 - i
     }
   }
 
   reset () {
-    this._lookbehind_size = 0
     this.matches = 0
+    this._lookbehind_size = 0
     this._bufpos = 0
   }
 
-  push (chunk, pos) {
+  push (chunk, pos = 0) {
     if (!Buffer.isBuffer(chunk)) {
       chunk = Buffer.from(chunk, 'binary')
     }
+
+    this._bufpos = pos
     const chlen = chunk.length
-    this._bufpos = pos || 0
     let r
-    while (r !== chlen && this.matches < this.maxMatches) { r = this._sbmh_feed(chunk) }
+
+    while (r !== chlen && this.matches < this.maxMatches) {
+      r = this._sbmh_feed(chunk)
+    }
+
     return r
   }
 
@@ -98,6 +100,7 @@ class SBMH extends EventEmitter {
 
           return (this._bufpos = pos + needleLength)
         }
+
         pos += this._occ[ch]
       }
 
@@ -175,6 +178,7 @@ class SBMH extends EventEmitter {
     ) {
       ++pos
     }
+
     if (pos < len) {
       data.copy(this._lookbehind, 0, pos, pos + (len - pos))
       this._lookbehind_size = len - pos
@@ -184,6 +188,7 @@ class SBMH extends EventEmitter {
     if (pos > 0) { this.emit('info', false, data, this._bufpos, pos < len ? pos : len) }
 
     this._bufpos = len
+
     return len
   }
 
@@ -197,6 +202,7 @@ class SBMH extends EventEmitter {
     for (var i = 0; i < len; ++i) { // eslint-disable-line no-var
       if (this._sbmh_lookup_char(data, pos + i) !== this._needle[i]) { return false }
     }
+
     return true
   }
 }
