@@ -5,6 +5,7 @@ const { EventEmitter } = require('node:events')
 class SBMH extends EventEmitter {
   constructor (needle) {
     super()
+
     if (typeof needle === 'string') {
       needle = Buffer.from(needle)
     }
