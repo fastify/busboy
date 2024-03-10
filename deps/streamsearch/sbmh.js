@@ -142,11 +142,9 @@ class SBMH extends EventEmitter {
       }
     }
 
-    pos += (pos >= 0) * this._bufpos
-
     // Lookbehind buffer is now empty. We only need to check if the
     // needle is in the haystack.
-    pos = data.indexOf(needle, pos)
+    pos = data.indexOf(needle, pos + ((pos >= 0) * this._bufpos))
 
     if (pos !== -1) {
       ++this.matches
