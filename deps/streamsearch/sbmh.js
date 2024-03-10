@@ -152,14 +152,14 @@ class SBMH extends EventEmitter {
         // been processed and append the entire haystack
         // into it.
         const bytesToCutOff = this._lookbehind_size + pos
+
         if (bytesToCutOff > 0) {
           // The cut off data is guaranteed not to contain the needle.
           this.emit('info', false, this._lookbehind, 0, bytesToCutOff)
         }
 
-        this._lookbehind.copy(this._lookbehind, 0, bytesToCutOff,
-          this._lookbehind_size - bytesToCutOff)
         this._lookbehind_size -= bytesToCutOff
+        this._lookbehind.copy(this._lookbehind, 0, bytesToCutOff, this._lookbehind_size)
 
         data.copy(this._lookbehind, this._lookbehind_size)
         this._lookbehind_size += len
