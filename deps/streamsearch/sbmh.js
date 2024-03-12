@@ -68,8 +68,8 @@ class SBMH extends EventEmitter {
 
   reset () {
     this.matches = 0
-    this._lookbehind_size = 0
     this._bufpos = 0
+    this._lookbehind_size = 0
   }
 
   push (chunk, pos = 0) {
