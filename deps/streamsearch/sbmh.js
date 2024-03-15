@@ -77,10 +77,9 @@ class SBMH extends EventEmitter {
       chunk = Buffer.from(chunk, 'binary')
     }
 
-    const chlen = chunk.length
-
     this._bufpos = pos
 
+    const chlen = chunk.length
     let r
     while (r !== chlen && this.matches < this.maxMatches) { r = this._sbmh_feed(chunk) }
     return r
