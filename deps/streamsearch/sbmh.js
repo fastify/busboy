@@ -26,8 +26,9 @@
  * Based heavily on the Streaming Boyer-Moore-Horspool C++ implementation
  * by Hongli Lai at: https://github.com/FooBarWidget/boyer-moore-horspool
  */
-const EventEmitter = require('node:events').EventEmitter
-const inherits = require('node:util').inherits
+
+const { EventEmitter } = require('node:events')
+const { inherits } = require('node:util')
 
 function SBMH (needle) {
   if (typeof needle === 'string') {
@@ -154,9 +155,8 @@ SBMH.prototype._sbmh_feed = function (data) {
         this.emit('info', false, this._lookbehind, 0, bytesToCutOff)
       }
 
-      this._lookbehind.copy(this._lookbehind, 0, bytesToCutOff,
-        this._lookbehind_size - bytesToCutOff)
       this._lookbehind_size -= bytesToCutOff
+      this._lookbehind.copy(this._lookbehind, 0, bytesToCutOff, this._lookbehind_size)
 
       data.copy(this._lookbehind, this._lookbehind_size)
       this._lookbehind_size += len
@@ -166,19 +166,17 @@ SBMH.prototype._sbmh_feed = function (data) {
     }
   }
 
-  pos += (pos >= 0) * this._bufpos
-
   // Lookbehind buffer is now empty. We only need to check if the
   // needle is in the haystack.
-  if (data.indexOf(needle, pos) !== -1) {
-    pos = data.indexOf(needle, pos)
+  pos = data.indexOf(needle, pos + ((pos >= 0) * this._bufpos))
+
+  if (pos !== -1) {
     ++this.matches
     if (pos > 0) { this.emit('info', true, data, this._bufpos, pos) } else { this.emit('info', true) }
-
     return (this._bufpos = pos + needleLength)
-  } else {
-    pos = len - needleLength
   }
+
+  pos = len - needleLength
 
   // There was no match. If there's trailing haystack data that we cannot
   // match yet using the Boyer-Moore-Horspool algorithm (because the trailing
@@ -190,12 +188,10 @@ SBMH.prototype._sbmh_feed = function (data) {
     pos < len &&
     (
       data[pos] !== needle[0] ||
-      (
-        (Buffer.compare(
-          data.subarray(pos, pos + len - pos),
-          needle.subarray(0, len - pos)
-        ) !== 0)
-      )
+      Buffer.compare(
+        data.subarray(pos, pos + len - pos),
+        needle.subarray(0, len - pos)
+      ) !== 0
     )
   ) {
     ++pos
@@ -213,7 +209,7 @@ SBMH.prototype._sbmh_feed = function (data) {
 }
 
 SBMH.prototype._sbmh_lookup_char = function (data, pos) {
-  return (pos < 0)
+  return pos < 0
     ? this._lookbehind[this._lookbehind_size + pos]
     : data[pos]
 }
