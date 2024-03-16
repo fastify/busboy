@@ -155,9 +155,8 @@ SBMH.prototype._sbmh_feed = function (data) {
         this.emit('info', false, this._lookbehind, 0, bytesToCutOff)
       }
 
-      this._lookbehind.copy(this._lookbehind, 0, bytesToCutOff,
-        this._lookbehind_size - bytesToCutOff)
       this._lookbehind_size -= bytesToCutOff
+      this._lookbehind.copy(this._lookbehind, 0, bytesToCutOff, this._lookbehind_size)
 
       data.copy(this._lookbehind, this._lookbehind_size)
       this._lookbehind_size += len
@@ -212,7 +211,7 @@ SBMH.prototype._sbmh_feed = function (data) {
 }
 
 SBMH.prototype._sbmh_lookup_char = function (data, pos) {
-  return (pos < 0)
+  return pos < 0
     ? this._lookbehind[this._lookbehind_size + pos]
     : data[pos]
 }
