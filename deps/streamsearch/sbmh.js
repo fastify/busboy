@@ -27,8 +27,8 @@
  * by Hongli Lai at: https://github.com/FooBarWidget/boyer-moore-horspool
  */
 
-const EventEmitter = require('node:events').EventEmitter
-const inherits = require('node:util').inherits
+const { EventEmitter } = require('node:events')
+const { inherits } = require('node:util')
 
 function SBMH (needle) {
   if (typeof needle === 'string') {
