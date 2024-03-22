@@ -13,32 +13,28 @@ const options = getopts(process.argv.slice(1), {
 
 const PRESET = {
   LOW: (builder) => {
-    return builder
-      .warmupCycles(1000)
-      .benchmarkCycles(1000)
+    return builder.warmupCycles(5).benchmarkCycles(50)
   },
 
   MEDIUM: (builder) => {
-    return builder
-      .warmupCycles(1000)
-      .benchmarkCycles(2000)
+    return builder.warmupCycles(10).benchmarkCycles(100)
   },
 
   HIGH: (builder) => {
-    return builder
-      .warmupCycles(1000)
-      .benchmarkCycles(10000)
+    return builder.warmupCycles(50).benchmarkCycles(500)
   }
 }
 
 function getCommonBuilder () {
   const presetId = options.preset || 'MEDIUM'
-  const preset = validateNotNil(PRESET[presetId.toUpperCase()], `Unknown preset: ${presetId}`)
+  const preset = validateNotNil(
+    PRESET[presetId.toUpperCase()],
+    `Unknown preset: ${presetId}`
+  )
 
   const builder = new BenchmarkBuilder()
   preset(builder)
-  return builder
-    .benchmarkCycleSamples(50)
+  return builder.benchmarkCycleSamples(50)
 }
 
 module.exports = {

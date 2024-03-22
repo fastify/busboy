@@ -1,0 +1,10 @@
+{
+  "runtimeVersion": "20.9.0, V8 11.3.244.8-node.16",
+  "benchmarkName": "Busboy comparison",
+  "benchmarkEntryName": "multipasta",
+  "benchmarkCycles": 500,
+  "benchmarkCycleSamples": 50,
+  "warmupCycles": 50,
+  "meanTimeNs": 67089.49805620349,
+  "meanTimeMs": 0.0670894980562035
+}

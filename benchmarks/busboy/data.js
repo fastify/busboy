@@ -1,8 +1,13 @@
 'use strict'
 
 const boundary = '-----------------------------paZqsnEHRufoShdX6fh0lUhXBP4k'
-const randomContent = Buffer.from(makeString(1024 * 500), 'utf8')
-const buffer = createMultipartBuffer(boundary)
+const fileContent = Buffer.from(makeString(1024 * 512), 'utf8')
+const fileCount = 2
+const fieldContent = Buffer.from(makeString(128), 'utf8')
+const fieldCount = 10
+const chunkSize = 16000
+
+const buffers = createMultipartBuffer(boundary)
 
 function makeString (length) {
   let result = ''
@@ -17,18 +22,38 @@ function makeString (length) {
 
 function createMultipartBuffer (boundary) {
   const payload = [
-    '--' + boundary,
-    'Content-Disposition: form-data; name="upload_file_0"; filename="1k_a.dat"',
-    'Content-Type: application/octet-stream',
-    '',
-    randomContent,
+    /* eslint-disable no-array-constructor */
+    ...Array.from({ length: fieldCount }, (_, i) => [
+      '--' + boundary,
+      `Content-Disposition: form-data; name="field_${i}"`,
+      'Content-Type: application/octet-stream',
+      '',
+      fieldContent
+    ]).flat(),
+    /* eslint-disable no-array-constructor */
+    ...Array.from({ length: fileCount }, (_, i) => [
+      '--' + boundary,
+      `Content-Disposition: form-data; name="file_${i}"; filename="file.dat"`,
+      'Content-Type: application/octet-stream',
+      '',
+      fileContent
+    ]).flat(),
     '--' + boundary + '--'
   ].join('\r\n')
-  return Buffer.from(payload, 'ascii')
+  const buf = Buffer.from(payload, 'ascii')
+  // split into 16000 byte chunks to simulate network packets
+  const buffers = []
+  for (let i = 0; i < buf.length; i += chunkSize) {
+    buffers.push(buf.subarray(i, i + chunkSize))
+  }
+  return buffers
 }
 
 module.exports = {
   boundary,
-  buffer,
-  randomContent
+  buffers,
+  fileContent,
+  fileCount,
+  fieldContent,
+  fieldCount
 }
