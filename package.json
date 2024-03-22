@@ -32,9 +32,6 @@
     "test:coverage": "nyc npm run test",
     "test": "npm run test:mocha"
   },
-  "engines": {
-    "node": ">=14"
-  },
   "devDependencies": {
     "@types/node": "^20.11.30",
     "busboy": "^1.6.0",
