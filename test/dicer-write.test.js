@@ -15,7 +15,5 @@ test('dicer _write method', t => {
         t.pass('write method called')
       })
     })
-
-    t.end()
   })
 })
