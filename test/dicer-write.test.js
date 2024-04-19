@@ -6,7 +6,7 @@ const { Dicer } = require('../lib/main')
 test('dicer _write method', t => {
   t.plan(1)
 
-  t.test('the PartStream instance is created only once if the _write method is called more than once', t => {
+  t.test('calls the callback cb() when headerFirst is set and all the data have been written', t => {
     const dicer = new Dicer({ headerFirst: true })
 
     dicer._write(Buffer.from('Content-Type: text/plain'), null, () => {
