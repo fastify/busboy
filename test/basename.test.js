@@ -4,26 +4,25 @@ const { test } = require('tap')
 const basename = require('../lib/utils/basename')
 
 test('basename', (t) => {
-  t.plan(3)
+  const testCases = [
+    { description: 'returns an empty string if the path is not a string', path: {}, expected: '' },
+    { description: 'returns an empty string if the path includes a \' and the char after is a .', path: 'path\\.', expected: '' },
+    { description: 'returns an empty string if the path includes a / and the char after is a .', path: 'path/.', expected: '' },
+    { description: 'returns an empty string if the path includes a \' and the chars after are a ..', path: 'path\\..', expected: '' },
+    { description: 'returns an empty string if the path includes a / and the chars after are a ..', path: 'path/..', expected: '' },
+    { description: 'returns the path if the path includes a \' and the rest is anything other than dots', path: 'path\\subpath', expected: 'subpath' },
+    { description: 'returns the path if the path includes a / and the rest is anything other than dots', path: 'path/subpath', expected: 'subpath' },
+    { description: 'returns an empty string if the path is a .', path: '.', expected: '' },
+    { description: 'returns an empty string if the path is a ..', path: '..', expected: '' },
+    { description: 'returns the path if the path is anything other than dots', path: 'subpath', expected: 'subpath' }
+  ]
 
-  t.test('returns an empty string if the path is not a string', (t) => {
-    const result = basename({})
+  t.plan(testCases.length)
 
-    t.equal(result, '')
-    t.end()
-  })
-
-  t.test('returns an empty string if the path includes a \' and the char after is a .', (t) => {
-    const result = basename('path\\.')
-
-    t.equal(result, '')
-    t.end()
-  })
-
-  t.test('returns an empty string if the path is a .', (t) => {
-    const result = basename('.')
-
-    t.equal(result, '')
-    t.end()
+  testCases.forEach((testCase, index) => {
+    t.test(testCase.description, t => {
+      t.plan(1)
+      t.equal(basename(testCase.path), testCase.expected, `Test case ${index + 1}`)
+    })
   })
 })
