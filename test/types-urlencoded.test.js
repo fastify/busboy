@@ -264,7 +264,7 @@ test('Call emit finish twice', t => {
 
   let fields = 0
   let finishes = 0
-  
+
   const busboy = new Busboy({
     headers: {
       'content-type': 'application/x-www-form-urlencoded; charset=utf-8'
@@ -280,6 +280,6 @@ test('Call emit finish twice', t => {
 
   busboy.write(Buffer.from('Hello world', 'utf8'), EMPTY_FN)
 
-  busboy.emit('finish');
-  busboy.emit('finish');
+  busboy.emit('finish')
+  busboy.emit('finish')
 })
