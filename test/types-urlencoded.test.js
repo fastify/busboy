@@ -28,6 +28,13 @@ const tests = [
     plan: 5
   },
   {
+    source: ['foo&baz=bla'],
+    expected: [['foo', '', false, false]],
+    what: 'Unassigned and assigned value with limit',
+    limits: { fields: 1 },
+    plan: 4
+  },
+  {
     source: ['foo=bar&baz'],
     expected: [['foo', 'bar', false, false],
       ['baz', '', false, false]],
@@ -81,6 +88,13 @@ const tests = [
     plan: 5
   },
   {
+    source: ['foo=bar&baz=bla', 'foo=bar'],
+    expected: [],
+    what: 'Exceeded limits',
+    limits: { fields: 0 },
+    plan: 3
+  },
+  {
     source: ['foo=bar&baz=bla'],
     expected: [],
     what: 'Limits: zero fields',
@@ -108,6 +122,22 @@ const tests = [
       ['ba', 'bla', true, false]],
     what: 'Limits: truncated field name',
     limits: { fieldNameSize: 2 },
+    plan: 5
+  },
+  {
+    source: ['f%20=bar&baz=bla'],
+    expected: [['f ', 'bar', false, false],
+      ['ba', 'bla', true, false]],
+    what: 'Limits: truncated field name with encoded bytes',
+    limits: { fieldNameSize: 2 },
+    plan: 5
+  },
+  {
+    source: ['foo=b%20&baz=bla'],
+    expected: [['foo', 'b ', false, false],
+      ['baz', 'bl', false, true]],
+    what: 'Limits: truncated field value with encoded bytes',
+    limits: { fieldSize: 2 },
     plan: 5
   },
   {
@@ -207,4 +237,24 @@ tests.forEach((v) => {
     })
     busboy.end()
   })
+})
+
+test('Call end twice', t => {
+  t.plan(1)
+
+  let finishes = 0
+  const busboy = new Busboy({
+    headers: {
+      'content-type': 'application/x-www-form-urlencoded; charset=utf-8'
+    }
+  })
+
+  busboy.on('finish', function () {
+    t.ok(++finishes === 1, 'finish emitted')
+  })
+
+  busboy.write(Buffer.from('Hello world', 'utf8'), EMPTY_FN)
+
+  busboy._parser.end()
+  busboy._parser.end()
 })
