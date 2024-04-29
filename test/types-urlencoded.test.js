@@ -239,7 +239,7 @@ tests.forEach((v) => {
   })
 })
 
-test('Call end twice', t => {
+test('Call parser end twice', t => {
   t.plan(1)
 
   let finishes = 0
@@ -257,4 +257,29 @@ test('Call end twice', t => {
 
   busboy._parser.end()
   busboy._parser.end()
+})
+
+test('Call emit finish twice', t => {
+  t.plan(2)
+
+  let fields = 0
+  let finishes = 0
+  
+  const busboy = new Busboy({
+    headers: {
+      'content-type': 'application/x-www-form-urlencoded; charset=utf-8'
+    }
+  })
+  busboy.on('field', function () {
+    t.ok(++fields === 1, 'field emitted')
+  })
+
+  busboy.on('finish', function () {
+    t.ok(++finishes === 1, 'finish emitted')
+  })
+
+  busboy.write(Buffer.from('Hello world', 'utf8'), EMPTY_FN)
+
+  busboy.emit('finish');
+  busboy.emit('finish');
 })
