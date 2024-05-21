@@ -4,7 +4,7 @@ const { test } = require('tap')
 const Streamsearch = require('../deps/streamsearch/sbmh')
 
 test('streamsearch', t => {
-  t.plan(17)
+  t.plan(18)
 
   t.test('should throw an error if the needle is not a String or Buffer', t => {
     t.plan(1)
@@ -316,6 +316,40 @@ test('streamsearch', t => {
       Buffer.from('\n'),
       Buffer.from('\n'),
       Buffer.from('hello')
+    ]
+    let i = 0
+    s.on('info', (isMatched, data, start, end) => {
+      t.strictSame(isMatched, expected[i][0])
+      t.strictSame(data, expected[i][1])
+      t.strictSame(start, expected[i][2])
+      t.strictSame(end, expected[i][3])
+      i++
+      if (i >= 3) {
+        t.pass()
+      }
+    })
+
+    s.push(chunks[0])
+    s.push(chunks[1])
+    s.push(chunks[2])
+    s.push(chunks[3])
+  })
+
+  t.test('should process four chunks with repeted starting overflowing needle', t => {
+    t.plan(13)
+
+    const expected = [
+      [false, Buffer.from('\n\n\0'), 0, 1],
+      [true, undefined, undefined, undefined],
+      [false, Buffer.from('\r\nhello'), 1, 7]
+    ]
+    const needle = '\n\n\r'
+    const s = new Streamsearch(needle)
+    const chunks = [
+      Buffer.from('\n'),
+      Buffer.from('\n'),
+      Buffer.from('\n'),
+      Buffer.from('\r\nhello')
     ]
     let i = 0
     s.on('info', (isMatched, data, start, end) => {
