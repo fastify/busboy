@@ -17,6 +17,11 @@ test('Decoder', t => {
       what: 'One full encoded byte'
     },
     {
+      source: ['%20Hello World'],
+      expected: ' Hello World',
+      what: 'Start with full encoded byte'
+    },
+    {
       source: ['Hello%20world%21'],
       expected: 'Hello world!',
       what: 'Two full encoded bytes'

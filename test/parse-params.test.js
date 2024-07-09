@@ -52,6 +52,11 @@ test('parse-params', t => {
       what: 'Quotes within quoted'
     },
     {
+      source: 'text/plain; greeting="hello \\\\world\\\\"',
+      expected: ['text/plain', ['greeting', 'hello \\world\\']],
+      what: 'Escape within quoted'
+    },
+    {
       source: 'text/plain; encoding=""',
       expected: ['text/plain', ['encoding', '']],
       what: 'Quoted empty string'
@@ -85,6 +90,11 @@ test('parse-params', t => {
       source: "text/plain; filename*=iso-8859-1'en'%A3%20rates; altfilename=\"foobarbaz\"",
       expected: ['text/plain', ['filename', '£ rates'], ['altfilename', 'foobarbaz']],
       what: 'Mixed regular and extended parameters (RFC 5987)'
+    },
+    {
+      source: "text/plain; filename*=iso-8859-1'en';",
+      expected: ['text/plain', ['filename', '']],
+      what: 'Mixed regular and extended parameters (RFC 5987) with separator'
     },
     {
       source: "text/plain; filename=\"foobarbaz\"; altfilename*=iso-8859-1'en'%A3%20rates",
