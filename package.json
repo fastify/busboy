@@ -33,7 +33,7 @@
     "test": "npm run test:mocha"
   },
   "devDependencies": {
-    "@types/node": "^20.11.30",
+    "@types/node": "^22.0.0",
     "busboy": "^1.6.0",
     "photofinish": "^1.8.0",
     "snazzy": "^9.0.0",
