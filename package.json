@@ -41,7 +41,7 @@
     "tap": "^21.0.0",
     "tinybench": "^2.6.0",
     "tsd": "^0.31.0",
-    "typescript": "^5.4.3"
+    "typescript": "~5.4.3"
   },
   "keywords": [
     "uploads",
