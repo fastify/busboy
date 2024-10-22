@@ -1,33 +1,33 @@
 'use strict'
 
-const { test } = require('tap')
+const { test } = require('node:test')
 const Streamsearch = require('../deps/streamsearch/sbmh')
 
-test('streamsearch', t => {
+test('streamsearch', async t => {
   t.plan(18)
 
-  t.test('should throw an error if the needle is not a String or Buffer', t => {
+  await t.test('should throw an error if the needle is not a String or Buffer', t => {
     t.plan(1)
 
-    t.throws(() => new Streamsearch(2), new Error('The needle has to be a String or a Buffer.'))
+    t.assert.throws(() => new Streamsearch(2), { message: 'The needle has to be a String or a Buffer.' })
   })
-  t.test('should throw an error if the needle is an empty String', t => {
+  await t.test('should throw an error if the needle is an empty String', t => {
     t.plan(1)
 
-    t.throws(() => new Streamsearch(''), new Error('The needle cannot be an empty String/Buffer.'))
+    t.assert.throws(() => new Streamsearch(''), { message: 'The needle cannot be an empty String/Buffer.' })
   })
-  t.test('should throw an error if the needle is an empty Buffer', t => {
+  await t.test('should throw an error if the needle is an empty Buffer', t => {
     t.plan(1)
 
-    t.throws(() => new Streamsearch(Buffer.from('')), new Error('The needle cannot be an empty String/Buffer.'))
+    t.assert.throws(() => new Streamsearch(Buffer.from('')), { message: 'The needle cannot be an empty String/Buffer.' })
   })
-  t.test('should throw an error if the needle is bigger than 256 characters', t => {
+  await t.test('should throw an error if the needle is bigger than 256 characters', t => {
     t.plan(1)
 
-    t.throws(() => new Streamsearch(Buffer.from(Array(257).fill('a').join(''))), new Error('The needle cannot have a length bigger than 256.'))
+    t.assert.throws(() => new Streamsearch(Buffer.from(Array(257).fill('a').join(''))), { message: 'The needle cannot have a length bigger than 256.' })
   })
 
-  t.test('should process a Buffer without a needle', t => {
+  await t.test('should process a Buffer without a needle', t => {
     t.plan(5)
     const expected = [
       [false, Buffer.from('bar hello'), 0, 9]
@@ -39,20 +39,20 @@ test('streamsearch', t => {
     ]
     let i = 0
     s.on('info', (isMatched, data, start, end) => {
-      t.strictSame(isMatched, expected[i][0])
-      t.strictSame(data, expected[i][1])
-      t.strictSame(start, expected[i][2])
-      t.strictSame(end, expected[i][3])
+      t.assert.deepStrictEqual(isMatched, expected[i][0])
+      t.assert.deepStrictEqual(data, expected[i][1])
+      t.assert.deepStrictEqual(start, expected[i][2])
+      t.assert.deepStrictEqual(end, expected[i][3])
       i++
       if (i >= 1) {
-        t.pass()
+        t.assert.ok('pass')
       }
     })
 
     s.push(chunks[0])
   })
 
-  t.test('should cast a string without a needle', t => {
+  await t.test('should cast a string without a needle', t => {
     t.plan(5)
 
     const expected = [
@@ -65,20 +65,20 @@ test('streamsearch', t => {
     ]
     let i = 0
     s.on('info', (isMatched, data, start, end) => {
-      t.strictSame(isMatched, expected[i][0])
-      t.strictSame(data, expected[i][1])
-      t.strictSame(start, expected[i][2])
-      t.strictSame(end, expected[i][3])
+      t.assert.deepStrictEqual(isMatched, expected[i][0])
+      t.assert.deepStrictEqual(data, expected[i][1])
+      t.assert.deepStrictEqual(start, expected[i][2])
+      t.assert.deepStrictEqual(end, expected[i][3])
       i++
       if (i >= 1) {
-        t.pass()
+        t.assert.ok('pass')
       }
     })
 
     s.push(chunks[0])
   })
 
-  t.test('should process a chunk with a needle at the beginning', t => {
+  await t.test('should process a chunk with a needle at the beginning', t => {
     t.plan(9)
 
     const expected = [
@@ -92,20 +92,20 @@ test('streamsearch', t => {
     ]
     let i = 0
     s.on('info', (isMatched, data, start, end) => {
-      t.strictSame(isMatched, expected[i][0])
-      t.strictSame(data, expected[i][1])
-      t.strictSame(start, expected[i][2])
-      t.strictSame(end, expected[i][3])
+      t.assert.deepStrictEqual(isMatched, expected[i][0])
+      t.assert.deepStrictEqual(data, expected[i][1])
+      t.assert.deepStrictEqual(start, expected[i][2])
+      t.assert.deepStrictEqual(end, expected[i][3])
       i++
       if (i >= 2) {
-        t.pass()
+        t.assert.ok('pass')
       }
     })
 
     s.push(chunks[0])
   })
 
-  t.test('should process a chunk with a needle in the middle', t => {
+  await t.test('should process a chunk with a needle in the middle', t => {
     t.plan(9)
     const expected = [
       [true, Buffer.from('bar\r\n hello'), 0, 3],
@@ -118,20 +118,20 @@ test('streamsearch', t => {
     ]
     let i = 0
     s.on('info', (isMatched, data, start, end) => {
-      t.strictSame(isMatched, expected[i][0])
-      t.strictSame(data, expected[i][1])
-      t.strictSame(start, expected[i][2])
-      t.strictSame(end, expected[i][3])
+      t.assert.deepStrictEqual(isMatched, expected[i][0])
+      t.assert.deepStrictEqual(data, expected[i][1])
+      t.assert.deepStrictEqual(start, expected[i][2])
+      t.assert.deepStrictEqual(end, expected[i][3])
       i++
       if (i >= 2) {
-        t.pass()
+        t.assert.ok('pass')
       }
     })
 
     s.push(chunks[0])
   })
 
-  t.test('should process a chunk with a needle at the end', t => {
+  await t.test('should process a chunk with a needle at the end', t => {
     t.plan(5)
     const expected = [
       [true, Buffer.from('bar hello\r\n'), 0, 9]
@@ -143,20 +143,20 @@ test('streamsearch', t => {
     ]
     let i = 0
     s.on('info', (isMatched, data, start, end) => {
-      t.strictSame(isMatched, expected[i][0])
-      t.strictSame(data, expected[i][1])
-      t.strictSame(start, expected[i][2])
-      t.strictSame(end, expected[i][3])
+      t.assert.deepStrictEqual(isMatched, expected[i][0])
+      t.assert.deepStrictEqual(data, expected[i][1])
+      t.assert.deepStrictEqual(start, expected[i][2])
+      t.assert.deepStrictEqual(end, expected[i][3])
       i++
       if (i >= 1) {
-        t.pass()
+        t.assert.ok('pass')
       }
     })
 
     s.push(chunks[0])
   })
 
-  t.test('should process a chunk with multiple needle at the end', t => {
+  await t.test('should process a chunk with multiple needle at the end', t => {
     t.plan(9)
     const expected = [
       [true, Buffer.from('bar hello\r\n\r\n'), 0, 9],
@@ -169,20 +169,20 @@ test('streamsearch', t => {
     ]
     let i = 0
     s.on('info', (isMatched, data, start, end) => {
-      t.strictSame(isMatched, expected[i][0])
-      t.strictSame(data, expected[i][1])
-      t.strictSame(start, expected[i][2])
-      t.strictSame(end, expected[i][3])
+      t.assert.deepStrictEqual(isMatched, expected[i][0])
+      t.assert.deepStrictEqual(data, expected[i][1])
+      t.assert.deepStrictEqual(start, expected[i][2])
+      t.assert.deepStrictEqual(end, expected[i][3])
       i++
       if (i >= 2) {
-        t.pass()
+        t.assert.ok('pass')
       }
     })
 
     s.push(chunks[0])
   })
 
-  t.test('should process two chunks without a needle', t => {
+  await t.test('should process two chunks without a needle', t => {
     t.plan(9)
     const expected = [
       [false, Buffer.from('bar'), 0, 3],
@@ -196,13 +196,13 @@ test('streamsearch', t => {
     ]
     let i = 0
     s.on('info', (isMatched, data, start, end) => {
-      t.strictSame(isMatched, expected[i][0])
-      t.strictSame(data, expected[i][1])
-      t.strictSame(start, expected[i][2])
-      t.strictSame(end, expected[i][3])
+      t.assert.deepStrictEqual(isMatched, expected[i][0])
+      t.assert.deepStrictEqual(data, expected[i][1])
+      t.assert.deepStrictEqual(start, expected[i][2])
+      t.assert.deepStrictEqual(end, expected[i][3])
       i++
       if (i >= 2) {
-        t.pass()
+        t.assert.ok('pass')
       }
     })
 
@@ -210,7 +210,7 @@ test('streamsearch', t => {
     s.push(chunks[1])
   })
 
-  t.test('should process two chunks with an overflowing needle', t => {
+  await t.test('should process two chunks with an overflowing needle', t => {
     t.plan(13)
     const expected = [
       [false, Buffer.from('bar\r'), 0, 3],
@@ -225,13 +225,13 @@ test('streamsearch', t => {
     ]
     let i = 0
     s.on('info', (isMatched, data, start, end) => {
-      t.strictSame(isMatched, expected[i][0])
-      t.strictSame(data, expected[i][1])
-      t.strictSame(start, expected[i][2])
-      t.strictSame(end, expected[i][3])
+      t.assert.deepStrictEqual(isMatched, expected[i][0])
+      t.assert.deepStrictEqual(data, expected[i][1])
+      t.assert.deepStrictEqual(start, expected[i][2])
+      t.assert.deepStrictEqual(end, expected[i][3])
       i++
       if (i >= 3) {
-        t.pass()
+        t.assert.ok('pass')
       }
     })
 
@@ -239,7 +239,7 @@ test('streamsearch', t => {
     s.push(chunks[1])
   })
 
-  t.test('should process two chunks with a potentially overflowing needle', t => {
+  await t.test('should process two chunks with a potentially overflowing needle', t => {
     t.plan(13)
 
     const expected = [
@@ -255,13 +255,13 @@ test('streamsearch', t => {
     ]
     let i = 0
     s.on('info', (isMatched, data, start, end) => {
-      t.strictSame(isMatched, expected[i][0])
-      t.strictSame(data, expected[i][1])
-      t.strictSame(start, expected[i][2])
-      t.strictSame(end, expected[i][3])
+      t.assert.deepStrictEqual(isMatched, expected[i][0])
+      t.assert.deepStrictEqual(data, expected[i][1])
+      t.assert.deepStrictEqual(start, expected[i][2])
+      t.assert.deepStrictEqual(end, expected[i][3])
       i++
       if (i >= 3) {
-        t.pass()
+        t.assert.ok('pass')
       }
     })
 
@@ -269,7 +269,7 @@ test('streamsearch', t => {
     s.push(chunks[1])
   })
 
-  t.test('should process three chunks with a overflowing needle', t => {
+  await t.test('should process three chunks with a overflowing needle', t => {
     t.plan(13)
 
     const expected = [
@@ -286,13 +286,13 @@ test('streamsearch', t => {
     ]
     let i = 0
     s.on('info', (isMatched, data, start, end) => {
-      t.strictSame(isMatched, expected[i][0])
-      t.strictSame(data, expected[i][1])
-      t.strictSame(start, expected[i][2])
-      t.strictSame(end, expected[i][3])
+      t.assert.deepStrictEqual(isMatched, expected[i][0])
+      t.assert.deepStrictEqual(data, expected[i][1])
+      t.assert.deepStrictEqual(start, expected[i][2])
+      t.assert.deepStrictEqual(end, expected[i][3])
       i++
       if (i >= 3) {
-        t.pass()
+        t.assert.ok('pass')
       }
     })
 
@@ -301,7 +301,7 @@ test('streamsearch', t => {
     s.push(chunks[2])
   })
 
-  t.test('should process four chunks with a overflowing needle', t => {
+  await t.test('should process four chunks with a overflowing needle', t => {
     t.plan(13)
 
     const expected = [
@@ -319,13 +319,13 @@ test('streamsearch', t => {
     ]
     let i = 0
     s.on('info', (isMatched, data, start, end) => {
-      t.strictSame(isMatched, expected[i][0])
-      t.strictSame(data, expected[i][1])
-      t.strictSame(start, expected[i][2])
-      t.strictSame(end, expected[i][3])
+      t.assert.deepStrictEqual(isMatched, expected[i][0])
+      t.assert.deepStrictEqual(data, expected[i][1])
+      t.assert.deepStrictEqual(start, expected[i][2])
+      t.assert.deepStrictEqual(end, expected[i][3])
       i++
       if (i >= 3) {
-        t.pass()
+        t.assert.ok('pass')
       }
     })
 
@@ -335,7 +335,7 @@ test('streamsearch', t => {
     s.push(chunks[3])
   })
 
-  t.test('should process four chunks with repeted starting overflowing needle', t => {
+  await t.test('should process four chunks with repeted starting overflowing needle', t => {
     t.plan(13)
 
     const expected = [
@@ -353,13 +353,13 @@ test('streamsearch', t => {
     ]
     let i = 0
     s.on('info', (isMatched, data, start, end) => {
-      t.strictSame(isMatched, expected[i][0])
-      t.strictSame(data, expected[i][1])
-      t.strictSame(start, expected[i][2])
-      t.strictSame(end, expected[i][3])
+      t.assert.deepStrictEqual(isMatched, expected[i][0])
+      t.assert.deepStrictEqual(data, expected[i][1])
+      t.assert.deepStrictEqual(start, expected[i][2])
+      t.assert.deepStrictEqual(end, expected[i][3])
       i++
       if (i >= 3) {
-        t.pass()
+        t.assert.ok('pass')
       }
     })
 
@@ -369,7 +369,7 @@ test('streamsearch', t => {
     s.push(chunks[3])
   })
 
-  t.test('should process four chunks with a potentially overflowing needle', t => {
+  await t.test('should process four chunks with a potentially overflowing needle', t => {
     t.plan(17)
 
     const expected = [
@@ -388,13 +388,13 @@ test('streamsearch', t => {
     ]
     let i = 0
     s.on('info', (isMatched, data, start, end) => {
-      t.strictSame(isMatched, expected[i][0])
-      t.strictSame(data, expected[i][1])
-      t.strictSame(start, expected[i][2])
-      t.strictSame(end, expected[i][3])
+      t.assert.deepStrictEqual(isMatched, expected[i][0])
+      t.assert.deepStrictEqual(data, expected[i][1])
+      t.assert.deepStrictEqual(start, expected[i][2])
+      t.assert.deepStrictEqual(end, expected[i][3])
       i++
       if (i >= 4) {
-        t.pass()
+        t.assert.ok('pass')
       }
     })
 
@@ -404,27 +404,27 @@ test('streamsearch', t => {
     s.push(chunks[3])
   })
 
-  t.test('should reset the internal values if .reset() is called', t => {
+  await t.test('should reset the internal values if .reset() is called', t => {
     t.plan(9)
 
     const s = new Streamsearch('test')
 
-    t.strictSame(s._lookbehind_size, 0)
-    t.strictSame(s.matches, 0)
-    t.strictSame(s._bufpos, 0)
+    t.assert.deepStrictEqual(s._lookbehind_size, 0)
+    t.assert.deepStrictEqual(s.matches, 0)
+    t.assert.deepStrictEqual(s._bufpos, 0)
 
     s._lookbehind_size = 1
     s._bufpos = 1
     s.matches = 1
 
-    t.strictSame(s._lookbehind_size, 1)
-    t.strictSame(s.matches, 1)
-    t.strictSame(s._bufpos, 1)
+    t.assert.deepStrictEqual(s._lookbehind_size, 1)
+    t.assert.deepStrictEqual(s.matches, 1)
+    t.assert.deepStrictEqual(s._bufpos, 1)
 
     s.reset()
 
-    t.strictSame(s._lookbehind_size, 0)
-    t.strictSame(s.matches, 0)
-    t.strictSame(s._bufpos, 0)
+    t.assert.deepStrictEqual(s._lookbehind_size, 0)
+    t.assert.deepStrictEqual(s.matches, 0)
+    t.assert.deepStrictEqual(s._bufpos, 0)
   })
 })

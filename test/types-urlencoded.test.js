@@ -2,7 +2,7 @@
 
 const { inspect } = require('util')
 const Busboy = require('..')
-const { test } = require('tap')
+const { test } = require('node:test')
 
 const EMPTY_FN = function () {
 }
@@ -198,88 +198,93 @@ const tests = [
   }
 ]
 
-tests.forEach((v) => {
-  test(v.what, t => {
-    t.plan(v.plan || 20)
+test('types-urlencoded', async t => {
+  for (const v of tests) {
+    await t.test(v.what, async t => {
+      t.plan(v.plan || 20)
+      const busboy = new Busboy({
+        limits: v.limits,
+        headers: {
+          'content-type': 'application/x-www-form-urlencoded; charset=utf-8'
+        }
+      })
+      await new Promise((resolve) => {
+        let finishes = 0
+        const results = []
+
+        busboy.on('field', function (key, val, keyTrunc, valTrunc) {
+          results.push([key, val, keyTrunc, valTrunc])
+        })
+        busboy.on('file', function () {
+          throw new Error('Unexpected file')
+        })
+        busboy.on('finish', function () {
+          t.assert.ok(finishes++ === 0, 'finish emitted multiple times')
+          t.assert.strictEqual(results.length, v.expected.length)
+
+          let i = 0
+          results.forEach(function (result) {
+            t.assert.deepStrictEqual(result,
+              v.expected[i],
+              'Result mismatch:\nParsed: ' + inspect(result) +
+                        '\nExpected: ' + inspect(v.expected[i])
+            )
+            ++i
+          })
+          t.assert.ok('pass')
+          resolve()
+        })
+
+        v.source.forEach(function (s) {
+          busboy.write(Buffer.from(s, 'utf8'), EMPTY_FN)
+        })
+        busboy.end()
+      })
+    })
+  }
+
+  await t.test('Call parser end twice', t => {
+    t.plan(1)
+
+    let finishes = 0
     const busboy = new Busboy({
-      limits: v.limits,
       headers: {
         'content-type': 'application/x-www-form-urlencoded; charset=utf-8'
       }
     })
-    let finishes = 0
-    const results = []
 
-    busboy.on('field', function (key, val, keyTrunc, valTrunc) {
-      results.push([key, val, keyTrunc, valTrunc])
-    })
-    busboy.on('file', function () {
-      throw new Error('Unexpected file')
-    })
     busboy.on('finish', function () {
-      t.ok(finishes++ === 0, 'finish emitted multiple times')
-      t.equal(results.length, v.expected.length)
-
-      let i = 0
-      results.forEach(function (result) {
-        t.strictSame(result,
-          v.expected[i],
-          'Result mismatch:\nParsed: ' + inspect(result) +
-                        '\nExpected: ' + inspect(v.expected[i])
-        )
-        ++i
-      })
-      t.pass()
+      t.assert.ok(++finishes === 1, 'finish emitted')
     })
 
-    v.source.forEach(function (s) {
-      busboy.write(Buffer.from(s, 'utf8'), EMPTY_FN)
+    busboy.write(Buffer.from('Hello world', 'utf8'), EMPTY_FN)
+
+    busboy._parser.end()
+    busboy._parser.end()
+  })
+
+  await t.test('Call emit finish twice', t => {
+    t.plan(2)
+
+    let fields = 0
+    let finishes = 0
+
+    const busboy = new Busboy({
+      headers: {
+        'content-type': 'application/x-www-form-urlencoded; charset=utf-8'
+      }
     })
-    busboy.end()
+    busboy.on('field', function () {
+      t.assert.ok(++fields === 1, 'field emitted')
+    })
+
+    busboy.on('finish', function () {
+      t.assert.ok(++finishes === 1, 'finish emitted')
+    })
+
+    busboy.write(Buffer.from('Hello world', 'utf8'), EMPTY_FN)
+
+    busboy.emit('finish')
+    busboy.emit('finish')
   })
-})
-
-test('Call parser end twice', t => {
-  t.plan(1)
-
-  let finishes = 0
-  const busboy = new Busboy({
-    headers: {
-      'content-type': 'application/x-www-form-urlencoded; charset=utf-8'
-    }
-  })
-
-  busboy.on('finish', function () {
-    t.ok(++finishes === 1, 'finish emitted')
-  })
-
-  busboy.write(Buffer.from('Hello world', 'utf8'), EMPTY_FN)
-
-  busboy._parser.end()
-  busboy._parser.end()
-})
-
-test('Call emit finish twice', t => {
-  t.plan(2)
-
-  let fields = 0
-  let finishes = 0
-
-  const busboy = new Busboy({
-    headers: {
-      'content-type': 'application/x-www-form-urlencoded; charset=utf-8'
-    }
-  })
-  busboy.on('field', function () {
-    t.ok(++fields === 1, 'field emitted')
-  })
-
-  busboy.on('finish', function () {
-    t.ok(++finishes === 1, 'finish emitted')
-  })
-
-  busboy.write(Buffer.from('Hello world', 'utf8'), EMPTY_FN)
-
-  busboy.emit('finish')
-  busboy.emit('finish')
 })

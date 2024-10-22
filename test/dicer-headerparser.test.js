@@ -1,9 +1,9 @@
 'use strict'
 
-const { test } = require('tap')
+const { test } = require('node:test')
 const HeaderParser = require('../deps/dicer/lib/HeaderParser')
 
-test('dicer-headerparser', t => {
+test('dicer-headerparser', async t => {
   const DCRLF = '\r\n\r\n'
   const MAXED_BUFFER = Buffer.allocUnsafe(128 * 1024)
   MAXED_BUFFER.fill(0x41) // 'A'
@@ -163,8 +163,8 @@ test('dicer-headerparser', t => {
 
   t.plan(tests.length)
 
-  tests.forEach(function (v) {
-    t.test(v.what, t => {
+  for (const v of tests) {
+    await t.test(v.what, t => {
       t.plan(4)
 
       const cfg = {
@@ -175,9 +175,9 @@ test('dicer-headerparser', t => {
       let fired = false
 
       parser.on('header', function (header) {
-        t.ok(!fired, `${v.what}: Header event fired more than once`)
+        t.assert.ok(!fired, `${v.what}: Header event fired more than once`)
         fired = true
-        t.strictSame(header,
+        t.assert.deepStrictEqual(header,
           v.expected,
           `${v.what}: Parsed result mismatch`)
       })
@@ -185,8 +185,8 @@ test('dicer-headerparser', t => {
       v.source.forEach(function (s) {
         parser.push(s)
       })
-      t.ok(fired, `${v.what}: Did not receive header from parser`)
-      t.pass()
+      t.assert.ok(fired, `${v.what}: Did not receive header from parser`)
+      t.assert.ok('passed')
     })
-  })
+  }
 })
