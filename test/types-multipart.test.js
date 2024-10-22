@@ -2,7 +2,7 @@
 
 const Busboy = require('..')
 
-const { test } = require('tap')
+const { test } = require('node:test')
 const { inspect } = require('util')
 
 const EMPTY_FN = function () {
@@ -608,71 +608,76 @@ const tests = [
   }
 ]
 
-tests.forEach((v) => {
-  test(v.what, t => {
-    t.plan(v.plan)
-    const busboy = new Busboy({
-      ...v.config,
-      limits: v.limits,
-      preservePath: v.preservePath,
-      headers: {
-        'content-type': 'multipart/form-data; boundary=' + v.boundary
-      }
-    })
-    let finishes = 0
-    const results = []
-
-    if (v.events === undefined || v.events.indexOf('field') > -1) {
-      busboy.on('field', function (key, val, keyTrunc, valTrunc, encoding, contype) {
-        results.push(['field', key, val, keyTrunc, valTrunc, encoding, contype])
-      })
-    }
-    if (v.events === undefined || v.events.indexOf('file') > -1) {
-      busboy.on('file', function (fieldname, stream, filename, encoding, mimeType) {
-        let nb = 0
-        const info = ['file',
-          fieldname,
-          nb,
-          0,
-          filename,
-          encoding,
-          mimeType]
-        results.push(info)
-        stream.on('data', function (d) {
-          nb += d.length
-        }).on('limit', function () {
-          ++info[3]
-        }).on('end', function () {
-          info[2] = nb
-          t.ok(typeof (stream.bytesRead) === 'number', 'file.bytesRead is missing')
-          t.ok(stream.bytesRead === nb, 'file.bytesRead is not equal to filesize')
-          if (stream.truncated) { ++info[3] }
+test('types-multipart.test', async t => {
+  for (const v of tests) {
+    await t.test(v.what, async t => {
+      t.plan(v.plan)
+      await new Promise((resolve) => {
+        const busboy = new Busboy({
+          ...v.config,
+          limits: v.limits,
+          preservePath: v.preservePath,
+          headers: {
+            'content-type': 'multipart/form-data; boundary=' + v.boundary
+          }
         })
-      })
-    }
-    busboy.on('finish', function () {
-      t.ok(finishes++ === 0, 'finish emitted multiple times')
-      t.equal(results.length,
-        v.expected.length,
-        'Parsed result count mismatch. Saw ' +
+        let finishes = 0
+        const results = []
+
+        if (v.events === undefined || v.events.indexOf('field') > -1) {
+          busboy.on('field', function (key, val, keyTrunc, valTrunc, encoding, contype) {
+            results.push(['field', key, val, keyTrunc, valTrunc, encoding, contype])
+          })
+        }
+        if (v.events === undefined || v.events.indexOf('file') > -1) {
+          busboy.on('file', function (fieldname, stream, filename, encoding, mimeType) {
+            let nb = 0
+            const info = ['file',
+              fieldname,
+              nb,
+              0,
+              filename,
+              encoding,
+              mimeType]
+            results.push(info)
+            stream.on('data', function (d) {
+              nb += d.length
+            }).on('limit', function () {
+              ++info[3]
+            }).on('end', function () {
+              info[2] = nb
+              t.assert.ok(typeof (stream.bytesRead) === 'number', 'file.bytesRead is missing')
+              t.assert.ok(stream.bytesRead === nb, 'file.bytesRead is not.assert.strictEqual to filesize')
+              if (stream.truncated) { ++info[3] }
+            })
+          })
+        }
+        busboy.on('finish', function () {
+          t.assert.ok(finishes++ === 0, 'finish emitted multiple times')
+          t.assert.strictEqual(results.length,
+            v.expected.length,
+            'Parsed result count mismatch. Saw ' +
                     results.length +
                     '. Expected: ' + v.expected.length)
 
-      results.forEach(function (result, i) {
-        t.strictSame(result,
-          v.expected[i],
-          'Result mismatch:\nParsed: ' + inspect(result) +
+          results.forEach(function (result, i) {
+            t.assert.deepStrictEqual(result,
+              v.expected[i],
+              'Result mismatch:\nParsed: ' + inspect(result) +
                         '\nExpected: ' + inspect(v.expected[i])
-        )
-      })
-      t.pass()
-    }).on('error', function (err) {
-      if (!v.shouldError || v.shouldError !== err.message) { t.error(err) }
-    })
+            )
+          })
+          t.assert.ok('pass')
+          resolve()
+        }).on('error', function (err) {
+          if (!v.shouldError || v.shouldError !== err.message) { t.assert.ifError(err) }
+        })
 
-    v.source.forEach(function (s) {
-      busboy.write(Buffer.from(s, 'utf8'), EMPTY_FN)
+        v.source.forEach(function (s) {
+          busboy.write(Buffer.from(s, 'utf8'), EMPTY_FN)
+        })
+        busboy.end()
+      })
     })
-    busboy.end()
-  })
+  }
 })

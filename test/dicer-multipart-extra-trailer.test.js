@@ -1,16 +1,16 @@
 'use strict'
 
-const { test } = require('tap')
+const { test } = require('node:test')
 const Dicer = require('../deps/dicer/lib/Dicer')
 const fs = require('fs')
 const path = require('path')
 
 const FIXTURES_ROOT = path.join(__dirname, 'fixtures/')
 
-test('dicer-multipart-extra-trailer', t => {
+test('dicer-multipart-extra-trailer', async t => {
   t.plan(1)
 
-  t.test('Extra trailer data pushed after finished', t => {
+  await t.test('Extra trailer data pushed after finished', t => {
     t.plan(5)
     const fixtureBase = FIXTURES_ROOT + 'many'
     let n = 0
@@ -52,14 +52,14 @@ test('dicer-multipart-extra-trailer', t => {
       error = err
     }).on('trailer', function (data) {
       trailerEmitted = true
-      t.equal(data.toString(), 'Extra', 'trailer should contain the extra data')
+      t.assert.strictEqual(data.toString(), 'Extra', 'trailer should contain the extra data')
     }).on('finish', function () {
-      t.ok(finishes++ === 0, makeMsg('Extra trailer data pushed after finished', 'finish emitted multiple times'))
-      t.ok(trailerEmitted, makeMsg('Extra trailer data pushed after finished', 'should have emitted trailer'))
+      t.assert.ok(finishes++ === 0, makeMsg('Extra trailer data pushed after finished', 'finish emitted multiple times'))
+      t.assert.ok(trailerEmitted, makeMsg('Extra trailer data pushed after finished', 'should have emitted trailer'))
 
-      t.ok(error === undefined, makeMsg('Extra trailer data pushed after finished', 'Unexpected error'))
+      t.assert.ok(error === undefined, makeMsg('Extra trailer data pushed after finished', 'Unexpected error'))
 
-      t.pass()
+      t.assert.ok('pass')
     })
 
     while (true) {

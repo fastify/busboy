@@ -1,9 +1,9 @@
 'use strict'
 
-const { test } = require('tap')
+const { test } = require('node:test')
 const Decoder = require('../lib/utils/Decoder')
 
-test('Decoder', t => {
+test('Decoder', async t => {
   const tests =
   [
     {
@@ -74,8 +74,8 @@ test('Decoder', t => {
   ]
   t.plan(tests.length + 1)
 
-  tests.forEach((v) => {
-    t.test(v.what, t => {
+  for (const v of tests) {
+    await t.test(v.what, async t => {
       t.plan(1)
 
       const dec = new Decoder()
@@ -86,9 +86,9 @@ test('Decoder', t => {
       const msg = 'Decoded string mismatch.\n' +
                 'Saw: ' + result + '\n' +
                 'Expected: ' + v.expected
-      t.strictSame(result, v.expected, msg)
+      t.assert.deepStrictEqual(result, v.expected, msg)
     })
-  })
+  }
 
   t.test('reset sets internal buffer to undefined', t => {
     t.plan(2)
@@ -96,8 +96,8 @@ test('Decoder', t => {
     const dec = new Decoder()
     dec.write('Hello+world%2')
 
-    t.notSame(dec.buffer, undefined)
+    t.assert.notStrictEqual(dec.buffer, undefined)
     dec.reset()
-    t.equal(dec.buffer, undefined)
+    t.assert.strictEqual(dec.buffer, undefined)
   })
 })

@@ -1,6 +1,6 @@
 'use strict'
 
-const { test } = require('tap')
+const { test } = require('node:test')
 const { Dicer } = require('../lib/main')
 
 test('dicer _write method', t => {
@@ -12,7 +12,7 @@ test('dicer _write method', t => {
 
     dicer._write(Buffer.from('Content-Type: text/plain'), null, () => {
       dicer._write(Buffer.from('Content-Type: text/plain'), null, () => {
-        t.pass('write method called')
+        t.assert.ok('write method called')
       })
     })
   })

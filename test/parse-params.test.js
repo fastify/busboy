@@ -1,10 +1,10 @@
 'use strict'
 
 const { inspect } = require('node:util')
-const { test } = require('tap')
+const { test } = require('node:test')
 const parseParams = require('../lib/utils/parseParams')
 
-test('parse-params', t => {
+test('parse-params', async t => {
   const tests = [
     {
       source: 'video/ogg',
@@ -120,15 +120,15 @@ test('parse-params', t => {
 
   t.plan(tests.length)
 
-  tests.forEach((v) => {
-    t.test(v.what, t => {
+  for (const v of tests) {
+    await t.test(v.what, t => {
       t.plan(1)
 
       const result = parseParams(v.source)
-      t.strictSame(
+      t.assert.deepStrictEqual(
         result,
         v.expected,
         `parsed parameters match.\nSaw: ${inspect(result)}\nExpected: ${inspect(v.expected)}`)
     })
-  })
+  }
 })
