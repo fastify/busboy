@@ -1,7 +1,7 @@
 'use strict'
 
 const Busboy = require('../lib/main')
-const { test } = require('tap')
+const { test } = require('node:test')
 
 test('busboy, emit', t => {
   t.plan(1)
@@ -11,7 +11,6 @@ test('busboy, emit', t => {
     busboy._finished = true
     busboy.emit('finish')
 
-    t.equal(busboy.emit('finish'), undefined)
-    t.end()
+    t.assert.strictEqual(busboy.emit('finish'), undefined)
   })
 })

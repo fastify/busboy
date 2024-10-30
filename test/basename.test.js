@@ -1,9 +1,9 @@
 'use strict'
 
-const { test } = require('tap')
+const { test } = require('node:test')
 const basename = require('../lib/utils/basename')
 
-test('basename', (t) => {
+test('basename', async (t) => {
   const testCases = [
     { description: 'returns an empty string if the path is not a string', path: {}, expected: '' },
     { description: 'returns an empty string if the path includes a \' and the char after is a .', path: 'path\\.', expected: '' },
@@ -19,10 +19,11 @@ test('basename', (t) => {
 
   t.plan(testCases.length)
 
-  testCases.forEach((testCase, index) => {
-    t.test(testCase.description, t => {
+  const index = 0
+  for (const testCase of testCases) {
+    await t.test(testCase.description, t => {
       t.plan(1)
-      t.equal(basename(testCase.path), testCase.expected, `Test case ${index + 1}`)
+      t.assert.strictEqual(basename(testCase.path), testCase.expected, `Test case ${index + 1}`)
     })
-  })
+  }
 })

@@ -1,9 +1,9 @@
 'use strict'
 
-const { test } = require('tap')
+const { test } = require('node:test')
 const decodeText = require('../lib/utils/decodeText')
 
-test('decodeText', t => {
+test('decodeText', async t => {
   const testCases = [
     { description: 'UTF-8 encoding', text: Buffer.from('Hello, World!', 'utf8'), initialCharset: 'utf8', outputCharset: 'utf8', expected: 'Hello, World!' },
     { description: 'UTF-8 encoding empty', text: Buffer.from('', 'utf8'), initialCharset: 'utf8', outputCharset: 'utf8', expected: '' },
@@ -24,10 +24,11 @@ test('decodeText', t => {
 
   t.plan(testCases.length)
 
-  testCases.forEach((c, index) => {
-    t.test(c.description, t => {
+  const index = 0
+  for (const c of testCases) {
+    await t.test(c.description, t => {
       t.plan(1)
-      t.equal(decodeText(c.text, c.initialCharset, c.outputCharset), c.expected, `Test case ${index + 1}`)
+      t.assert.strictEqual(decodeText(c.text, c.initialCharset, c.outputCharset), c.expected, `Test case ${index + 1}`)
     })
-  })
+  }
 })

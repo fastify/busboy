@@ -1,7 +1,7 @@
 'use strict'
 
 const { inspect } = require('util')
-const { test } = require('tap')
+const { test } = require('node:test')
 
 const Busboy = require('..')
 
@@ -22,7 +22,7 @@ function formDataFile (key, filename, contentType) {
   ])
 }
 
-test('multipart-stream-pause - processes stream correctly', t => {
+test('multipart-stream-pause - processes stream correctly', async t => {
   t.plan(6)
   const reqChunks = [
     Buffer.concat([
@@ -32,51 +32,54 @@ test('multipart-stream-pause - processes stream correctly', t => {
     formDataSection('bar', 'bar value'),
     Buffer.from('\r\n--' + BOUNDARY + '--\r\n')
   ]
-  const busboy = new Busboy({
-    headers: {
-      'content-type': 'multipart/form-data; boundary=' + BOUNDARY
-    }
-  })
-  let finishes = 0
-  const results = []
-  const expected = [
-    ['file', 'file', 'file.bin', '7bit', 'application/octet-stream'],
-    ['field', 'foo', 'foo value', false, false, '7bit', 'text/plain'],
-    ['field', 'bar', 'bar value', false, false, '7bit', 'text/plain']
-  ]
+  await new Promise((resolve) => {
+    const busboy = new Busboy({
+      headers: {
+        'content-type': 'multipart/form-data; boundary=' + BOUNDARY
+      }
+    })
+    let finishes = 0
+    const results = []
+    const expected = [
+      ['file', 'file', 'file.bin', '7bit', 'application/octet-stream'],
+      ['field', 'foo', 'foo value', false, false, '7bit', 'text/plain'],
+      ['field', 'bar', 'bar value', false, false, '7bit', 'text/plain']
+    ]
 
-  busboy.on('field', function (key, val, keyTrunc, valTrunc, encoding, contype) {
-    results.push(['field', key, val, keyTrunc, valTrunc, encoding, contype])
-  })
-  busboy.on('file', function (fieldname, stream, filename, encoding, mimeType) {
-    results.push(['file', fieldname, filename, encoding, mimeType])
-    // Simulate a pipe where the destination is pausing (perhaps due to waiting
-    // for file system write to finish)
-    setTimeout(function () {
-      stream.resume()
-    }, 10)
-  })
-  busboy.on('finish', function () {
-    t.ok(finishes++ === 0, 'finish emitted multiple times')
-    t.strictSame(results.length,
-      expected.length,
-      'Parsed result count mismatch. Saw ' +
+    busboy.on('field', function (key, val, keyTrunc, valTrunc, encoding, contype) {
+      results.push(['field', key, val, keyTrunc, valTrunc, encoding, contype])
+    })
+    busboy.on('file', function (fieldname, stream, filename, encoding, mimeType) {
+      results.push(['file', fieldname, filename, encoding, mimeType])
+      // Simulate a pipe where the destination is pausing (perhaps due to waiting
+      // for file system write to finish)
+      setTimeout(function () {
+        stream.resume()
+      }, 10)
+    })
+    busboy.on('finish', function () {
+      t.assert.ok(finishes++ === 0, 'finish emitted multiple times')
+      t.assert.deepStrictEqual(results.length,
+        expected.length,
+        'Parsed result count mismatch. Saw ' +
           results.length +
           '. Expected: ' + expected.length)
 
-    results.forEach(function (result, i) {
-      t.strictSame(result,
-        expected[i],
-        'Result mismatch:\nParsed: ' + inspect(result) +
+      results.forEach(function (result, i) {
+        t.assert.deepStrictEqual(result,
+          expected[i],
+          'Result mismatch:\nParsed: ' + inspect(result) +
             '\nExpected: ' + inspect(expected[i]))
+      })
+      t.assert.ok('pass')
+      resolve()
+    }).on('error', function (err) {
+      t.assert.ifError(err)
     })
-    t.pass()
-  }).on('error', function (err) {
-    t.error(err)
-  })
 
-  reqChunks.forEach(function (buf) {
-    busboy.write(buf)
+    reqChunks.forEach(function (buf) {
+      busboy.write(buf)
+    })
+    busboy.end()
   })
-  busboy.end()
 })

@@ -1,24 +1,24 @@
 'use strict'
 
-const { test } = require('tap')
+const { test } = require('node:test')
 const { Dicer } = require('../lib/main')
 
-test('dicer-export', t => {
+test('dicer-export', async t => {
   t.plan(2)
 
-  t.test('without new operator a new dicer instance will be initialized', t => {
+  await t.test('without new operator a new dicer instance will be initialized', t => {
     t.plan(1)
 
-    t.type(Dicer({
+    t.assert.strictEqual(Dicer({
       boundary: '----boundary'
-    }), Dicer)
+    }) instanceof Dicer, true)
   })
 
-  t.test('with new operator a new dicer instance will be initialized', t => {
+  await t.test('with new operator a new dicer instance will be initialized', t => {
     t.plan(1)
 
-    t.type(new Dicer({
+    t.assert.strictEqual(new Dicer({
       boundary: '----boundary'
-    }), Dicer)
+    }) instanceof Dicer, true)
   })
 })
