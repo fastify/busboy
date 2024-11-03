@@ -264,7 +264,7 @@ Busboy methods
 
         * **Busboy expected an options-Object with headers-attribute.** - The first parameter is lacking of a headers-attribute.
 
-        * **Limit $limit is not a valid number** - Busboy expected the desired limit to be of type number. Busboy throws this Error to prevent a potential security issue by falling silently back to the Busboy-defaults. Potential source for this Error can be the direct use of environment variables without transforming them to the type number. 
+        * **Limit $limit is not a valid number** - Busboy expected the desired limit to be of type number. Busboy throws this Error to prevent a potential security issue by falling silently back to the Busboy-defaults. Potential source for this Error can be the direct use of environment variables without transforming them to the type number.
 
         * **Unsupported Content-Type.** - The `Content-Type` isn't one Busboy can parse.
 

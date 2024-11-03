@@ -33,11 +33,11 @@ export interface BusboyConfig {
     defCharset?: string | undefined;
     /**
      * Detect if a Part is a file.
-     * 
-     * By default a file is detected if contentType 
+     *
+     * By default a file is detected if contentType
      * is application/octet-stream or fileName is not
      * undefined.
-     * 
+     *
      * Modify this to handle e.g. Blobs.
      */
     isPartAFile?: (fieldName: string | undefined, contentType: string | undefined, fileName: string | undefined) => boolean;
