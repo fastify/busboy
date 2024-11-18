@@ -54,6 +54,10 @@
     "type": "git",
     "url": "git+https://github.com/fastify/busboy.git"
   },
+  "bugs": {
+    "url": "https://github.com/fastify/busboy/issues"
+  },
+  "homepage": "https://github.com/fastify/busboy#readme",
   "tsd": {
     "directory": "test/types",
     "compilerOptions": {
