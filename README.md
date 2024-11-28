@@ -52,7 +52,7 @@ Examples
 ```javascript
 const http = require('node:http');
 const { inspect } = require('node:util');
-const Busboy = require('busboy');
+const Busboy = require('@fastify/busboy');
 
 http.createServer((req, res) => {
   if (req.method === 'POST') {
@@ -107,7 +107,7 @@ const path = require('node:path');
 const os = require('node:os');
 const fs = require('node:fs');
 
-const Busboy = require('busboy');
+const Busboy = require('@fastify/busboy');
 
 http.createServer(function(req, res) {
   if (req.method === 'POST') {
@@ -135,7 +135,7 @@ http.createServer(function(req, res) {
 const http = require('node:http');
 const { inspect } = require('node:util');
 
-const Busboy = require('busboy');
+const Busboy = require('@fastify/busboy');
 
 http.createServer(function(req, res) {
   if (req.method === 'POST') {
