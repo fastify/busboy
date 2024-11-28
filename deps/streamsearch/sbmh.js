@@ -52,7 +52,7 @@ function SBMH (needle) {
   this.maxMatches = Infinity
   this.matches = 0
 
-  this._occ = new Array(256)
+  this._occ = new Uint8Array(256)
     .fill(needleLength) // Initialize occurrence table.
   this._lookbehind_size = 0
   this._needle = needle
