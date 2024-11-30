@@ -58,7 +58,7 @@ function SBMH (needle) {
   this._needle = needle
   this._bufpos = 0
 
-  this._lookbehind = Buffer.alloc(needleLength)
+  this._lookbehind = Buffer.alloc(needleLength - 1)
 
   // Populate occurrence table with analysis of the needle,
   // ignoring last letter.
