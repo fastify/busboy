@@ -177,7 +177,10 @@ SBMH.prototype._sbmh_feed = function (data) {
     return (this._bufpos = pos + needleLength)
   }
 
-  pos = Math.max(len - needleLastCharIndex, 0)
+  pos = len - needleLastCharIndex
+  if (pos < 0) {
+    pos = 0
+  }
 
   // There was no match. If there's trailing haystack data that we cannot
   // match yet using the Boyer-Moore-Horspool algorithm (because the trailing
