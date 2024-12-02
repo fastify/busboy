@@ -244,7 +244,7 @@ test('streamsearch', async t => {
 
     const expected = [
       [false, Buffer.from('bar\r'), 0, 3],
-      [false, Buffer.from('\r\0\0'), 0, 1],
+      [false, Buffer.from('\r\0'), 0, 1],
       [false, Buffer.from('\n\r\nhello'), 0, 8]
     ]
     const needle = '\r\n\n'
@@ -339,7 +339,7 @@ test('streamsearch', async t => {
     t.plan(13)
 
     const expected = [
-      [false, Buffer.from('\n\n\0'), 0, 1],
+      [false, Buffer.from('\n\n'), 0, 1],
       [true, undefined, undefined, undefined],
       [false, Buffer.from('\r\nhello'), 1, 7]
     ]
@@ -374,8 +374,8 @@ test('streamsearch', async t => {
 
     const expected = [
       [false, Buffer.from('bar\r'), 0, 3],
-      [false, Buffer.from('\r\n\0'), 0, 2],
-      [false, Buffer.from('\r\n\0'), 0, 1],
+      [false, Buffer.from('\r\n'), 0, 2],
+      [false, Buffer.from('\r\n'), 0, 1],
       [false, Buffer.from('hello'), 0, 5]
     ]
     const needle = '\r\n\n'

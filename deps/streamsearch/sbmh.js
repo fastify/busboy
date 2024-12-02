@@ -40,6 +40,7 @@ function SBMH (needle) {
   }
 
   const needleLength = needle.length
+  const needleLastCharIndex = needleLength - 1
 
   if (needleLength === 0) {
     throw new Error('The needle cannot be an empty String/Buffer.')
@@ -58,12 +59,12 @@ function SBMH (needle) {
   this._needle = needle
   this._bufpos = 0
 
-  this._lookbehind = Buffer.alloc(needleLength)
+  this._lookbehind = Buffer.alloc(needleLastCharIndex)
 
   // Populate occurrence table with analysis of the needle,
   // ignoring last letter.
-  for (var i = 0; i < needleLength - 1; ++i) { // eslint-disable-line no-var
-    this._occ[needle[i]] = needleLength - 1 - i
+  for (var i = 0; i < needleLastCharIndex; ++i) { // eslint-disable-line no-var
+    this._occ[needle[i]] = needleLastCharIndex - i
   }
 }
 inherits(SBMH, EventEmitter)
