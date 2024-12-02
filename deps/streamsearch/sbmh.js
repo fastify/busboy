@@ -89,7 +89,8 @@ SBMH.prototype._sbmh_feed = function (data) {
   const len = data.length
   const needle = this._needle
   const needleLength = needle.length
-  const lastNeedleChar = needle[needleLength - 1]
+  const needleLastCharIndex = needleLength - 1
+  const needleLastChar = needle[needleLastCharIndex]
 
   // Positive: points to a position in `data`
   //           pos == 3 points to data[3]
@@ -112,24 +113,24 @@ SBMH.prototype._sbmh_feed = function (data) {
     // or until
     //   the character to look at lies outside the haystack.
     while (pos < 0 && pos <= len - needleLength) {
-      ch = this._sbmh_lookup_char(data, pos + needleLength - 1)
+      ch = this._sbmh_lookup_char(data, pos + needleLastCharIndex)
 
       if (
-        ch === lastNeedleChar &&
-        this._sbmh_memcmp(data, pos, needleLength - 1)
+        ch === needleLastChar &&
+        this._sbmh_memcmp(data, pos, needleLastCharIndex)
       ) {
         this._lookbehind_size = 0
         ++this.matches
         this.emit('info', true)
-
         return (this._bufpos = pos + needleLength)
       }
+
       pos += this._occ[ch]
     }
 
     // No match.
 
-    if (pos < 0) {
+    while (pos < 0 && !this._sbmh_memcmp(data, pos, len - pos)) {
       // There's too few data for Boyer-Moore-Horspool to run,
       // so let's use a different algorithm to skip as much as
       // we can.
@@ -138,7 +139,7 @@ SBMH.prototype._sbmh_feed = function (data) {
       //   looks like the beginning of the needle
       // or until
       //   pos == 0
-      while (pos < 0 && !this._sbmh_memcmp(data, pos, len - pos)) { ++pos }
+      ++pos
     }
 
     if (pos >= 0) {
@@ -168,15 +169,18 @@ SBMH.prototype._sbmh_feed = function (data) {
 
   // Lookbehind buffer is now empty. We only need to check if the
   // needle is in the haystack.
-  pos = data.indexOf(needle, pos + ((pos >= 0) * this._bufpos))
+  pos = data.indexOf(needle, pos + this._bufpos)
 
   if (pos !== -1) {
     ++this.matches
-    if (pos > 0) { this.emit('info', true, data, this._bufpos, pos) } else { this.emit('info', true) }
+    if (pos === 0) { this.emit('info', true) } else { this.emit('info', true, data, this._bufpos, pos) }
     return (this._bufpos = pos + needleLength)
   }
 
-  pos = len - needleLength
+  pos = len - needleLastCharIndex
+  if (pos < 0) {
+    pos = 0
+  }
 
   // There was no match. If there's trailing haystack data that we cannot
   // match yet using the Boyer-Moore-Horspool algorithm (because the trailing
@@ -185,24 +189,25 @@ SBMH.prototype._sbmh_feed = function (data) {
   // Whatever trailing data is left after running this algorithm is added to
   // the lookbehind buffer.
   while (
-    pos < len &&
+    pos !== len &&
     (
       data[pos] !== needle[0] ||
       Buffer.compare(
-        data.subarray(pos, pos + len - pos),
-        needle.subarray(0, len - pos)
+        data.subarray(pos + 1, len),
+        needle.subarray(1, len - pos)
       ) !== 0
     )
   ) {
     ++pos
   }
-  if (pos < len) {
-    data.copy(this._lookbehind, 0, pos, pos + (len - pos))
+
+  if (pos !== len) {
+    data.copy(this._lookbehind, 0, pos, len)
     this._lookbehind_size = len - pos
   }
 
   // Everything until pos is guaranteed not to contain needle data.
-  if (pos > 0) { this.emit('info', false, data, this._bufpos, pos < len ? pos : len) }
+  if (pos !== 0) { this.emit('info', false, data, this._bufpos, pos) }
 
   this._bufpos = len
   return len
