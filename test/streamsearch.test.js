@@ -243,7 +243,7 @@ test('streamsearch', async t => {
     t.plan(9)
     const expected = [
       [false, Buffer.from('t\0\0'), 0, 1],
-      [false, Buffer.from('shello'), 0, 7]
+      [false, Buffer.from('eshello'), 0, 7]
     ]
     const needle = 'test'
     const s = new Streamsearch(needle)
