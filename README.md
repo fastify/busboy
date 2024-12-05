@@ -2,7 +2,7 @@
 
 <div align="center">
 
-[![Build Status](https://github.com/fastify/busboy/actions/workflows/ci.yml/badge.svg)](https://github.com/fastify/busboy/actions)
+[![Build Status](https://github.com/fastify/busboy/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/fastify/busboy/actions)
 [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat)](https://standardjs.com/)
 [![Security Responsible Disclosure](https://img.shields.io/badge/Security-Responsible%20Disclosure-yellow.svg)](https://github.com/fastify/.github/blob/main/SECURITY.md)
 
