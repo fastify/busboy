@@ -114,7 +114,7 @@ SBMH.prototype._sbmh_feed = function (data) {
     // or until
     //   the character to look at lies outside the haystack.
     while (pos < 0 && pos <= len - needleLength) {
-      ch = this._sbmh_lookup_char(data, pos + needleLastCharIndex)
+      ch = data[pos + needleLastCharIndex]
 
       if (
         ch === needleLastChar &&

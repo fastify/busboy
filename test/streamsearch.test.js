@@ -4,7 +4,7 @@ const { test } = require('node:test')
 const Streamsearch = require('../deps/streamsearch/sbmh')
 
 test('streamsearch', async t => {
-  t.plan(18)
+  t.plan(19)
 
   await t.test('should throw an error if the needle is not a String or Buffer', t => {
     t.plan(1)
@@ -231,6 +231,34 @@ test('streamsearch', async t => {
       t.assert.deepStrictEqual(end, expected[i][3])
       i++
       if (i >= 3) {
+        t.assert.ok('pass')
+      }
+    })
+
+    s.push(chunks[0])
+    s.push(chunks[1])
+  })
+
+  await t.test('should process two chunks with an overflowing needle /2', t => {
+    t.plan(9)
+    const expected = [
+      [false, Buffer.from('t\0\0'), 0, 1],
+      [false, Buffer.from('eshello'), 0, 7]
+    ]
+    const needle = 'test'
+    const s = new Streamsearch(needle)
+    const chunks = [
+      Buffer.from('t'),
+      Buffer.from('eshello')
+    ]
+    let i = 0
+    s.on('info', (isMatched, data, start, end) => {
+      t.assert.deepStrictEqual(isMatched, expected[i][0])
+      t.assert.deepStrictEqual(data, expected[i][1])
+      t.assert.deepStrictEqual(start, expected[i][2])
+      t.assert.deepStrictEqual(end, expected[i][3])
+      i++
+      if (i >= 2) {
         t.assert.ok('pass')
       }
     })
