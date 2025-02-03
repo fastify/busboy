@@ -2,7 +2,7 @@
 
 <div align="center">
 
-[![Build Status](https://github.com/fastify/busboy/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/fastify/busboy/actions)
+[![Build Status](https://github.com/fastify/busboy/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/fastify/busboy/actions)
 [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat)](https://standardjs.com/)
 [![Security Responsible Disclosure](https://img.shields.io/badge/Security-Responsible%20Disclosure-yellow.svg)](https://github.com/fastify/.github/blob/main/SECURITY.md)
 
@@ -30,7 +30,7 @@ Benchmark (Mean time for 500 Kb payload, 2000 cycles, 1000 cycle warmup):
 | busboy                | 0.3.1   | `340114`                                  |
 | @fastify/busboy       | 1.0.0   | `270984`                                  |
 
-[Changelog](https://github.com/fastify/busboy/blob/master/CHANGELOG.md) since busboy 0.31.
+[Changelog](https://github.com/fastify/busboy/blob/main/CHANGELOG.md) since busboy 0.31.
 
 Requirements
 ============
