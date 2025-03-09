@@ -3,7 +3,7 @@
 const Busboy = require('..')
 
 const { test } = require('node:test')
-const { inspect } = require('util')
+const { inspect } = require('node:util')
 
 const EMPTY_FN = function () {
 }
