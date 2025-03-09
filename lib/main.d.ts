@@ -4,8 +4,8 @@
 
 /// <reference types="node" />
 
-import * as http from 'http';
-import { Readable, Writable } from 'stream';
+import * as http from 'node:http';
+import { Readable, Writable } from 'node:stream';
 export { Dicer } from "../deps/dicer/lib/dicer";
 
 export const Busboy: BusboyConstructor;

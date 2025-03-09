@@ -1,6 +1,6 @@
 'use strict'
 
-const { inspect } = require('util')
+const { inspect } = require('node:util')
 const Busboy = require('..')
 const { test } = require('node:test')
 

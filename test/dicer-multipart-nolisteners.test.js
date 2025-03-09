@@ -2,8 +2,8 @@
 
 const Dicer = require('../deps/dicer/lib/Dicer')
 const { test } = require('node:test')
-const fs = require('fs')
-const path = require('path')
+const fs = require('node:fs')
+const path = require('node:path')
 
 const FIXTURES_ROOT = path.join(__dirname, 'fixtures/')
 
