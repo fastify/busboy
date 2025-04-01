@@ -37,7 +37,7 @@
     "photofinish": "^1.8.0",
     "snazzy": "^9.0.0",
     "standard": "^17.1.0",
-    "tinybench": "^3.0.0",
+    "tinybench": "^4.0.1",
     "tsd": "^0.31.0",
     "typescript": "~5.8.2"
   },
