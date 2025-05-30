@@ -201,6 +201,16 @@ Busboy (special) events
     * If a configured file size limit was reached, `stream` will both have a boolean property `truncated` (best checked at the end of the stream) and emit a 'limit' event to notify you when this happens.
     * The property `bytesRead` informs about the number of bytes that have been read so far.
 
+* **limit**() - Emitted when a file exceeds the configured `fileSize` limit. You can listen on the file stream to handle it:
+
+```js
+busboy.on('file', (fieldname, stream) => {
+  stream.on('limit', () => {
+    console.log('File size exceeded')
+  })
+})
+```
+
 * **field**(< _string_ >fieldname, < _string_ >value, < _boolean_ >fieldnameTruncated, < _boolean_ >valueTruncated, < _string_ >transferEncoding, < _string_ >mimeType) - Emitted for each new non-file field found.
 
 * **partsLimit**() - Emitted when specified `parts` limit has been reached. No more 'file' or 'field' events will be emitted.

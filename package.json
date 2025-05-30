@@ -32,11 +32,13 @@
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
+    "@types/tap": "^15.0.12",
     "busboy": "^1.6.0",
     "c8": "^10.1.2",
     "photofinish": "^1.8.0",
     "snazzy": "^9.0.0",
     "standard": "^17.1.0",
+    "tap": "^21.1.0",
     "tinybench": "^4.0.1",
     "tsd": "^0.32.0",
     "typescript": "~5.8.2"
