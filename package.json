@@ -31,7 +31,7 @@
     "test": "npm run test:unit && npm run test:types"
   },
   "devDependencies": {
-    "@types/node": "^22.0.0",
+    "@types/node": "^24.0.8",
     "busboy": "^1.6.0",
     "c8": "^10.1.2",
     "photofinish": "^1.8.0",
