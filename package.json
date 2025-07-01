@@ -39,6 +39,7 @@
     "standard": "^17.1.0",
     "tinybench": "^4.0.1",
     "tsd": "^0.32.0",
+    "tslib": "^2.8.1",
     "typescript": "~5.8.2"
   },
   "keywords": [
@@ -57,12 +58,7 @@
   },
   "homepage": "https://github.com/fastify/busboy#readme",
   "tsd": {
-    "directory": "test/types",
-    "compilerOptions": {
-      "esModuleInterop": false,
-      "module": "commonjs",
-      "target": "ES2017"
-    }
+    "directory": "test-types"
   },
   "standard": {
     "globals": [
