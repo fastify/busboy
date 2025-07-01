@@ -3,6 +3,17 @@
 //                 Igor Savin <https://github.com/kibertoad>
 
 /// <reference types="node" />
+declare module 'stream' {
+  interface Readable {
+    /**
+     * Emitted when the configured file size limit is reached.
+     */
+    on(event: 'limit', listener: () => void): this;
+    once(event: 'limit', listener: () => void): this;
+    addListener(event: 'limit', listener: () => void): this;
+    removeListener(event: 'limit', listener: () => void): this;
+  }
+}
 
 import * as http from 'node:http';
 import { Readable, Writable } from 'node:stream';
