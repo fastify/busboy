@@ -1,6 +1,6 @@
-import BusboyDefault, { BusboyConstructor, BusboyConfig, BusboyHeaders, Busboy, BusboyEvents, BusboyFileStream } from '../..';
+import BusboyDefault, { BusboyConstructor, BusboyConfig, BusboyHeaders, Busboy, BusboyEvents, BusboyFileStream } from '..';
 import {expectError, expectType} from "tsd";
-import BusboyESM from "../..";
+import BusboyESM from "..";
 
 // test type exports
 type Constructor = BusboyConstructor;

@@ -1,4 +1,4 @@
-import { Dicer } from "../../lib/main";
+import { Dicer } from "../lib/main";
 import * as fs from "fs";
 import * as stream from "stream";
 
