@@ -40,7 +40,7 @@
     "tinybench": "^4.0.1",
     "tsd": "^0.32.0",
     "tslib": "^2.8.1",
-    "typescript": "~5.8.2"
+    "typescript": "~5.9.2"
   },
   "keywords": [
     "uploads",
