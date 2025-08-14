@@ -115,6 +115,21 @@ test('parse-params', async t => {
       source: 'multipart/form-data; charset=utf-8; boundary=0xKhTmLbOuNdArY',
       expected: ['multipart/form-data', ['charset', 'utf-8'], ['boundary', '0xKhTmLbOuNdArY']],
       what: 'Multiple non-quoted parameters'
+    },
+    {
+      source: 'form-data; name="file"; filename="payload.jpg".html',
+      expected: ['form-data', ['name', 'file'], ['filename', 'payload.jpg']],
+      what: 'Improperly quoted filename should stop at closing quote (RFC 2183/7578 compliance)'
+    },
+    {
+      source: 'form-data; name="field"; filename="test.pdf"extra.txt',
+      expected: ['form-data', ['name', 'field'], ['filename', 'test.pdf']],
+      what: 'Quoted filename with trailing unquoted text should stop at closing quote'
+    },
+    {
+      source: 'text/plain; charset="utf-8"garbage; boundary=test',
+      expected: ['text/plain', ['charset', 'utf-8'], ['boundary', 'test']],
+      what: 'Quoted parameter with trailing garbage should stop at closing quote'
     }
   ]
 
