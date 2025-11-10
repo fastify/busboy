@@ -41,7 +41,9 @@ Requirements
 Install
 =======
 
-    npm i @fastify/busboy
+```sh
+npm i @fastify/busboy
+```
 
 
 Examples
@@ -200,6 +202,16 @@ Busboy (special) events
     * Note: if you listen for this event, you should always handle the `stream` no matter if you care about the file contents or not (e.g. you can simply just do `stream.resume();` if you want to discard the contents), otherwise the 'finish' event will never fire on the Busboy instance. However, if you don't care about **any** incoming files, you can simply not listen for the 'file' event at all and any/all files will be automatically and safely discarded (these discarded files do still count towards `files` and `parts` limits).
     * If a configured file size limit was reached, `stream` will both have a boolean property `truncated` (best checked at the end of the stream) and emit a 'limit' event to notify you when this happens.
     * The property `bytesRead` informs about the number of bytes that have been read so far.
+
+* **limit**() - Emitted when a file exceeds the configured `fileSize` limit. You can listen on the file stream to handle it:
+
+```js
+busboy.on('file', (fieldname, stream) => {
+  stream.on('limit', () => {
+    console.log('File size exceeded')
+  })
+})
+```
 
 * **field**(< _string_ >fieldname, < _string_ >value, < _boolean_ >fieldnameTruncated, < _boolean_ >valueTruncated, < _string_ >transferEncoding, < _string_ >mimeType) - Emitted for each new non-file field found.
 
