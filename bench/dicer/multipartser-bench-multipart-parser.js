@@ -29,14 +29,10 @@ parser.on('error', function (error) {
 })
 
 const start = +new Date()
-const nparsed = parser.data(buffer)
-const nend = parser.end()
 const duration = +new Date() - start
 const mbPerSec = (mb / (duration / 1000)).toFixed(2)
 
 console.log(mbPerSec + ' mb/sec')
-
-// assert.equal(nparsed, buffer.length);
 
 function createMultipartBuffer (boundary, size) {
   const head =

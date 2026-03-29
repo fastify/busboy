@@ -120,34 +120,64 @@ export interface BusboyFileStream extends
   bytesRead: number;
 }
 
-export interface Busboy extends Writable {
-  addListener<Event extends keyof BusboyEvents>(event: Event, listener: BusboyEvents[Event]): this;
+export interface BusboyInstance extends Writable {
+  addListener<Event extends keyof BusboyEvents>(
+    event: Event,
+    listener: BusboyEvents[Event]
+  ): this;
 
   addListener(event: string | symbol, listener: (...args: any[]) => void): this;
 
-  on<Event extends keyof BusboyEvents>(event: Event, listener: BusboyEvents[Event]): this;
+  on<Event extends keyof BusboyEvents>(
+    event: Event,
+    listener: BusboyEvents[Event]
+  ): this;
 
   on(event: string | symbol, listener: (...args: any[]) => void): this;
 
-  once<Event extends keyof BusboyEvents>(event: Event, listener: BusboyEvents[Event]): this;
+  once<Event extends keyof BusboyEvents>(
+    event: Event,
+    listener: BusboyEvents[Event]
+  ): this;
 
   once(event: string | symbol, listener: (...args: any[]) => void): this;
 
-  removeListener<Event extends keyof BusboyEvents>(event: Event, listener: BusboyEvents[Event]): this;
+  removeListener<Event extends keyof BusboyEvents>(
+    event: Event,
+    listener: BusboyEvents[Event]
+  ): this;
 
-  removeListener(event: string | symbol, listener: (...args: any[]) => void): this;
+  removeListener(
+    event: string | symbol,
+    listener: (...args: any[]) => void
+  ): this;
 
-  off<Event extends keyof BusboyEvents>(event: Event, listener: BusboyEvents[Event]): this;
+  off<Event extends keyof BusboyEvents>(
+    event: Event,
+    listener: BusboyEvents[Event]
+  ): this;
 
   off(event: string | symbol, listener: (...args: any[]) => void): this;
 
-  prependListener<Event extends keyof BusboyEvents>(event: Event, listener: BusboyEvents[Event]): this;
+  prependListener<Event extends keyof BusboyEvents>(
+    event: Event,
+    listener: BusboyEvents[Event]
+  ): this;
 
-  prependListener(event: string | symbol, listener: (...args: any[]) => void): this;
+  prependListener(
+    event: string | symbol,
+    listener: (...args: any[]) => void
+  ): this;
 
-  prependOnceListener<Event extends keyof BusboyEvents>(event: Event, listener: BusboyEvents[Event]): this;
+  prependOnceListener<Event extends keyof BusboyEvents>(
+    event: Event,
+    listener: BusboyEvents[Event]
+  ): this;
 
-  prependOnceListener(event: string | symbol, listener: (...args: any[]) => void): this;
+  prependOnceListener(
+    event: string | symbol,
+    listener: (...args: any[]) => void
+  ): this;
 }
 
 export interface BusboyEvents {
@@ -200,7 +230,7 @@ export interface BusboyEvents {
 }
 
 export interface BusboyConstructor {
-  (options: BusboyConfig): Busboy;
+  (options: BusboyConfig): BusboyInstance;
 
-  new(options: BusboyConfig): Busboy;
+  new(options: BusboyConfig): BusboyInstance;
 }
