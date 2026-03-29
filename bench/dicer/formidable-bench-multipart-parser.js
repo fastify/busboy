@@ -1,5 +1,7 @@
 'use strict'
 
+/* eslint-disable */
+
 require('../node_modules/formidable/test/common')
 const multipartParser = require('../node_modules/formidable/lib/multipart_parser')
 const MultipartParser = multipartParser.MultipartParser

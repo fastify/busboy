@@ -1,4 +1,5 @@
 'use strict'
+/* eslint-disable */
 
 /**
  * Parted (https://github.com/chjj/parted)

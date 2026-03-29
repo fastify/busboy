@@ -1,5 +1,6 @@
 'use strict'
 
+/* eslint-disable */
 const multipartser = require('multipartser')
 const boundary = '-----------------------------168072824752491622650073'
 const parser = multipartser()

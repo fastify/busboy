@@ -1,4 +1,5 @@
 'use strict'
+/* eslint-disable */
 
 // A special, edited version of the multipart parser from parted is needed here
 // because otherwise it attempts to do some things above and beyond just parsing
