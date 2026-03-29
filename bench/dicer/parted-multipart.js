@@ -6,273 +6,273 @@
  * Copyright (c) 2011, Christopher Jeffrey. (MIT Licensed)
  */
 
-var fs = require('node:fs')
-  , path = require('node:path')
-  , EventEmitter = require('node:events').EventEmitter
-  , StringDecoder = require('node:string_decoder').StringDecoder
-  , set = require('qs').set
-  , each = Array.prototype.forEach;
+const fs = require('node:fs')
+const path = require('node:path')
+const EventEmitter = require('node:events').EventEmitter
+const StringDecoder = require('node:string_decoder').StringDecoder
+const set = require('qs').set
+const each = Array.prototype.forEach
 
 /**
  * Character Constants
  */
 
-var DASH = '-'.charCodeAt(0)
-  , CR = '\r'.charCodeAt(0)
-  , LF = '\n'.charCodeAt(0)
-  , COLON = ':'.charCodeAt(0)
-  , SPACE = ' '.charCodeAt(0);
+const DASH = '-'.charCodeAt(0)
+const CR = '\r'.charCodeAt(0)
+const LF = '\n'.charCodeAt(0)
+const COLON = ':'.charCodeAt(0)
+const SPACE = ' '.charCodeAt(0)
 
 /**
  * Parser
  */
 
-var Parser = function(type, options) {
+const Parser = function (type, options) {
   if (!(this instanceof Parser)) {
-    return new Parser(type, options);
+    return new Parser(type, options)
   }
 
-  EventEmitter.call(this);
+  EventEmitter.call(this)
 
-  this.writable = true;
-  this.readable = true;
+  this.writable = true
+  this.readable = true
 
-  this.options = options || {};
+  this.options = options || {}
 
-  var key = grab(type, 'boundary');
+  const key = grab(type, 'boundary')
   if (!key) {
-    return this._error('No boundary key found.');
+    return this._error('No boundary key found.')
   }
 
-  this.key = Buffer.allocUnsafe('\r\n--' + key);
+  this.key = Buffer.allocUnsafe('\r\n--' + key)
 
-  this._key = {};
-  each.call(this.key, function(ch) {
-    this._key[ch] = true;
-  }, this);
+  this._key = {}
+  each.call(this.key, function (ch) {
+    this._key[ch] = true
+  }, this)
 
-  this.state = 'start';
-  this.pending = 0;
-  this.written = 0;
-  this.writtenDisk = 0;
-  this.buff = Buffer.allocUnsafe(200);
+  this.state = 'start'
+  this.pending = 0
+  this.written = 0
+  this.writtenDisk = 0
+  this.buff = Buffer.allocUnsafe(200)
 
-  this.preamble = true;
-  this.epilogue = false;
+  this.preamble = true
+  this.epilogue = false
 
-  this._reset();
-};
+  this._reset()
+}
 
-Parser.prototype.__proto__ = EventEmitter.prototype;
+Parser.prototype.__proto__ = EventEmitter.prototype
 
 /**
  * Parsing
  */
 
-Parser.prototype.write = function(data) {
-  if (!this.writable
-      || this.epilogue) return;
+Parser.prototype.write = function (data) {
+  if (!this.writable ||
+      this.epilogue) return
 
   try {
-    this._parse(data);
+    this._parse(data)
   } catch (e) {
-    this._error(e);
+    this._error(e)
   }
 
-  return true;
-};
+  return true
+}
 
-Parser.prototype.end = function(data) {
-  if (!this.writable) return;
+Parser.prototype.end = function (data) {
+  if (!this.writable) return
 
-  if (data) this.write(data);
+  if (data) this.write(data)
 
   if (!this.epilogue) {
-    return this._error('Message underflow.');
+    return this._error('Message underflow.')
   }
 
-  return true;
-};
+  return true
+}
 
-Parser.prototype._parse = function(data) {
-  var i = 0
-    , len = data.length
-    , buff = this.buff
-    , key = this.key
-    , ch
-    , val
-    , j;
+Parser.prototype._parse = function (data) {
+  let i = 0
+  let len = data.length
+  const buff = this.buff
+  const key = this.key
+  let ch
+  let val
+  let j
 
   for (; i < len; i++) {
     if (this.pos >= 200) {
-      return this._error('Potential buffer overflow.');
+      return this._error('Potential buffer overflow.')
     }
 
-    ch = data[i];
+    ch = data[i]
 
     switch (this.state) {
       case 'start':
         switch (ch) {
           case DASH:
-            this.pos = 3;
-            this.state = 'key';
-            break;
+            this.pos = 3
+            this.state = 'key'
+            break
           default:
-            break;
+            break
         }
-        break;
+        break
       case 'key':
         if (this.pos === key.length) {
-          this.state = 'key_end';
-          i--;
+          this.state = 'key_end'
+          i--
         } else if (ch !== key[this.pos]) {
           if (this.preamble) {
-            this.state = 'start';
-            i--;
+            this.state = 'start'
+            i--
           } else {
-            this.state = 'body';
-            val = this.pos - i;
+            this.state = 'body'
+            val = this.pos - i
             if (val > 0) {
-              this._write(key.slice(0, val));
+              this._write(key.slice(0, val))
             }
-            i--;
+            i--
           }
         } else {
-          this.pos++;
+          this.pos++
         }
-        break;
+        break
       case 'key_end':
         switch (ch) {
           case CR:
-            this.state = 'key_line_end';
-            break;
+            this.state = 'key_line_end'
+            break
           case DASH:
-            this.state = 'key_dash_end';
-            break;
+            this.state = 'key_dash_end'
+            break
           default:
-            return this._error('Expected CR or DASH.');
+            return this._error('Expected CR or DASH.')
         }
-        break;
+        break
       case 'key_line_end':
         switch (ch) {
           case LF:
             if (this.preamble) {
-              this.preamble = false;
+              this.preamble = false
             } else {
-              this._finish();
+              this._finish()
             }
-            this.state = 'header_name';
-            this.pos = 0;
-            break;
+            this.state = 'header_name'
+            this.pos = 0
+            break
           default:
-            return this._error('Expected CR.');
+            return this._error('Expected CR.')
         }
-        break;
+        break
       case 'key_dash_end':
         switch (ch) {
           case DASH:
-            this.epilogue = true;
-            this._finish();
-            return;
+            this.epilogue = true
+            this._finish()
+            return
           default:
-            return this._error('Expected DASH.');
+            return this._error('Expected DASH.')
         }
       case 'header_name':
         switch (ch) {
           case COLON:
-            this.header = buff.toString('ascii', 0, this.pos);
-            this.pos = 0;
-            this.state = 'header_val';
-            break;
+            this.header = buff.toString('ascii', 0, this.pos)
+            this.pos = 0
+            this.state = 'header_val'
+            break
           default:
-            buff[this.pos++] = ch | 32;
-            break;
+            buff[this.pos++] = ch | 32
+            break
         }
-        break;
+        break
       case 'header_val':
         switch (ch) {
           case CR:
-            this.state = 'header_val_end';
-            break;
+            this.state = 'header_val_end'
+            break
           case SPACE:
             if (this.pos === 0) {
-              break;
+              break
             }
             // FALL-THROUGH
           default:
-            buff[this.pos++] = ch;
-            break;
+            buff[this.pos++] = ch
+            break
         }
-        break;
+        break
       case 'header_val_end':
         switch (ch) {
           case LF:
-            val = buff.toString('ascii', 0, this.pos);
-            this._header(this.header, val);
-            this.pos = 0;
-            this.state = 'header_end';
-            break;
+            val = buff.toString('ascii', 0, this.pos)
+            this._header(this.header, val)
+            this.pos = 0
+            this.state = 'header_end'
+            break
           default:
-            return this._error('Expected LF.');
+            return this._error('Expected LF.')
         }
-        break;
+        break
       case 'header_end':
         switch (ch) {
           case CR:
-            this.state = 'head_end';
-            break;
+            this.state = 'head_end'
+            break
           default:
-            this.state = 'header_name';
-            i--;
-            break;
+            this.state = 'header_name'
+            i--
+            break
         }
-        break;
+        break
       case 'head_end':
         switch (ch) {
           case LF:
-            this.state = 'body';
-            i++;
-            if (i >= len) return;
-            data = data.slice(i);
-            i = -1;
-            len = data.length;
-            break;
+            this.state = 'body'
+            i++
+            if (i >= len) return
+            data = data.slice(i)
+            i = -1
+            len = data.length
+            break
           default:
-            return this._error('Expected LF.');
+            return this._error('Expected LF.')
         }
-        break;
+        break
       case 'body':
         switch (ch) {
           case CR:
             if (i > 0) {
-              this._write(data.slice(0, i));
+              this._write(data.slice(0, i))
             }
-            this.pos = 1;
-            this.state = 'key';
-            data = data.slice(i);
-            i = 0;
-            len = data.length;
-            break;
+            this.pos = 1
+            this.state = 'key'
+            data = data.slice(i)
+            i = 0
+            len = data.length
+            break
           default:
             // boyer-moore-like algorithm
             // at felixge's suggestion
             while ((j = i + key.length - 1) < len) {
-              if (this._key[data[j]]) break;
-              i = j;
+              if (this._key[data[j]]) break
+              i = j
             }
-            break;
+            break
         }
-        break;
+        break
     }
   }
 
   if (this.state === 'body') {
-    this._write(data);
+    this._write(data)
   }
-};
+}
 
-Parser.prototype._header = function(name, val) {
-  /*if (name === 'content-disposition') {
+Parser.prototype._header = function (name, val) {
+  /* if (name === 'content-disposition') {
     this.field = grab(val, 'name');
     this.file = grab(val, 'filename');
 
@@ -282,13 +282,13 @@ Parser.prototype._header = function(name, val) {
       this.decode = new StringDecoder('utf8');
       this.data = '';
     }
-  }*/
+  } */
 
-  return this.emit('header', name, val);
-};
+  return this.emit('header', name, val)
+}
 
-Parser.prototype._write = function(data) {
-  /*if (this.data == null) {
+Parser.prototype._write = function (data) {
+  /* if (this.data == null) {
     return this._error('No disposition.');
   }
 
@@ -298,69 +298,69 @@ Parser.prototype._write = function(data) {
   } else {
     this.data += this.decode.write(data);
     this.written += data.length;
-  }*/
+  } */
 
-  this.emit('data', data);
-};
+  this.emit('data', data)
+}
 
-Parser.prototype._reset = function() {
-  this.pos = 0;
-  this.decode = null;
-  this.field = null;
-  this.data = null;
-  this.file = null;
-  this.header = null;
-};
+Parser.prototype._reset = function () {
+  this.pos = 0
+  this.decode = null
+  this.field = null
+  this.data = null
+  this.file = null
+  this.header = null
+}
 
-Parser.prototype._error = function(err) {
-  this.destroy();
+Parser.prototype._error = function (err) {
+  this.destroy()
   this.emit('error', typeof err === 'string'
     ? new Error(err)
-    : err);
-};
+    : err)
+}
 
-Parser.prototype.destroy = function(err) {
-  this.writable = false;
-  this.readable = false;
-  this._reset();
-};
+Parser.prototype.destroy = function (err) {
+  this.writable = false
+  this.readable = false
+  this._reset()
+}
 
-Parser.prototype._finish = function() {
-  var self = this
-    , field = this.field
-    , data = this.data
-    , file = this.file
-    , part;
+Parser.prototype._finish = function () {
+  const self = this
+  const field = this.field
+  const data = this.data
+  const file = this.file
+  let part
 
-  this.pending++;
+  this.pending++
 
-  this._reset();
+  this._reset()
 
   if (data && data.path) {
-    part = data.path;
-    data.end(next);
+    part = data.path
+    data.end(next)
   } else {
-    part = data;
-    next();
+    part = data
+    next()
   }
 
-  function next() {
-    if (!self.readable) return;
+  function next () {
+    if (!self.readable) return
 
-    self.pending--;
+    self.pending--
 
-    self.emit('part', field, part);
+    self.emit('part', field, part)
 
     if (data && data.path) {
-      self.emit('file', field, part, file);
+      self.emit('file', field, part, file)
     }
 
     if (self.epilogue && !self.pending) {
-      self.emit('end');
-      self.destroy();
+      self.emit('end')
+      self.destroy()
     }
   }
-};
+}
 
 /**
  * Uploads
@@ -368,119 +368,119 @@ Parser.prototype._finish = function() {
 
 Parser.root = process.platform === 'win32'
   ? 'C:/Temp'
-  : '/tmp';
+  : '/tmp'
 
 /**
  * Middleware
  */
 
-Parser.middleware = function(options) {
-  options = options || {};
-  return function(req, res, next) {
+Parser.middleware = function (options) {
+  options = options || {}
+  return function (req, res, next) {
     if (options.ensureBody) {
-      req.body = {};
+      req.body = {}
     }
 
-    if (req.method === 'GET'
-        || req.method === 'HEAD'
-        || req._multipart) return next();
+    if (req.method === 'GET' ||
+        req.method === 'HEAD' ||
+        req._multipart) return next()
 
-    req._multipart = true;
+    req._multipart = true
 
-    var type = req.headers['content-type'];
+    let type = req.headers['content-type']
 
-    if (type) type = type.split(';', 1)[0].trim().toLowerCase();
+    if (type) type = type.split(';', 1)[0].trim().toLowerCase()
 
     if (type === 'multipart/form-data') {
-      Parser.handle(req, res, next, options);
+      Parser.handle(req, res, next, options)
     } else {
-      next();
+      next()
     }
-  };
-};
+  }
+}
 
 /**
  * Handler
  */
 
-Parser.handle = function(req, res, next, options) {
-  var parser = new Parser(req.headers['content-type'], options)
-    , diskLimit = options.diskLimit
-    , limit = options.limit
-    , parts = {}
-    , files = {};
+Parser.handle = function (req, res, next, options) {
+  const parser = new Parser(req.headers['content-type'], options)
+  const diskLimit = options.diskLimit
+  const limit = options.limit
+  const parts = {}
+  const files = {}
 
-  parser.on('error', function(err) {
-    req.destroy();
-    next(err);
-  });
+  parser.on('error', function (err) {
+    req.destroy()
+    next(err)
+  })
 
-  parser.on('part', function(field, part) {
-    set(parts, field, part);
-  });
+  parser.on('part', function (field, part) {
+    set(parts, field, part)
+  })
 
-  parser.on('file', function(field, path, name) {
+  parser.on('file', function (field, path, name) {
     set(files, field, {
-      path: path,
-      name: name,
-      toString: function() {
-        return path;
+      path,
+      name,
+      toString: function () {
+        return path
       }
-    });
-  });
+    })
+  })
 
-  parser.on('data', function() {
+  parser.on('data', function () {
     if (this.writtenDisk > diskLimit || this.written > limit) {
-      this.emit('error', new Error('Overflow.'));
-      this.destroy();
+      this.emit('error', new Error('Overflow.'))
+      this.destroy()
     }
-  });
+  })
 
-  parser.on('end', next);
+  parser.on('end', next)
 
-  req.body = parts;
-  req.files = files;
-  req.pipe(parser);
-};
+  req.body = parts
+  req.files = files
+  req.pipe(parser)
+}
 
 /**
  * Helpers
  */
 
-var isWindows = process.platform === 'win32';
+const isWindows = process.platform === 'win32'
 
-var stream = function(name, dir) {
-  var ext = path.extname(name) || ''
-    , name = path.basename(name, ext) || ''
-    , dir = dir || Parser.root
-    , tag;
+const stream = function (name, dir) {
+  const ext = path.extname(name) || ''
+  var name = path.basename(name, ext) || ''
+  var dir = dir || Parser.root
+  let tag
 
-  tag = Math.random().toString(36).substring(2);
+  tag = Math.random().toString(36).substring(2)
 
-  name = name.substring(0, 200) + '.' + tag;
-  name = path.join(dir, name) + ext.substring(0, 6);
-  name = name.replace(/\0/g, '');
+  name = name.substring(0, 200) + '.' + tag
+  name = path.join(dir, name) + ext.substring(0, 6)
+  name = name.replace(/\0/g, '')
 
   if (isWindows) {
-    name = name.replace(/[:*<>|"?]/g, '');
+    name = name.replace(/[:*<>|"?]/g, '')
   }
 
-  return fs.createWriteStream(name);
-};
+  return fs.createWriteStream(name)
+}
 
-var grab = function(str, name) {
-  if (!str) return;
+var grab = function (str, name) {
+  if (!str) return
 
-  var rx = new RegExp('\\b' + name + '\\s*=\\s*("[^"]+"|\'[^\']+\'|[^;,]+)', 'i')
-    , cap = rx.exec(str);
+  const rx = new RegExp('\\b' + name + '\\s*=\\s*("[^"]+"|\'[^\']+\'|[^;,]+)', 'i')
+  const cap = rx.exec(str)
 
   if (cap) {
-    return cap[1].trim().replace(/^['"]|['"]$/g, '');
+    return cap[1].trim().replace(/^['"]|['"]$/g, '')
   }
-};
+}
 
 /**
  * Expose
  */
 
-module.exports = Parser;
+module.exports = Parser

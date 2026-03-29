@@ -3,6 +3,9 @@
 //                 Igor Savin <https://github.com/kibertoad>
 
 /// <reference types="node" />
+import * as http from 'node:http'
+import { Readable, Writable } from 'node:stream'
+
 declare module 'stream' {
   interface Readable {
     /**
@@ -14,35 +17,32 @@ declare module 'stream' {
     removeListener(event: 'limit', listener: () => void): this;
   }
 }
+export { Dicer } from '../deps/dicer/lib/dicer'
 
-import * as http from 'node:http';
-import { Readable, Writable } from 'node:stream';
-export { Dicer } from "../deps/dicer/lib/dicer";
-
-export const Busboy: BusboyConstructor;
-export default Busboy;
+export const Busboy: BusboyConstructor
+export default Busboy
 
 export interface BusboyConfig {
-    /**
+  /**
      * These are the HTTP headers of the incoming request, which are used by individual parsers.
      */
-    headers: BusboyHeaders;
-    /**
+  headers: BusboyHeaders;
+  /**
      * `highWaterMark` to use for this Busboy instance.
      * @default WritableStream default.
      */
-    highWaterMark?: number | undefined;
-    /**
+  highWaterMark?: number | undefined;
+  /**
      * highWaterMark to use for file streams.
      * @default ReadableStream default.
      */
-    fileHwm?: number | undefined;
-    /**
+  fileHwm?: number | undefined;
+  /**
      * Default character set to use when one isn't defined.
      * @default 'utf8'
      */
-    defCharset?: string | undefined;
-    /**
+  defCharset?: string | undefined;
+  /**
      * Detect if a Part is a file.
      *
      * By default a file is detected if contentType
@@ -51,107 +51,107 @@ export interface BusboyConfig {
      *
      * Modify this to handle e.g. Blobs.
      */
-    isPartAFile?: (fieldName: string | undefined, contentType: string | undefined, fileName: string | undefined) => boolean;
-    /**
+  isPartAFile?: (fieldName: string | undefined, contentType: string | undefined, fileName: string | undefined) => boolean;
+  /**
      * If paths in the multipart 'filename' field shall be preserved.
      * @default false
      */
-    preservePath?: boolean | undefined;
-    /**
+  preservePath?: boolean | undefined;
+  /**
      * Various limits on incoming data.
      */
-    limits?:
+  limits?:
     | {
-        /**
+      /**
          * Max field name size (in bytes)
          * @default 100 bytes
          */
-        fieldNameSize?: number | undefined;
-        /**
+      fieldNameSize?: number | undefined;
+      /**
          * Max field value size (in bytes)
          * @default 1MB
          */
-        fieldSize?: number | undefined;
-        /**
+      fieldSize?: number | undefined;
+      /**
          * Max number of non-file fields
          * @default Infinity
          */
-        fields?: number | undefined;
-        /**
+      fields?: number | undefined;
+      /**
          * For multipart forms, the max file size (in bytes)
          * @default Infinity
          */
-        fileSize?: number | undefined;
-        /**
+      fileSize?: number | undefined;
+      /**
          * For multipart forms, the max number of file fields
          * @default Infinity
          */
-        files?: number | undefined;
-        /**
+      files?: number | undefined;
+      /**
          * For multipart forms, the max number of parts (fields + files)
          * @default Infinity
          */
-        parts?: number | undefined;
-        /**
+      parts?: number | undefined;
+      /**
          * For multipart forms, the max number of header key=>value pairs to parse
          * @default 2000
          */
-        headerPairs?: number | undefined;
+      headerPairs?: number | undefined;
 
-        /**
+      /**
          * For multipart forms, the max size of a header part
          * @default 81920
          */
-        headerSize?: number | undefined;
+      headerSize?: number | undefined;
     }
     | undefined;
 }
 
-export type BusboyHeaders = { 'content-type': string } & http.IncomingHttpHeaders;
+export type BusboyHeaders = { 'content-type': string } & http.IncomingHttpHeaders
 
 export interface BusboyFileStream extends
-    Readable {
+  Readable {
 
-        truncated: boolean;
+  truncated: boolean;
 
-        /**
+  /**
          * The number of bytes that have been read so far.
          */
-        bytesRead: number;
+  bytesRead: number;
 }
 
 export interface Busboy extends Writable {
-    addListener<Event extends keyof BusboyEvents>(event: Event, listener: BusboyEvents[Event]): this;
+  addListener<Event extends keyof BusboyEvents>(event: Event, listener: BusboyEvents[Event]): this;
 
-    addListener(event: string | symbol, listener: (...args: any[]) => void): this;
+  addListener(event: string | symbol, listener: (...args: any[]) => void): this;
 
-    on<Event extends keyof BusboyEvents>(event: Event, listener: BusboyEvents[Event]): this;
+  on<Event extends keyof BusboyEvents>(event: Event, listener: BusboyEvents[Event]): this;
 
-    on(event: string | symbol, listener: (...args: any[]) => void): this;
+  on(event: string | symbol, listener: (...args: any[]) => void): this;
 
-    once<Event extends keyof BusboyEvents>(event: Event, listener: BusboyEvents[Event]): this;
+  once<Event extends keyof BusboyEvents>(event: Event, listener: BusboyEvents[Event]): this;
 
-    once(event: string | symbol, listener: (...args: any[]) => void): this;
+  once(event: string | symbol, listener: (...args: any[]) => void): this;
 
-    removeListener<Event extends keyof BusboyEvents>(event: Event, listener: BusboyEvents[Event]): this;
+  removeListener<Event extends keyof BusboyEvents>(event: Event, listener: BusboyEvents[Event]): this;
 
-    removeListener(event: string | symbol, listener: (...args: any[]) => void): this;
+  removeListener(event: string | symbol, listener: (...args: any[]) => void): this;
 
-    off<Event extends keyof BusboyEvents>(event: Event, listener: BusboyEvents[Event]): this;
+  off<Event extends keyof BusboyEvents>(event: Event, listener: BusboyEvents[Event]): this;
 
-    off(event: string | symbol, listener: (...args: any[]) => void): this;
+  off(event: string | symbol, listener: (...args: any[]) => void): this;
 
-    prependListener<Event extends keyof BusboyEvents>(event: Event, listener: BusboyEvents[Event]): this;
+  prependListener<Event extends keyof BusboyEvents>(event: Event, listener: BusboyEvents[Event]): this;
 
-    prependListener(event: string | symbol, listener: (...args: any[]) => void): this;
+  prependListener(event: string | symbol, listener: (...args: any[]) => void): this;
 
-    prependOnceListener<Event extends keyof BusboyEvents>(event: Event, listener: BusboyEvents[Event]): this;
+  prependOnceListener<Event extends keyof BusboyEvents>(event: Event, listener: BusboyEvents[Event]): this;
 
-    prependOnceListener(event: string | symbol, listener: (...args: any[]) => void): this;
+  prependOnceListener(event: string | symbol, listener: (...args: any[]) => void): this;
 }
 
 export interface BusboyEvents {
-    /**
+  /**
      * Emitted for each new file form field found.
      *
      * * Note: if you listen for this event, you should always handle the `stream` no matter if you care about the
@@ -165,43 +165,42 @@ export interface BusboyEvents {
      * @param listener.transferEncoding Contains the 'Content-Transfer-Encoding' value for the file stream.
      * @param listener.mimeType Contains the 'Content-Type' value for the file stream.
      */
-    file: (
-        fieldname: string,
-        stream: BusboyFileStream,
-        filename: string,
-        transferEncoding: string,
-        mimeType: string,
-    ) => void;
-    /**
+  file: (
+    fieldname: string,
+    stream: BusboyFileStream,
+    filename: string,
+    transferEncoding: string,
+    mimeType: string,
+  ) => void;
+  /**
      * Emitted for each new non-file field found.
      */
-    field: (
-        fieldname: string,
-        value: string,
-        fieldnameTruncated: boolean,
-        valueTruncated: boolean,
-        transferEncoding: string,
-        mimeType: string,
-    ) => void;
-    finish: () => void;
-    /**
+  field: (
+    fieldname: string,
+    value: string,
+    fieldnameTruncated: boolean,
+    valueTruncated: boolean,
+    transferEncoding: string,
+    mimeType: string,
+  ) => void;
+  finish: () => void;
+  /**
      * Emitted when specified `parts` limit has been reached. No more 'file' or 'field' events will be emitted.
      */
-    partsLimit: () => void;
-    /**
+  partsLimit: () => void;
+  /**
      *  Emitted when specified `files` limit has been reached. No more 'file' events will be emitted.
      */
-    filesLimit: () => void;
-    /**
+  filesLimit: () => void;
+  /**
      * Emitted when specified `fields` limit has been reached. No more 'field' events will be emitted.
      */
-    fieldsLimit: () => void;
-    error: (error: unknown) => void;
+  fieldsLimit: () => void;
+  error: (error: unknown) => void;
 }
 
 export interface BusboyConstructor {
-    (options: BusboyConfig): Busboy;
+  (options: BusboyConfig): Busboy;
 
-    new(options: BusboyConfig): Busboy;
+  new(options: BusboyConfig): Busboy;
 }
-
