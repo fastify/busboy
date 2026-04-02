@@ -1,14 +1,14 @@
 {
   "compilerOptions": {
     "outDir": "dist",
-    "module": "commonjs",
-    "target": "es2015",
+    "module": "Node16",
+    "target": "es2022",
     "sourceMap": false,
     "declaration": true,
     "declarationMap": false,
     "types": ["node"],
     "strict": true,
-    "moduleResolution": "node",
+    "moduleResolution": "Node16",
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "noFallthroughCasesInSwitch": true,
@@ -22,9 +22,5 @@
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true
   },
-  "exclude": [
-    "node_modules",
-    "test",
-    "dist"
-  ]
+  "exclude": ["node_modules", "test", "dist"]
 }
