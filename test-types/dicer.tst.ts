@@ -17,6 +17,7 @@ function testDicerSyntax () {
     headerFirst: false,
     maxHeaderPairs: 8,
   }
+
   dicer.setBoundary('new-testing-boundary')
   dicer.on('part', handleDicerPartStream)
   dicer.on('finish', () => {

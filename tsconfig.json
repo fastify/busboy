@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "outDir": "dist",
+    "rootDir": ".",
     "module": "Node16",
     "target": "es2022",
     "sourceMap": false,
@@ -17,7 +18,6 @@
     "noImplicitThis": true,
     "strictNullChecks": true,
     "importHelpers": true,
-    "baseUrl": ".",
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true
