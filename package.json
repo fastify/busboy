@@ -16,9 +16,9 @@
     }
   ],
   "description": "A streaming parser for HTML form data for node.js",
-  "main": "lib/main",
+  "main": "index.js",
   "type": "commonjs",
-  "types": "lib/main.d.ts",
+  "types": "types/index.d.ts",
   "scripts": {
     "bench:busboy": "cd benchmarks && npm install && npm run benchmark-fastify",
     "bench:dicer": "node bench/dicer/dicer-bench-multipart-parser.js",
@@ -57,9 +57,6 @@
     "url": "https://github.com/fastify/busboy/issues"
   },
   "homepage": "https://github.com/fastify/busboy#readme",
-  "tsd": {
-    "directory": "test-types"
-  },
   "standard": {
     "globals": [
       "describe",

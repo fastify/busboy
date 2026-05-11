@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Dicer } from '../lib/main'
+import { Dicer } from '.'
 import * as fs from 'fs'
 import * as stream from 'stream'
 

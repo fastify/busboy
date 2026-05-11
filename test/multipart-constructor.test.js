@@ -1,7 +1,7 @@
 'use strict'
 
 const Multipart = require('../lib/types/multipart')
-const Busboy = require('../lib/main')
+const Busboy = require('..')
 const { test } = require('node:test')
 
 test('multipart constructor', t => {

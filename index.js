@@ -2,11 +2,11 @@
 
 const WritableStream = require('node:stream').Writable
 const { inherits } = require('node:util')
-const Dicer = require('../deps/dicer/lib/Dicer')
+const Dicer = require('./deps/dicer/lib/Dicer')
 
-const MultipartParser = require('./types/multipart')
-const UrlencodedParser = require('./types/urlencoded')
-const parseParams = require('./utils/parseParams')
+const MultipartParser = require('./lib/types/multipart')
+const UrlencodedParser = require('./lib/types/urlencoded')
+const parseParams = require('./lib/utils/parseParams')
 
 function Busboy (opts) {
   if (!(this instanceof Busboy)) { return new Busboy(opts) }

@@ -1,6 +1,6 @@
 'use strict'
 
-const Busboy = require('../lib/main')
+const Busboy = require('..')
 const { test } = require('node:test')
 
 test('busboy-constructor - should throw an Error if no options are provided', t => {

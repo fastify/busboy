@@ -1,7 +1,7 @@
 'use strict'
 
 const { test } = require('node:test')
-const { Dicer } = require('../lib/main')
+const { Dicer } = require('..')
 
 test('dicer-export', async t => {
   t.plan(2)

@@ -1,8 +1,8 @@
 /* eslint-disable import-x/no-duplicates */
 /* eslint-disable no-new */
-import BusboyDefault, { Busboy, BusboyFileStream } from '../lib/main'
+import BusboyDefault, { Busboy, BusboyFileStream } from '.'
 import { expect } from 'tstyche'
-import BusboyESM from '../lib/main'
+import BusboyESM from '.'
 
 expect(new BusboyESM({ headers: { 'content-type': 'foo' } })).type.toBe<
   InstanceType<typeof Busboy>
