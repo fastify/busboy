@@ -11,8 +11,7 @@ expect(new Busboy({ headers: { 'content-type': 'foo' } })).type.toBe<
   InstanceType<typeof Busboy>
 >()
 
-// @ts-expect-error Argument of type '{}' is not assignable to parameter of type 'BusboyConfig'.
-new BusboyDefault({})
+expect(BusboyDefault).type.not.toBeConstructableWith({})
 const busboy = BusboyDefault({ headers: { 'content-type': 'foo' } })
 new BusboyDefault({ headers: { 'content-type': 'foo' } })
 new BusboyDefault({ headers: { 'content-type': 'foo' }, highWaterMark: 1000 })
