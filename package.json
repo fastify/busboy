@@ -69,7 +69,9 @@
   "files": [
     "README.md",
     "LICENSE",
+    "index.js",
     "lib/*",
+    "types/*",
     "deps/encoding/*",
     "deps/dicer/lib",
     "deps/streamsearch/",
