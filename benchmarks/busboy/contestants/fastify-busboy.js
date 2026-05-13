@@ -1,6 +1,6 @@
 'use strict'
 
-const Busboy = require('../../../lib/main')
+const Busboy = require('../../../index')
 const { buffer, boundary } = require('../data')
 
 function process () {

@@ -1,6 +1,6 @@
 'use strict'
 
-const Busboy = require('../lib/main')
+const Busboy = require('..')
 const { test } = require('node:test')
 
 test('busboy, emit', t => {

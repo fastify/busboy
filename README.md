@@ -20,8 +20,6 @@ Benchmark (Mean time for 500 Kb payload, 2000 cycles, 1000 cycle warmup):
 | busboy                | 0.3.1   | `340114`                                  |
 | @fastify/busboy       | 1.0.0   | `270984`                                  |
 
-[Changelog](https://github.com/fastify/busboy/blob/main/CHANGELOG.md) since busboy 0.31.
-
 Requirements
 ============
 

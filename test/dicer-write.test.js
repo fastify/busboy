@@ -1,7 +1,7 @@
 'use strict'
 
 const { test } = require('node:test')
-const { Dicer } = require('../lib/main')
+const { Dicer } = require('..')
 
 test('dicer _write method', t => {
   t.plan(1)
