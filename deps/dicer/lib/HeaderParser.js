@@ -7,8 +7,6 @@ const getLimit = require('../../../lib/utils/getLimit')
 const StreamSearch = require('../../streamsearch/sbmh')
 
 const B_DCRLF = Buffer.from('\r\n\r\n')
-const RE_CRLF = /\r\n/g
-const RE_HDR = /^([^:]+):[ \t]?([\x00-\xFF]+)?$/ // eslint-disable-line no-control-regex
 
 function HeaderParser (cfg) {
   EventEmitter.call(this)
@@ -66,34 +64,44 @@ HeaderParser.prototype._finish = function () {
 HeaderParser.prototype._parseHeader = function () {
   if (this.npairs === this.maxHeaderPairs) { return }
 
-  const lines = this.buffer.split(RE_CRLF)
-  const len = lines.length
-  let m, h
+  const buffer = this.buffer
+  let h
+  let lineStart = 0
 
-  for (var i = 0; i < len; ++i) { // eslint-disable-line no-var
-    if (lines[i].length === 0) { continue }
-    if (lines[i][0] === '\t' || lines[i][0] === ' ') {
+  while (lineStart < buffer.length) {
+    let lineEnd = buffer.indexOf('\r\n', lineStart)
+    if (lineEnd === -1) { lineEnd = buffer.length }
+
+    if (lineEnd === lineStart) {
+      lineStart = lineEnd + 2
+      continue
+    }
+
+    if ((buffer[lineStart] === '\t' || buffer[lineStart] === ' ') && h) {
       // folded header content
       // RFC2822 says to just remove the CRLF and not the whitespace following
       // it, so we follow the RFC and include the leading whitespace ...
-      if (h) {
-        this.header[h][this.header[h].length - 1] += lines[i]
-        continue
-      }
+      this.header[h][this.header[h].length - 1] += buffer.slice(lineStart, lineEnd)
+      lineStart = lineEnd + 2
+      continue
     }
 
-    const posColon = lines[i].indexOf(':')
+    const posColon = buffer.indexOf(':', lineStart)
     if (
       posColon === -1 ||
-      posColon === 0
+      posColon === lineStart ||
+      posColon > lineEnd
     ) {
       return
     }
-    m = RE_HDR.exec(lines[i])
-    h = m[1].toLowerCase()
-    this.header[h] = this.header[h] || []
-    this.header[h].push((m[2] || ''))
+    h = buffer.slice(lineStart, posColon).toLowerCase()
+    let valueStart = posColon + 1
+    if (buffer[valueStart] === ' ' || buffer[valueStart] === '\t') { ++valueStart }
+    const values = this.header[h] || (this.header[h] = [])
+    values.push(buffer.slice(valueStart, lineEnd))
     if (++this.npairs === this.maxHeaderPairs) { break }
+
+    lineStart = lineEnd + 2
   }
 }
 
