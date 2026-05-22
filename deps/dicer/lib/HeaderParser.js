@@ -4,15 +4,13 @@ const EventEmitter = require('node:events').EventEmitter
 const inherits = require('node:util').inherits
 const getLimit = require('../../../lib/utils/getLimit')
 
-const StreamSearch = require('../../streamsearch/sbmh')
-
 const B_DCRLF = Buffer.from('\r\n\r\n')
+const S_DCRLF = '\r\n\r\n'
 
 function HeaderParser (cfg) {
   EventEmitter.call(this)
 
   cfg = cfg || {}
-  const self = this
   this.nread = 0
   this.maxed = false
   this.npairs = 0
@@ -21,40 +19,79 @@ function HeaderParser (cfg) {
   this.buffer = ''
   this.header = {}
   this.finished = false
-  this.ss = new StreamSearch(B_DCRLF)
-  this.ss.on('info', function (isMatch, data, start, end) {
-    if (data && !self.maxed) {
-      if (self.nread + end - start >= self.maxHeaderSize) {
-        end = self.maxHeaderSize - self.nread + start
-        self.nread = self.maxHeaderSize
-        self.maxed = true
-      } else { self.nread += (end - start) }
-
-      self.buffer += data.toString('binary', start, end)
-    }
-    if (isMatch) { self._finish() }
-  })
+  this.tail = ''
 }
 inherits(HeaderParser, EventEmitter)
 
 HeaderParser.prototype.push = function (data) {
-  const r = this.ss.push(data)
-  if (this.finished) { return r }
+  if (!Buffer.isBuffer(data)) { data = Buffer.from(data, 'binary') }
+
+  let end = data.length
+  let appendEnd = data.length
+  let found = false
+  const tail = this.tail
+
+  for (let i = tail.length; i > 0; --i) {
+    if (tail.endsWith(S_DCRLF.slice(0, i))) {
+      let matched = data.length >= S_DCRLF.length - i
+      for (let j = i; matched && j < S_DCRLF.length; ++j) {
+        matched = data[j - i] === S_DCRLF.charCodeAt(j)
+      }
+      if (matched) {
+        end = S_DCRLF.length - i
+        appendEnd = 0
+        found = true
+        break
+      }
+    }
+  }
+
+  if (!found) {
+    const pos = data.indexOf(B_DCRLF)
+    if (pos !== -1) {
+      end = pos + B_DCRLF.length
+      appendEnd = pos
+      found = true
+    }
+  }
+
+  if (!found) {
+    this.tail = data.length >= 3
+      ? data.toString('binary', data.length - 3)
+      : (tail + data.toString('binary')).slice(-3)
+  } else { this.tail = '' }
+
+  if (appendEnd !== 0 && !this.maxed) {
+    const remaining = this.maxHeaderSize - this.nread
+    if (appendEnd >= remaining) {
+      this.buffer += data.toString('binary', 0, remaining)
+      this.nread = this.maxHeaderSize
+      this.maxed = true
+    } else {
+      this.buffer += data.toString('binary', 0, appendEnd)
+      this.nread += appendEnd
+    }
+  }
+
+  if (found) {
+    this._finish()
+    return end
+  }
 }
 
 HeaderParser.prototype.reset = function () {
   this.finished = false
   this.buffer = ''
   this.header = {}
-  this.ss.reset()
+  this.tail = ''
 }
 
 HeaderParser.prototype._finish = function () {
   if (this.buffer) { this._parseHeader() }
-  this.ss.matches = this.ss.maxMatches
   const header = this.header
   this.header = {}
   this.buffer = ''
+  this.tail = ''
   this.finished = true
   this.nread = this.npairs = 0
   this.maxed = false

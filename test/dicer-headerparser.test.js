@@ -15,6 +15,19 @@ test('dicer-headerparser', async t => {
       what: 'No header'
     },
     {
+      source: ['Foo: bar\r', '\n\r', '\nextra'],
+      expected: { foo: ['bar'] },
+      what: 'Header terminator across chunks'
+    },
+    {
+      source: ['Foo: bar\r', '\n\r', '\nextra'],
+      cfg: {
+        maxHeaderSize: 0
+      },
+      expected: {},
+      what: 'Header terminator across chunks after max header size'
+    },
+    {
       source: ['Content-Type:\t  text/plain',
         'Content-Length:0'
       ].join('\r\n') + DCRLF,
