@@ -35,7 +35,7 @@
     "c8": "^11.0.0",
     "photofinish": "^1.8.0",
     "snazzy": "^9.0.0",
-    "eslint": "^9.39.0",
+    "eslint": "^10.5.0",
     "neostandard": "^0.12.0",
     "tinybench": "^6.0.0",
     "tstyche": "^7.0.0",
