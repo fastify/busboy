@@ -29,6 +29,7 @@ HeaderParser.prototype.push = function (data) {
   let end = data.length
   let appendEnd = data.length
   let found = false
+  let splitTail = 0
   const tail = this.tail
 
   for (let i = tail.length; i > 0; --i) {
@@ -40,6 +41,7 @@ HeaderParser.prototype.push = function (data) {
       if (matched) {
         end = S_DCRLF.length - i
         appendEnd = 0
+        splitTail = i
         found = true
         break
       }
@@ -74,6 +76,11 @@ HeaderParser.prototype.push = function (data) {
   }
 
   if (found) {
+    // A CRLFCRLF header terminator split across pushes left its leading bytes
+    // in this.buffer on the previous push; drop them so they do not trail the
+    // last header value. splitTail is 0 in the common case, making this a no-op.
+    this.buffer = this.buffer.slice(0, this.buffer.length - splitTail)
+    this.nread -= splitTail
     this._finish()
     return end
   }
