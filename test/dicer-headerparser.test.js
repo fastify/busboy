@@ -20,6 +20,11 @@ test('dicer-headerparser', async t => {
       what: 'Header terminator across chunks'
     },
     {
+      source: ['Foo: bar\r', '\n\r\n'],
+      expected: { foo: ['bar'] },
+      what: 'Header terminator split between CR and LFCRLF leaves no trailing CR on the value'
+    },
+    {
       source: ['Foo: bar\r', '\n\r', '\nextra'],
       cfg: {
         maxHeaderSize: 0
