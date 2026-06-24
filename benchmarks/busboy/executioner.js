@@ -2,7 +2,7 @@
 
 const { process: processBusboy } = require('./contestants/busboy')
 const { process: processFastify } = require('./contestants/fastify-busboy')
-const { getCommonBuilder } = require('../common/commonBuilder')
+const { getCommonBench } = require('../common/commonBuilder')
 const { validateAccuracy } = require('./validator')
 const { resolveContestant } = require('../common/contestantResolver')
 const { outputResults } = require('../common/resultUtils')
@@ -13,23 +13,19 @@ const contestants = {
 }
 
 async function measureBusboy () {
-  const benchmark = getCommonBuilder()
-    .benchmarkName('Busboy comparison')
-    .benchmarkEntryName('busboy')
-    .asyncFunctionUnderTest(processBusboy)
-    .build()
-  const benchmarkResults = await benchmark.executeAsync()
-  outputResults(benchmark, benchmarkResults)
+  const bench = getCommonBench()
+  bench.add('busboy', processBusboy)
+  await bench.run()
+  console.table(bench.table())
+  outputResults('busboy', bench)
 }
 
 async function measureFastify () {
-  const benchmark = getCommonBuilder()
-    .benchmarkName('Busboy comparison')
-    .benchmarkEntryName('fastify-busboy')
-    .asyncFunctionUnderTest(processFastify)
-    .build()
-  const benchmarkResults = await benchmark.executeAsync()
-  outputResults(benchmark, benchmarkResults)
+  const bench = getCommonBench()
+  bench.add('fastify-busboy', processFastify)
+  await bench.run()
+  console.table(bench.table())
+  outputResults('fastify-busboy', bench)
 }
 
 function execute () {
