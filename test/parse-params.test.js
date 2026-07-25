@@ -130,6 +130,41 @@ test('parse-params', async t => {
       source: 'text/plain; charset="utf-8"garbage; boundary=test',
       expected: ['text/plain', ['charset', 'utf-8'], ['boundary', 'test']],
       what: 'Quoted parameter with trailing garbage should stop at closing quote'
+    },
+    {
+      source: 'form-data; name="héllo"',
+      expected: ['form-data', ['name', 'h�llo']],
+      what: 'Non-ASCII name in fast path'
+    },
+    {
+      source: 'form-data; name="hello"; filename="café.png"',
+      expected: ['form-data', ['name', 'hello'], ['filename', 'caf�.png']],
+      what: 'Non-ASCII filename in fast path'
+    },
+    {
+      source: 'form-data; name="hello";filename="world.png"',
+      expected: ['form-data', ['name', 'hello'], ['filename', 'world.png']],
+      what: 'No whitespace between name and filename'
+    },
+    {
+      source: 'form-data; name="hello"  ; filename="world.png"',
+      expected: ['form-data', ['name', 'hello'], ['filename', 'world.png']],
+      what: 'Whitespace between name and filename'
+    },
+    {
+      source: 'form-data; name="hello"; filename="back\\slash.png"',
+      expected: ['form-data', ['name', 'hello'], ['filename', 'back\\slash.png']],
+      what: 'Filename with backslash falls back to slow parser'
+    },
+    {
+      source: 'form-data; name="hello"; extra=stuff',
+      expected: ['form-data', ['name', 'hello'], ['extra', 'stuff']],
+      what: 'Fast path falls back when filename is missing'
+    },
+    {
+      source: 'form-data; name="hello"; filename="unterminated',
+      expected: ['form-data', ['name', 'hello'], ['filename', 'unterminated']],
+      what: 'Fast path falls back when filename is unterminated'
     }
   ]
 
