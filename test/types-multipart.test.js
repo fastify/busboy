@@ -33,6 +33,7 @@ const tests = [
       ].join('\r\n')
     ],
     boundary: '---------------------------paZqsnEHRufoShdX6fh0lUhXBP4k',
+    pauseFileStream: true,
     expected: [
       ['field', 'file_name_0', 'super alpha file', false, false, '7bit', 'text/plain'],
       ['field', 'file_name_1', 'super beta file', false, false, '7bit', 'text/plain'],
@@ -40,7 +41,7 @@ const tests = [
       ['file', 'upload_file_1', 1023, 0, '1k_b.dat', '7bit', 'application/octet-stream']
     ],
     what: 'Fields and files',
-    plan: 11
+    plan: 15
   },
   {
     source: [
@@ -640,6 +641,13 @@ test('types-multipart.test', async t => {
               encoding,
               mimeType]
             results.push(info)
+            if (v.pauseFileStream) {
+              const parser = busboy._parser
+              parser._cb = () => t.assert.ok(true, 'write callback called after stream resumed')
+              parser._pause = true
+              stream._read()
+              t.assert.strictEqual(parser._cb, undefined)
+            }
             stream.on('data', function (d) {
               nb += d.length
             }).on('limit', function () {

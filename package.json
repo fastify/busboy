@@ -25,7 +25,7 @@
     "coveralls": "nyc report --reporter=lcov",
     "lint": "eslint",
     "lint:fix": "eslint --fix",
-    "test:unit": "c8 --statements 98 --branches 97 --functions 96 --lines 98 node --test",
+    "test:unit": "c8 --check-coverage --statements 100 --branches 100 --functions 100 --lines 100 node --test",
     "test:types": "tstyche",
     "test": "npm run test:unit && npm run test:types"
   },
