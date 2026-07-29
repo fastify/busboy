@@ -79,8 +79,11 @@ HeaderParser.prototype.push = function (data) {
     // A CRLFCRLF header terminator split across pushes left its leading bytes
     // in this.buffer on the previous push; drop them so they do not trail the
     // last header value. splitTail is 0 in the common case, making this a no-op.
-    this.buffer = this.buffer.slice(0, this.buffer.length - splitTail)
-    this.nread -= splitTail
+    // Skip when maxed: once maxHeaderSize truncation dropped the trailing bytes,
+    // the last splitTail bytes are real header content, not the terminator prefix.
+    if (!this.maxed) {
+      this.buffer = this.buffer.slice(0, this.buffer.length - splitTail)
+    }
     this._finish()
     return end
   }

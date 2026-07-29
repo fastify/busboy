@@ -25,6 +25,14 @@ test('dicer-headerparser', async t => {
       what: 'Header terminator split between CR and LFCRLF leaves no trailing CR on the value'
     },
     {
+      source: ['Foo: bar\r', '\n\r\n'],
+      cfg: {
+        maxHeaderSize: 8
+      },
+      expected: { foo: ['bar'] },
+      what: 'Header terminator split after maxHeaderSize truncation keeps the value intact'
+    },
+    {
       source: ['Foo: bar\r', '\n\r', '\nextra'],
       cfg: {
         maxHeaderSize: 0
