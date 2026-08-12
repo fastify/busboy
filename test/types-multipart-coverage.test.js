@@ -1,5 +1,6 @@
 'use strict'
 
+const { Readable } = require('node:stream')
 const { test } = require('node:test')
 const Busboy = require('..')
 
@@ -11,6 +12,42 @@ function buildBody (parts, boundary) {
     return [sep, ...part].join('\r\n')
   }).join('\r\n') + '\r\n' + sep + '--\r\n'
 }
+
+test('multipart parser accepts prototype property names', async (t) => {
+  const boundary = 'prototypeheader'
+  const names = ['__proto__', 'constructor']
+
+  for (const name of names) {
+    const body = buildBody([[
+      'Content-Disposition: form-data; name="field"',
+      `${name}: injected`,
+      '',
+      'value'
+    ]], boundary)
+
+    for (const piped of [false, true]) {
+      const busboy = new Busboy({
+        headers: { 'content-type': 'multipart/form-data; boundary=' + boundary }
+      })
+      let field
+      busboy.on('field', (key, value) => { field = [key, value] })
+
+      const finished = new Promise((resolve, reject) => {
+        busboy.once('finish', resolve)
+        busboy.once('error', reject)
+      })
+
+      if (piped) {
+        Readable.from([Buffer.from(body, 'utf8')]).pipe(busboy)
+      } else {
+        busboy.end(Buffer.from(body, 'utf8'))
+      }
+
+      await finished
+      t.assert.deepStrictEqual(field, ['field', 'value'])
+    }
+  }
+})
 
 test('partsLimit fires when more parts than limit', async (t) => {
   const boundary = 'xyzboundary'

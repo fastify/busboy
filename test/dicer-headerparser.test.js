@@ -190,7 +190,7 @@ test('dicer-headerparser', async t => {
       parser.on('header', function (header) {
         t.assert.ok(!fired, `${v.what}: Header event fired more than once`)
         fired = true
-        t.assert.deepStrictEqual(header,
+        t.assert.deepStrictEqual({ ...header },
           v.expected,
           `${v.what}: Parsed result mismatch`)
       })
@@ -201,5 +201,18 @@ test('dicer-headerparser', async t => {
       t.assert.ok(fired, `${v.what}: Did not receive header from parser`)
       t.assert.ok('passed')
     })
+  }
+})
+
+test('dicer-headerparser protects prototype property names', t => {
+  for (const name of ['__proto__', 'constructor']) {
+    const parser = new HeaderParser()
+    let header
+
+    parser.on('header', value => { header = value })
+    parser.push(`${name}: injected\r\n\r\n`)
+
+    t.assert.strictEqual(Object.getPrototypeOf(header), null)
+    t.assert.deepStrictEqual(header[name], ['injected'])
   }
 })

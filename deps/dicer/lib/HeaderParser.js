@@ -17,7 +17,7 @@ function HeaderParser (cfg) {
   this.maxHeaderPairs = getLimit(cfg, 'maxHeaderPairs', 2000)
   this.maxHeaderSize = getLimit(cfg, 'maxHeaderSize', 80 * 1024)
   this.buffer = ''
-  this.header = {}
+  this.header = Object.create(null)
   this.finished = false
   this.tail = ''
 }
@@ -82,14 +82,14 @@ HeaderParser.prototype.push = function (data) {
 HeaderParser.prototype.reset = function () {
   this.finished = false
   this.buffer = ''
-  this.header = {}
+  this.header = Object.create(null)
   this.tail = ''
 }
 
 HeaderParser.prototype._finish = function () {
   if (this.buffer) { this._parseHeader() }
   const header = this.header
-  this.header = {}
+  this.header = Object.create(null)
   this.buffer = ''
   this.tail = ''
   this.finished = true
