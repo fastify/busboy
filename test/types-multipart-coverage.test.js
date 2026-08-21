@@ -49,6 +49,44 @@ test('multipart parser accepts prototype property names', async (t) => {
   }
 })
 
+test('multipart parser rejects bare CR or LF in disposition parameters', async (t) => {
+  const boundary = 'barecrlf'
+  const dispositionValues = [
+    'form-data; name="field\rname"',
+    'form-data; name="field\nname"',
+    'form-data; name="field"; filename="file\rname.txt"',
+    'form-data; name="field"; filename="file\nname.txt"',
+    "form-data; name*=utf-8''field%0Dname",
+    "form-data; name*=utf-8''field%0Aname",
+    "form-data; name=field; filename*=utf-8''file%0Dname.txt",
+    "form-data; name=field; filename*=utf-8''file%0Aname.txt"
+  ]
+
+  for (const disposition of dispositionValues) {
+    const body = buildBody([[
+      `Content-Disposition: ${disposition}`,
+      '',
+      'value'
+    ]], boundary)
+    const busboy = new Busboy({
+      headers: { 'content-type': 'multipart/form-data; boundary=' + boundary }
+    })
+    let emitted = false
+    busboy.on('field', () => { emitted = true })
+    busboy.on('file', (_field, stream) => {
+      emitted = true
+      stream.resume()
+    })
+
+    busboy.end(Buffer.from(body, 'binary'))
+    await new Promise((resolve, reject) => {
+      busboy.once('finish', resolve)
+      busboy.once('error', reject)
+    })
+    t.assert.strictEqual(emitted, false)
+  }
+})
+
 test('partsLimit fires when more parts than limit', async (t) => {
   const boundary = 'xyzboundary'
   const body = buildBody([

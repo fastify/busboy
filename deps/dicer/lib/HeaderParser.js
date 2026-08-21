@@ -114,6 +114,10 @@ HeaderParser.prototype._parseHeader = function () {
       continue
     }
 
+    // Reject bare line breaks instead of exposing them in parsed values
+    const line = buffer.slice(lineStart, lineEnd)
+    if (line.includes('\r') || line.includes('\n')) { return }
+
     if ((buffer[lineStart] === '\t' || buffer[lineStart] === ' ') && h) {
       // folded header content
       // RFC2822 says to just remove the CRLF and not the whitespace following
