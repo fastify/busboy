@@ -59,12 +59,17 @@ test('multipart parser ignores an epilogue written after the closing boundary', 
   const busboy = new Busboy({
     headers: { 'content-type': 'multipart/form-data; boundary=' + boundary }
   })
+  const events = []
   const fields = []
   let finishes = 0
-  busboy.on('field', (key, value) => fields.push([key, value]))
+  busboy.on('field', (key, value) => {
+    events.push('field')
+    fields.push([key, value])
+  })
   const finished = new Promise((resolve, reject) => {
     busboy.once('error', reject)
-    busboy.once('finish', () => {
+    busboy.on('finish', () => {
+      events.push('finish')
       finishes++
       resolve()
     })
@@ -75,13 +80,18 @@ test('multipart parser ignores an epilogue written after the closing boundary', 
   await new Promise((resolve, reject) => {
     busboy.write(Buffer.from('epilogue', 'utf8'), error => {
       if (error) reject(error)
-      else resolve()
+      else {
+        events.push('epilogue write')
+        resolve()
+      }
     })
   })
   busboy.end()
 
   await finished
+  await new Promise(resolve => setImmediate(resolve))
   t.assert.deepStrictEqual(fields, [['field', 'value']])
+  t.assert.deepStrictEqual(events, ['field', 'epilogue write', 'finish'])
   t.assert.strictEqual(finishes, 1)
 })
 
