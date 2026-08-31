@@ -49,6 +49,42 @@ test('multipart parser accepts prototype property names', async (t) => {
   }
 })
 
+test('multipart parser ignores an epilogue written after the closing boundary', { timeout: 1000 }, async (t) => {
+  const boundary = 'epilogueboundary'
+  const body = buildBody([[
+    'Content-Disposition: form-data; name="field"',
+    '',
+    'value'
+  ]], boundary)
+  const busboy = new Busboy({
+    headers: { 'content-type': 'multipart/form-data; boundary=' + boundary }
+  })
+  const fields = []
+  let finishes = 0
+  busboy.on('field', (key, value) => fields.push([key, value]))
+  const finished = new Promise((resolve, reject) => {
+    busboy.once('error', reject)
+    busboy.once('finish', () => {
+      finishes++
+      resolve()
+    })
+  })
+
+  busboy.write(Buffer.from(body, 'utf8'))
+  await new Promise(resolve => setImmediate(resolve))
+  await new Promise((resolve, reject) => {
+    busboy.write(Buffer.from('epilogue', 'utf8'), error => {
+      if (error) reject(error)
+      else resolve()
+    })
+  })
+  busboy.end()
+
+  await finished
+  t.assert.deepStrictEqual(fields, [['field', 'value']])
+  t.assert.strictEqual(finishes, 1)
+})
+
 test('multipart parser rejects bare CR or LF in disposition parameters', async (t) => {
   const boundary = 'barecrlf'
   const dispositionValues = [
