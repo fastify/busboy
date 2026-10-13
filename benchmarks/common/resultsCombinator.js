@@ -3,52 +3,38 @@
 const fs = require('node:fs')
 const path = require('node:path')
 const getopts = require('getopts')
-const systemInformation = require('systeminformation')
-const { loadResults } = require('photofinish')
 
 const options = getopts(process.argv.slice(1), {
   alias: {
     resultsDir: 'r',
     precision: 'p'
   },
-  default: {}
-})
-
-const { generateTable } = require('photofinish')
-
-async function getSpecs () {
-  const cpuInfo = await systemInformation.cpu()
-
-  return {
-    cpu: {
-      brand: cpuInfo.brand,
-      speed: `${cpuInfo.speed} GHz`
-    }
+  default: {
+    precision: 6
   }
-}
+})
 
 async function saveTable () {
   const baseResultsDir = options.resultsDir
-  const benchmarkResults = await loadResults(baseResultsDir)
+  const files = fs.readdirSync(baseResultsDir).filter(f => f.endsWith('.json'))
 
-  const table = generateTable(benchmarkResults, {
-    precision: options.precision,
-    sortBy: [
-      { field: 'meanTimeNs', order: 'asc' }
-    ]
-  })
+  const allResults = []
+  for (const file of files) {
+    const content = JSON.parse(fs.readFileSync(path.resolve(baseResultsDir, file), 'utf8'))
+    allResults.push(...content)
+  }
 
-  const specs = await getSpecs()
+  const precision = Number(options.precision)
+  const lines = ['| Name | Mean Time (ns) | Ops/sec |', '|------|---------------|---------|']
+  for (const r of allResults.sort((a, b) => (a.meanTimeNs || 0) - (b.meanTimeNs || 0))) {
+    lines.push(`| ${r.name} | ${r.meanTimeNs?.toFixed(precision) ?? 'N/A'} | ${r.opsPerSecond ?? 'N/A'} |`)
+  }
 
-  console.log(specs)
+  const table = lines.join('\n')
   console.log(table)
 
   const targetFilePath = path.resolve(baseResultsDir, 'results.md')
-  fs.writeFileSync(
-    targetFilePath,
-    `${table}` +
-      `\n\n**Specs**: ${specs.cpu.brand} (${specs.cpu.speed})`
-  )
+  fs.writeFileSync(targetFilePath, table)
 }
 
 saveTable()
