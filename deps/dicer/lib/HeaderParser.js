@@ -17,7 +17,7 @@ function HeaderParser (cfg) {
   this.maxHeaderPairs = getLimit(cfg, 'maxHeaderPairs', 2000)
   this.maxHeaderSize = getLimit(cfg, 'maxHeaderSize', 80 * 1024)
   this.buffer = ''
-  this.header = {}
+  this.header = Object.create(null)
   this.finished = false
   this.tail = ''
 }
@@ -82,14 +82,14 @@ HeaderParser.prototype.push = function (data) {
 HeaderParser.prototype.reset = function () {
   this.finished = false
   this.buffer = ''
-  this.header = {}
+  this.header = Object.create(null)
   this.tail = ''
 }
 
 HeaderParser.prototype._finish = function () {
   if (this.buffer) { this._parseHeader() }
   const header = this.header
-  this.header = {}
+  this.header = Object.create(null)
   this.buffer = ''
   this.tail = ''
   this.finished = true
@@ -113,6 +113,10 @@ HeaderParser.prototype._parseHeader = function () {
       lineStart = lineEnd + 2
       continue
     }
+
+    // Reject bare line breaks instead of exposing them in parsed values
+    const line = buffer.slice(lineStart, lineEnd)
+    if (line.includes('\r') || line.includes('\n')) { return }
 
     if ((buffer[lineStart] === '\t' || buffer[lineStart] === ' ') && h) {
       // folded header content

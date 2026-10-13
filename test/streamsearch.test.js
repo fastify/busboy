@@ -4,7 +4,7 @@ const { test } = require('node:test')
 const Streamsearch = require('../deps/streamsearch/sbmh')
 
 test('streamsearch', async t => {
-  t.plan(19)
+  t.plan(20)
 
   await t.test('should throw an error if the needle is not a String or Buffer', t => {
     t.plan(1)
@@ -25,6 +25,14 @@ test('streamsearch', async t => {
     t.plan(1)
 
     t.assert.throws(() => new Streamsearch(Buffer.from(Array(257).fill('a').join(''))), { message: 'The needle cannot have a length bigger than 256.' })
+  })
+
+  await t.test('should represent the maximum skip distance', t => {
+    t.plan(1)
+
+    const search = new Streamsearch(Buffer.alloc(256, 0x41))
+
+    t.assert.strictEqual(search._occ[0x42], 256)
   })
 
   await t.test('should process a Buffer without a needle', t => {

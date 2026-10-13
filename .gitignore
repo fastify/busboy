@@ -153,3 +153,7 @@ yarn.lock
 
 /benchmarks/node_modules/
 /benchmarks/package-lock.json
+
+# AI
+.pi
+.claude

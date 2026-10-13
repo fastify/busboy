@@ -98,11 +98,31 @@ test('dicer-headerparser', async t => {
       source: ['Content-Type:\r\n text/plain',
         'Foo:\r\n bar\r\n baz'
       ].join('\r\n') + DCRLF,
-      expected: { 'content-type': [' text/plain'], foo: ['\r'] },
+      expected: { 'content-type': [' text/plain'] },
       cfg: {
         maxHeaderSize: 33
       },
-      what: 'should enforce maxHeaderSize of 32 and get only first character of second pair'
+      what: 'should reject a truncated header value ending with CR'
+    },
+    {
+      source: 'Foo: bar\rbare\r\n\r\n',
+      expected: {},
+      what: 'Bare CR in header value'
+    },
+    {
+      source: 'Foo: bar\nbare\r\n\r\n',
+      expected: {},
+      what: 'Bare LF in header value'
+    },
+    {
+      source: 'Foo\rbad: bar\r\n\r\n',
+      expected: {},
+      what: 'Bare CR in header name'
+    },
+    {
+      source: 'Foo\nbad: bar\r\n\r\n',
+      expected: {},
+      what: 'Bare LF in header name'
     },
     {
       source: ['Content-Type:\r\n text/plain',
@@ -190,7 +210,7 @@ test('dicer-headerparser', async t => {
       parser.on('header', function (header) {
         t.assert.ok(!fired, `${v.what}: Header event fired more than once`)
         fired = true
-        t.assert.deepStrictEqual(header,
+        t.assert.deepStrictEqual({ ...header },
           v.expected,
           `${v.what}: Parsed result mismatch`)
       })
@@ -201,5 +221,18 @@ test('dicer-headerparser', async t => {
       t.assert.ok(fired, `${v.what}: Did not receive header from parser`)
       t.assert.ok('passed')
     })
+  }
+})
+
+test('dicer-headerparser protects prototype property names', t => {
+  for (const name of ['__proto__', 'constructor']) {
+    const parser = new HeaderParser()
+    let header
+
+    parser.on('header', value => { header = value })
+    parser.push(`${name}: injected\r\n\r\n`)
+
+    t.assert.strictEqual(Object.getPrototypeOf(header), null)
+    t.assert.deepStrictEqual(header[name], ['injected'])
   }
 })
