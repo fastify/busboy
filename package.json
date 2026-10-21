@@ -1,6 +1,29 @@
 {
   "name": "@fastify/busboy",
   "version": "3.2.3",
+  "description": "A streaming parser for HTML form data for node.js",
+  "main": "index.js",
+  "type": "commonjs",
+  "types": "types/index.d.ts",
+  "scripts": {
+    "bench:busboy": "cd benchmarks && npm install && npm run benchmark-fastify",
+    "bench:dicer": "node bench/dicer/dicer-bench-multipart-parser.js",
+    "lint": "eslint",
+    "lint:fix": "eslint --fix",
+    "test": "npm run test:unit && npm run test:types",
+    "test:types": "tstyche",
+    "test:unit": "c8 --check-coverage --statements 100 --branches 100 --functions 100 --lines 100 node --test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fastify/busboy.git"
+  },
+  "keywords": [
+    "uploads",
+    "forms",
+    "multipart",
+    "form-data"
+  ],
   "author": "Brian White <mscdex@mscdex.net>",
   "contributors": [
     {
@@ -14,66 +37,22 @@
       "url": "https://github.com/uzlopak"
     }
   ],
-  "description": "A streaming parser for HTML form data for node.js",
-  "main": "index.js",
-  "type": "commonjs",
-  "types": "types/index.d.ts",
-  "scripts": {
-    "bench:busboy": "cd benchmarks && npm install && npm run benchmark-fastify",
-    "bench:dicer": "node bench/dicer/dicer-bench-multipart-parser.js",
-    "coveralls": "nyc report --reporter=lcov",
-    "lint": "eslint",
-    "lint:fix": "eslint --fix",
-    "test:unit": "c8 --check-coverage --statements 100 --branches 100 --functions 100 --lines 100 node --test",
-    "test:types": "tstyche",
-    "test": "npm run test:unit && npm run test:types"
-  },
-  "devDependencies": {
-    "@types/node": "^26.0.1",
-    "busboy": "^1.6.0",
-    "c8": "^12.0.0",
-    "photofinish": "^1.8.0",
-    "snazzy": "^9.0.0",
-    "eslint": "^9.39.0",
-    "neostandard": "^0.12.0",
-    "tinybench": "^6.0.0",
-    "tstyche": "^7.0.0",
-    "tslib": "^2.8.1",
-    "typescript": "~6.0.2"
-  },
-  "keywords": [
-    "uploads",
-    "forms",
-    "multipart",
-    "form-data"
-  ],
   "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/fastify/busboy.git"
-  },
   "bugs": {
     "url": "https://github.com/fastify/busboy/issues"
   },
   "homepage": "https://github.com/fastify/busboy#readme",
-  "standard": {
-    "globals": [
-      "describe",
-      "it"
-    ],
-    "ignore": [
-      "bench"
-    ]
-  },
-  "files": [
-    "README.md",
-    "LICENSE",
-    "index.js",
-    "lib/*",
-    "types/*",
-    "deps/encoding/*",
-    "deps/dicer/lib",
-    "deps/streamsearch/",
-    "deps/dicer/LICENSE"
-  ]
+  "devDependencies": {
+    "@types/node": "^26.0.1",
+    "busboy": "^1.6.0",
+    "c8": "^12.0.0",
+    "eslint": "^9.39.0",
+    "neostandard": "^0.12.0",
+    "photofinish": "^1.8.0",
+    "snazzy": "^9.0.0",
+    "tinybench": "^6.0.0",
+    "tslib": "^2.8.1",
+    "tstyche": "^7.0.0",
+    "typescript": "~6.0.2"
+  }
 }
