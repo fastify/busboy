@@ -1,6 +1,6 @@
 {
   "name": "@fastify/busboy",
-  "version": "3.2.3",
+  "version": "3.2.4",
   "description": "A streaming parser for HTML form data for node.js",
   "main": "index.js",
   "type": "commonjs",
