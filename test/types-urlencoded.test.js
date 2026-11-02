@@ -88,6 +88,32 @@ const tests = [
     plan: 5
   },
   {
+    source: ['foo=100%&bar=5%2&baz%=bla'],
+    expected: [['foo', '100%', false, false],
+      ['bar', '5%2', false, false],
+      ['baz%', 'bla', false, false]],
+    what: 'Incomplete encoded bytes before separators',
+    plan: 6
+  },
+  {
+    source: ['foo=bar%2'],
+    expected: [['foo', 'bar%2', false, false]],
+    what: 'Assigned value with incomplete encoded byte at end',
+    plan: 4
+  },
+  {
+    source: ['foo%'],
+    expected: [['foo%', '', false, false]],
+    what: 'Unassigned value with incomplete encoded byte at end',
+    plan: 4
+  },
+  {
+    source: ['foo=bar%', '2'],
+    expected: [['foo', 'bar%2', false, false]],
+    what: 'Incomplete encoded byte split across writes',
+    plan: 4
+  },
+  {
     source: ['foo=bar&baz=bla', 'foo=bar'],
     expected: [],
     what: 'Exceeded limits',
@@ -171,6 +197,28 @@ const tests = [
     what: 'Limits: truncated zero field name and zero value limit',
     limits: { fieldNameSize: 0, fieldSize: 0 },
     plan: 5
+  },
+  {
+    source: ['fo%2=ba%2&x'],
+    expected: [['fo%', 'ba%', true, true],
+      ['x', '', false, false]],
+    what: 'Limits: truncated incomplete encoded bytes',
+    limits: { fieldNameSize: 3, fieldSize: 3 },
+    plan: 5
+  },
+  {
+    source: ['fo%2'],
+    expected: [['fo%', '', true, false]],
+    what: 'Limits: truncated incomplete encoded byte at end of name',
+    limits: { fieldNameSize: 3 },
+    plan: 4
+  },
+  {
+    source: ['foo=ba%2'],
+    expected: [['foo', 'ba%', false, true]],
+    what: 'Limits: truncated incomplete encoded byte at end of value',
+    limits: { fieldSize: 3 },
+    plan: 4
   },
   {
     source: ['&'],
