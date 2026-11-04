@@ -72,7 +72,7 @@ test('Decoder', async t => {
       what: 'Spaces and encoded plus'
     }
   ]
-  t.plan(tests.length + 1)
+  t.plan(tests.length + 2)
 
   for (const v of tests) {
     await t.test(v.what, async t => {
@@ -89,6 +89,16 @@ test('Decoder', async t => {
       t.assert.deepStrictEqual(result, v.expected, msg)
     })
   }
+
+  await t.test('end returns an incomplete encoded byte literally', t => {
+    t.plan(4)
+
+    const dec = new Decoder()
+    t.assert.strictEqual(dec.write('100%'), '100')
+    t.assert.strictEqual(dec.end(), '%')
+    t.assert.strictEqual(dec.buffer, undefined)
+    t.assert.strictEqual(dec.end(), '')
+  })
 
   t.test('reset sets internal buffer to undefined', t => {
     t.plan(2)
