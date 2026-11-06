@@ -116,6 +116,38 @@ test('partsLimit fires when more parts than limit', async (t) => {
   t.assert.ok(fields.length < 3, 'later parts were skipped')
 })
 
+test('skipped part terminated early does not crash the process', async (t) => {
+  // A skipped part (past `parts`) has no consumer. If the request body ends in
+  // the middle of that part, Dicer emits a "terminated early" error on the
+  // skipped part stream. It must be swallowed, not thrown as an unhandled
+  // 'error' event (which would crash the process). See GHSA-5CW9-RRW8-9QHM.
+  const boundary = 'skippedearly'
+  const body =
+    '--' + boundary + '\r\nContent-Disposition: form-data; name="a"\r\n\r\n1\r\n' +
+    '--' + boundary + '\r\nContent-Disposition: form-data; name="b"\r\n\r\n2\r\n' +
+    '--' + boundary + '\r\nContent-Disposition: form-data; name="c"\r\n\r\npartial'
+
+  const busboy = new Busboy({
+    headers: { 'content-type': 'multipart/form-data; boundary=' + boundary },
+    limits: { parts: 2 }
+  })
+
+  const fields = []
+  let partsLimit = false
+  busboy.on('field', (key, val) => fields.push([key, val]))
+  busboy.on('partsLimit', () => { partsLimit = true })
+  // The parser also surfaces a normal 'error' when the body ends unexpectedly;
+  // a well-behaved consumer (like @fastify/multipart) listens for it.
+  busboy.on('error', EMPTY_FN)
+
+  const finished = new Promise(resolve => busboy.on('finish', resolve))
+  busboy.end(Buffer.from(body, 'utf8'))
+
+  await finished
+  t.assert.ok(partsLimit, 'partsLimit emitted')
+  t.assert.ok(fields.length >= 1, 'first parts emitted as fields')
+})
+
 test('parser drain resumes a paused write callback', async (t) => {
   const boundary = 'drainboundary'
   const body = buildBody([
