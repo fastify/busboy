@@ -606,6 +606,43 @@ const tests = [
     ],
     what: 'multiple empty parts should get ignored',
     plan: 7
+  },
+  {
+    source: [
+      ['--boundary',
+        'Content-Disposition: form-data; name="no-body"',
+        '--boundary',
+        'Content-Disposition: form-data; name="with-body"',
+        '',
+        'value',
+        '--boundary',
+        'Content-Disposition: form-data; name="no-body-at-the-end"',
+        '--boundary--'
+      ].join('\r\n')
+    ],
+    boundary: 'boundary',
+    expected: [
+      ['field', 'no-body', '', false, false, '7bit', 'text/plain'],
+      ['field', 'with-body', 'value', false, false, '7bit', 'text/plain'],
+      ['field', 'no-body-at-the-end', '', false, false, '7bit', 'text/plain']
+    ],
+    what: 'parts with headers but no body (RFC 2046 section 5.1.1)',
+    plan: 6
+  },
+  {
+    source: [
+      ['--boundary',
+        'Content-Disposition: form-data; name="file"; filename="empty.txt"',
+        'Content-Type: text/plain',
+        '--boundary--'
+      ].join('\r\n')
+    ],
+    boundary: 'boundary',
+    expected: [
+      ['file', 'file', 0, 0, 'empty.txt', '7bit', 'text/plain']
+    ],
+    what: 'file part with headers but no body',
+    plan: 6
   }
 ]
 

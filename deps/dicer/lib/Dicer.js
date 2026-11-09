@@ -174,6 +174,14 @@ Dicer.prototype._oninfo = function (isMatch, data, start, end) {
     }
   }
   if (isMatch) {
+    if (!this._isPreamble && this._inHeader && !this._ignoreData) {
+      // The delimiter arrived before an empty line ended the header block.
+      // The needle's CRLF terminated the last header line, so this is a part
+      // without a body (RFC 2046 section 5.1.1 makes the body optional). Emit
+      // the header now; otherwise the part would never be read, its 'end'
+      // would never fire and the Dicer would never finish.
+      this._hparser._finish()
+    }
     this._hparser.reset()
     if (this._isPreamble) { this._isPreamble = false } else {
       if (start !== end) {
