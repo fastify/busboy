@@ -9,6 +9,8 @@ const PartStream = require('./PartStream')
 const HeaderParser = require('./HeaderParser')
 
 const DASH = 45
+const SPACE = 32
+const TAB = 9
 const B_ONEDASH = Buffer.from('-')
 const B_CRLF = Buffer.from('\r\n')
 const EMPTY_FN = function () {}
@@ -146,6 +148,14 @@ Dicer.prototype._oninfo = function (isMatch, data, start, end) {
       }
     }
     if (this._dashes) { return }
+    // RFC 2046 section 5.1.1: a boundary delimiter line may carry transport
+    // padding (spaces and tabs) before its CRLF, and receivers must accept it.
+    while ((start + i) < end && (data[start + i] === SPACE || data[start + i] === TAB)) { ++i }
+    if (i > 0) {
+      // the padding may be split across writes: wait for the byte after it
+      if ((start + i) === end) { return }
+      start += i
+    }
   }
   if (this._justMatched) { this._justMatched = false }
   if (!this._part) {

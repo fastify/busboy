@@ -606,6 +606,45 @@ const tests = [
     ],
     what: 'multiple empty parts should get ignored',
     plan: 7
+  },
+  {
+    source: [
+      '--boundary \r\n' +
+        'Content-Disposition: form-data; name="padded-with-space"\r\n' +
+        '\r\n' +
+        'one\r\n' +
+        '--boundary\t\r\n' +
+        'Content-Disposition: form-data; name="padded-with-tab"\r\n' +
+        '\r\n' +
+        'two\r\n' +
+        '--boundary \t \r\n' +
+        'Content-Disposition: form-data; name="padded-with-both"\r\n' +
+        '\r\n' +
+        'three\r\n' +
+        '--boundary-- \r\n'
+    ],
+    boundary: 'boundary',
+    expected: [
+      ['field', 'padded-with-space', 'one', false, false, '7bit', 'text/plain'],
+      ['field', 'padded-with-tab', 'two', false, false, '7bit', 'text/plain'],
+      ['field', 'padded-with-both', 'three', false, false, '7bit', 'text/plain']
+    ],
+    what: 'boundary lines with transport padding (RFC 2046 section 5.1.1)',
+    plan: 6
+  },
+  {
+    source: [
+      '--boundary',
+      ' ',
+      '\t',
+      '\r\nContent-Disposition: form-data; name="split"\r\n\r\nvalue\r\n--boundary--'
+    ],
+    boundary: 'boundary',
+    expected: [
+      ['field', 'split', 'value', false, false, '7bit', 'text/plain']
+    ],
+    what: 'transport padding split across writes',
+    plan: 4
   }
 ]
 
