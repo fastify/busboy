@@ -40,6 +40,9 @@ inherits(Busboy, WritableStream)
 
 Busboy.prototype.emit = function (ev) {
   if (ev === 'finish') {
+    if (this.destroyed) {
+      return
+    }
     if (!this._done) {
       this._parser?.end()
       return
@@ -49,6 +52,13 @@ Busboy.prototype.emit = function (ev) {
     this._finished = true
   }
   WritableStream.prototype.emit.apply(this, arguments)
+}
+
+Busboy.prototype._destroy = function (err, cb) {
+  if (this._parser && typeof this._parser.destroy === 'function') {
+    this._parser.destroy(err)
+  }
+  cb(err)
 }
 
 Busboy.prototype.getParserByHeaders = function (headers) {
