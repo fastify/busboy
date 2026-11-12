@@ -13,6 +13,9 @@ function HeaderParser (cfg) {
   cfg = cfg || {}
   this.nread = 0
   this.maxed = false
+  // Number of trailing header bytes received but not kept in this.buffer
+  // because maxHeaderSize was reached.
+  this.dropped = 0
   this.npairs = 0
   this.maxHeaderPairs = getLimit(cfg, 'maxHeaderPairs', 2000)
   this.maxHeaderSize = getLimit(cfg, 'maxHeaderSize', 80 * 1024)
@@ -69,20 +72,24 @@ HeaderParser.prototype.push = function (data) {
       this.buffer += data.toString('binary', 0, remaining)
       this.nread = this.maxHeaderSize
       this.maxed = true
+      this.dropped = appendEnd - remaining
     } else {
       this.buffer += data.toString('binary', 0, appendEnd)
       this.nread += appendEnd
     }
+  } else {
+    this.dropped += appendEnd
   }
 
   if (found) {
     // A CRLFCRLF header terminator split across pushes left its leading bytes
     // in this.buffer on the previous push; drop them so they do not trail the
     // last header value. splitTail is 0 in the common case, making this a no-op.
-    // Skip when maxed: once maxHeaderSize truncation dropped the trailing bytes,
-    // the last splitTail bytes are real header content, not the terminator prefix.
-    if (!this.maxed) {
-      this.buffer = this.buffer.slice(0, this.buffer.length - splitTail)
+    // When maxHeaderSize truncation dropped some trailing bytes, only the
+    // terminator bytes that actually made it into this.buffer are removed.
+    const buffered = splitTail - this.dropped
+    if (buffered > 0) {
+      this.buffer = this.buffer.slice(0, this.buffer.length - buffered)
     }
     this._finish()
     return end
@@ -98,6 +105,7 @@ HeaderParser.prototype.reset = function () {
   this.buffer = ''
   this.header = Object.create(null)
   this.tail = ''
+  this.dropped = 0
 }
 
 HeaderParser.prototype._finish = function () {
@@ -109,6 +117,7 @@ HeaderParser.prototype._finish = function () {
   this.finished = true
   this.nread = this.npairs = 0
   this.maxed = false
+  this.dropped = 0
   this.emit('header', header)
 }
 
