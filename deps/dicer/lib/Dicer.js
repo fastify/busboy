@@ -176,7 +176,10 @@ Dicer.prototype._oninfo = function (isMatch, data, start, end) {
   if (isMatch) {
     this._hparser.reset()
     if (this._isPreamble) { this._isPreamble = false } else {
-      if (start !== end) {
+      // A part whose header block is still incomplete never emits 'header',
+      // so nothing will consume it and its 'end' would never fire. Do not
+      // count it as outstanding, just like an empty part.
+      if (start !== end && !this._inHeader) {
         ++this._parts
         this._part.on('end', function () {
           if (--self._parts === 0) {
