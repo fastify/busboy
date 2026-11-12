@@ -97,6 +97,28 @@ for (const { name, boundary, body, expected } of cases) {
   })
 }
 
+test('a cut-off header block does not use up the next part\'s header limits', async (t) => {
+  const busboy = new Busboy({
+    headers: { 'content-type': 'multipart/form-data; boundary=b' },
+    limits: { headerSize: 100, headerPairs: 2 }
+  })
+  const fields = []
+
+  await new Promise((resolve, reject) => {
+    busboy.on('field', (name, value) => fields.push([name, value]))
+    busboy.on('error', reject)
+    busboy.on('finish', resolve)
+    busboy.end(Buffer.from(
+      '--b\r\nX: ' + 'a'.repeat(200) + '\r\n' +
+      '--b\r\nA: 1\r\nB: 2\r\n' +
+      '--b\r\nContent-Disposition: form-data; name="ok"\r\n\r\nv\r\n' +
+      '--b--\r\n'
+    ))
+  })
+
+  t.assert.deepStrictEqual(fields, [['ok', 'v']])
+})
+
 test('still waits for a part whose header completed before the delimiter', async (t) => {
   const body = '--b\r\n' +
     'Content-Disposition: form-data; name="file"; filename="a.txt"\r\n' +

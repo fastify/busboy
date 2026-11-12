@@ -91,6 +91,10 @@ HeaderParser.prototype.push = function (data) {
 
 HeaderParser.prototype.reset = function () {
   this.finished = false
+  // A delimiter can cut off an incomplete header block; do not let its size
+  // and pair counts carry over into the next part's header block.
+  this.nread = this.npairs = 0
+  this.maxed = false
   this.buffer = ''
   this.header = Object.create(null)
   this.tail = ''
