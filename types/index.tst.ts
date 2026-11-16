@@ -1,6 +1,6 @@
 /* eslint-disable import-x/no-duplicates */
 /* eslint-disable no-new */
-import BusboyDefault, { Busboy, BusboyFileStream } from '.'
+import BusboyDefault, { Busboy, BusboyFileStream, BusboyPartHeaders } from '.'
 import { expect } from 'tstyche'
 import BusboyESM from '.'
 
@@ -60,7 +60,8 @@ new BusboyDefault({
   isPartAFile: (fieldName, contentType, fileName) => fileName !== undefined
 })
 
-busboy.addListener('file', (fieldname, file, filename, encoding, mimetype) => {
+busboy.addListener('file', (fieldname, file, filename, encoding, mimetype, headers) => {
+  expect(headers).type.toBe<BusboyPartHeaders>()
   expect(fieldname).type.toBe<string>()
   expect(file).type.toBe<BusboyFileStream>()
   expect(filename).type.toBe<string>()
@@ -69,7 +70,8 @@ busboy.addListener('file', (fieldname, file, filename, encoding, mimetype) => {
 })
 busboy.addListener(
   'field',
-  (fieldname, val, fieldnameTruncated, valTruncated, encoding, mimetype) => {
+  (fieldname, val, fieldnameTruncated, valTruncated, encoding, mimetype, headers) => {
+    expect(headers).type.toBe<BusboyPartHeaders>()
     expect(fieldname).type.toBe<string>()
     expect(val).type.toBe<string>()
     expect(fieldnameTruncated).type.toBe<boolean>()
@@ -93,7 +95,8 @@ busboy.on(Symbol('foo'), (foo) => {
   expect(foo).type.toBe<any>()
 })
 
-busboy.on('file', (fieldname, file, filename, encoding, mimetype) => {
+busboy.on('file', (fieldname, file, filename, encoding, mimetype, headers) => {
+  expect(headers).type.toBe<BusboyPartHeaders>()
   expect(fieldname).type.toBe<string>()
   expect(file).type.toBe<BusboyFileStream>()
   expect(filename).type.toBe<string>()
@@ -102,7 +105,8 @@ busboy.on('file', (fieldname, file, filename, encoding, mimetype) => {
 })
 busboy.on(
   'field',
-  (fieldname, val, fieldnameTruncated, valTruncated, encoding, mimetype) => {
+  (fieldname, val, fieldnameTruncated, valTruncated, encoding, mimetype, headers) => {
+    expect(headers).type.toBe<BusboyPartHeaders>()
     expect(fieldname).type.toBe<string>()
     expect(val).type.toBe<string>()
     expect(fieldnameTruncated).type.toBe<boolean>()
@@ -126,7 +130,8 @@ busboy.on(Symbol('foo'), (foo) => {
   expect(foo).type.toBe<any>()
 })
 
-busboy.once('file', (fieldname, file, filename, encoding, mimetype) => {
+busboy.once('file', (fieldname, file, filename, encoding, mimetype, headers) => {
+  expect(headers).type.toBe<BusboyPartHeaders>()
   expect(fieldname).type.toBe<string>()
   expect(file).type.toBe<BusboyFileStream>()
   expect(filename).type.toBe<string>()
@@ -135,7 +140,8 @@ busboy.once('file', (fieldname, file, filename, encoding, mimetype) => {
 })
 busboy.once(
   'field',
-  (fieldname, val, fieldnameTruncated, valTruncated, encoding, mimetype) => {
+  (fieldname, val, fieldnameTruncated, valTruncated, encoding, mimetype, headers) => {
+    expect(headers).type.toBe<BusboyPartHeaders>()
     expect(fieldname).type.toBe<string>()
     expect(val).type.toBe<string>()
     expect(fieldnameTruncated).type.toBe<boolean>()
@@ -171,7 +177,8 @@ busboy.removeListener(
 )
 busboy.removeListener(
   'field',
-  (fieldname, val, fieldnameTruncated, valTruncated, encoding, mimetype) => {
+  (fieldname, val, fieldnameTruncated, valTruncated, encoding, mimetype, headers) => {
+    expect(headers).type.toBe<BusboyPartHeaders>()
     expect(fieldname).type.toBe<string>()
     expect(val).type.toBe<string>()
     expect(fieldnameTruncated).type.toBe<boolean>()
@@ -195,7 +202,8 @@ busboy.removeListener(Symbol('foo'), (foo) => {
   expect(foo).type.toBe<any>()
 })
 
-busboy.off('file', (fieldname, file, filename, encoding, mimetype) => {
+busboy.off('file', (fieldname, file, filename, encoding, mimetype, headers) => {
+  expect(headers).type.toBe<BusboyPartHeaders>()
   expect(fieldname).type.toBe<string>()
   expect(file).type.toBe<BusboyFileStream>()
   expect(filename).type.toBe<string>()
@@ -204,7 +212,8 @@ busboy.off('file', (fieldname, file, filename, encoding, mimetype) => {
 })
 busboy.off(
   'field',
-  (fieldname, val, fieldnameTruncated, valTruncated, encoding, mimetype) => {
+  (fieldname, val, fieldnameTruncated, valTruncated, encoding, mimetype, headers) => {
+    expect(headers).type.toBe<BusboyPartHeaders>()
     expect(fieldname).type.toBe<string>()
     expect(val).type.toBe<string>()
     expect(fieldnameTruncated).type.toBe<boolean>()
@@ -240,7 +249,8 @@ busboy.prependListener(
 )
 busboy.prependListener(
   'field',
-  (fieldname, val, fieldnameTruncated, valTruncated, encoding, mimetype) => {
+  (fieldname, val, fieldnameTruncated, valTruncated, encoding, mimetype, headers) => {
+    expect(headers).type.toBe<BusboyPartHeaders>()
     expect(fieldname).type.toBe<string>()
     expect(val).type.toBe<string>()
     expect(fieldnameTruncated).type.toBe<boolean>()
@@ -276,7 +286,8 @@ busboy.prependOnceListener(
 )
 busboy.prependOnceListener(
   'field',
-  (fieldname, val, fieldnameTruncated, valTruncated, encoding, mimetype) => {
+  (fieldname, val, fieldnameTruncated, valTruncated, encoding, mimetype, headers) => {
+    expect(headers).type.toBe<BusboyPartHeaders>()
     expect(fieldname).type.toBe<string>()
     expect(val).type.toBe<string>()
     expect(fieldnameTruncated).type.toBe<boolean>()

@@ -109,6 +109,8 @@ export interface BusboyConfig {
 
 export type BusboyHeaders = { 'content-type': string } & http.IncomingHttpHeaders
 
+export type BusboyPartHeaders = Record<string, string[]>
+
 export interface BusboyFileStream extends
   Readable {
 
@@ -194,6 +196,8 @@ export interface BusboyEvents {
      *
      * @param listener.transferEncoding Contains the 'Content-Transfer-Encoding' value for the file stream.
      * @param listener.mimeType Contains the 'Content-Type' value for the file stream.
+     * @param listener.headers The raw headers of the part. Keys are lower-cased and each value is an array
+     * (repeated headers are preserved); values are not modified, e.g. `content-type` keeps its parameters and casing.
      */
   file: (
     fieldname: string,
@@ -201,6 +205,7 @@ export interface BusboyEvents {
     filename: string,
     transferEncoding: string,
     mimeType: string,
+    headers: BusboyPartHeaders,
   ) => void;
   /**
      * Emitted for each new non-file field found.
@@ -212,6 +217,7 @@ export interface BusboyEvents {
     valueTruncated: boolean,
     transferEncoding: string,
     mimeType: string,
+    headers: BusboyPartHeaders,
   ) => void;
   finish: () => void;
   /**
