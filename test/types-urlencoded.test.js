@@ -32,7 +32,8 @@ const tests = [
     expected: [['foo', '', false, false]],
     what: 'Unassigned and assigned value with limit',
     limits: { fields: 1 },
-    plan: 4
+    fieldsLimit: 1,
+    plan: 5
   },
   {
     source: ['foo=bar&baz'],
@@ -132,7 +133,40 @@ const tests = [
     expected: [['foo', 'bar', false, false]],
     what: 'Limits: one field',
     limits: { fields: 1 },
-    plan: 4
+    fieldsLimit: 1,
+    plan: 5
+  },
+  {
+    source: ['foo=bar&', 'baz=bla'],
+    expected: [['foo', 'bar', false, false]],
+    what: 'Limits: one field, split after the limit',
+    limits: { fields: 1 },
+    fieldsLimit: 1,
+    plan: 5
+  },
+  {
+    source: ['foo=bar&baz', '=bla'],
+    expected: [['foo', 'bar', false, false]],
+    what: 'Limits: one field, no second event on a later write',
+    limits: { fields: 1 },
+    fieldsLimit: 1,
+    plan: 5
+  },
+  {
+    source: ['foo=bar&'],
+    expected: [['foo', 'bar', false, false]],
+    what: 'Limits: one field, nothing after the limit',
+    limits: { fields: 1 },
+    fieldsLimit: 0,
+    plan: 5
+  },
+  {
+    source: ['foo&'],
+    expected: [['foo', '', false, false]],
+    what: 'Limits: one unassigned field, nothing after the limit',
+    limits: { fields: 1 },
+    fieldsLimit: 0,
+    plan: 5
   },
   {
     source: ['foo=bar&baz=bla'],
@@ -258,10 +292,14 @@ test('types-urlencoded', async t => {
       })
       await new Promise((resolve) => {
         let finishes = 0
+        let fieldsLimitEvents = 0
         const results = []
 
         busboy.on('field', function (key, val, keyTrunc, valTrunc) {
           results.push([key, val, keyTrunc, valTrunc])
+        })
+        busboy.on('fieldsLimit', function () {
+          ++fieldsLimitEvents
         })
         busboy.on('file', function () {
           throw new Error('Unexpected file')
@@ -279,6 +317,9 @@ test('types-urlencoded', async t => {
             )
             ++i
           })
+          if (v.fieldsLimit !== undefined) {
+            t.assert.strictEqual(fieldsLimitEvents, v.fieldsLimit, 'fieldsLimit events')
+          }
           t.assert.ok('pass')
           resolve()
         })
